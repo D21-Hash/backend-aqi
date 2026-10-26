@@ -44,12 +44,11 @@
 
  async function connectBLE() {
   try {
-    document.getElementById('status').innerText = "Mencari perangkat Bluetooth...";
+    document.getElementById('status').innerText = "Mencari ESP32_AQI_BLE...";
     
-    // Mengizinkan scan semua perangkat BLE di sekitar
+    // Filter khusus Service UUID ESP32
     const device = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [SERVICE_UUID]
+      filters: [{ services: [SERVICE_UUID] }]
     });
     
     document.getElementById('status').innerText = "Menghubungkan ke " + (device.name || "ESP32") + "...";
