@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengaturan Wi-Fi ESP32</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-6 flex flex-col items-center justify-center">
+
+  <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 w-full max-w-md shadow-2xl">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-xl font-bold text-blue-400">⚙️ Provisioning Wi-Fi ESP32</h1>
+      <a href="/" class="text-xs text-gray-400 hover:text-white underline">Kembali ke Dasbor</a>
+    </div>
+
+    <button id="btnConnect" onclick="connectBLE()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-4 transition">
+      1. Hubungkan Bluetooth
+    </button>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs text-gray-400 mb-1">NAMA WI-FI (SSID)</label>
+        <input type="text" id="ssid" placeholder="Contoh: MyHomeWiFi" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 mb-1">PASSWORD WI-FI</label>
+        <input type="password" id="pass" placeholder="Ketik kata sandi..." class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+      </div>
+      <button id="btnSend" onclick="sendWifiData()" disabled class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition">
+        2. Kirim Kredensial ke ESP32
+      </button>
+    </div>
+
+    <div id="status" class="mt-6 p-4 bg-gray-900 border border-gray-700 rounded-lg text-sm text-gray-300 text-center break-words">
+      Status: Belum Terhubung
+    </div>
+  </div>
+
+  <script>
+    const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+    let bleCharacteristic;
+
+    async function connectBLE() {
+      try {
+        document.getElementById('status').innerText = "Mencari perangkat ESP32_AQI_BLE...";
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'ESP32_AQI_BLE' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        document.getElementById('status').innerText = "Menghubungkan ke GATT Server...";
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        bleCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+        
+        document.getElementById('status').innerText = "✅ Terhubung ke Bluetooth ESP32! Silakan isi data Wi-Fi.";
+        document.getElementById('btnSend').disabled = false;
+      } catch (error) {
+        document.getElementById('status').innerText = "❌ Gagal terhubung: " + error;
+      }
+    }
+
+    async function sendWifiData() {
+      const ssid = document.getElementById('ssid').value;
+      const pass = document.getElementById('pass').value;
+
+      if (!ssid) {
+        alert("Nama Wi-Fi tidak boleh kosong!");
+        return;
+      }
+
+      const payload = `${ssid}|${pass}`;
+      const encoder = new TextEncoder();
+      
+      try {
+        document.getElementById('status').innerText = "Mengirim kredensial Wi-Fi ke ESP32...";
+        await bleCharacteristic.writeValue(encoder.encode(payload));
+        document.getElementById('status').innerText = "🎉 Sukses! Kredensial terkirim. ESP32 sedang restart & terhubung ke Wi-Fi.";
+      } catch (error) {
+        document.getElementById('status').innerText = "❌ Gagal mengirim data: " + error;
+      }
+    }
+  </script>
+</body>
+</html>
