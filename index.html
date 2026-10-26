@@ -12,9 +12,9 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-6">
 
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-6xl mx-auto space-y-8">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-gray-800 pb-4 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-center border-b border-gray-800 pb-4 gap-4">
       <div>
         <h1 class="text-3xl font-bold text-blue-400">🍃 Monitoring Kualitas Udara Real-Time</h1>
         <p class="text-gray-400 text-sm mt-1">Sistem Monitoring Terintegrasi ESP32 & EMQX Cloud</p>
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Real-time Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- AQI Card -->
       <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
         <div class="flex justify-between items-center text-gray-400 text-sm font-semibold">
@@ -63,20 +63,57 @@
       </div>
     </div>
 
-    <!-- Chart Section -->
-    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
-      <h2 class="text-lg font-bold text-gray-200 mb-4">📈 Grafik Tren Kualitas Udara (Real-time)</h2>
-      <div class="relative w-full h-80">
-        <canvas id="aqiChart"></canvas>
+    <!-- Chart & AI Section Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Chart Section -->
+      <div class="lg:col-span-2 bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-200 mb-4">📈 Grafik Tren Kualitas Udara (Real-time)</h2>
+        <div class="relative w-full h-80">
+          <canvas id="aqiChart"></canvas>
+        </div>
+      </div>
+
+      <!-- AI Analytics Section -->
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-blue-400 flex items-center gap-2">
+              🤖 AI Analytics Assistant
+            </h2>
+            <span class="text-xs bg-blue-900/50 text-blue-300 px-2.5 py-1 rounded-full border border-blue-800">Smart AI</span>
+          </div>
+          <p class="text-xs text-gray-400 mb-4">
+            Analisis kondisi udara saat ini atau tanyakan rekomendasi kesehatan berdasarkan parameter sensor.
+          </p>
+
+          <!-- Chat Output Box -->
+          <div id="aiChatBox" class="bg-gray-900 border border-gray-700 rounded-xl p-4 h-48 overflow-y-auto text-sm space-y-3 mb-4 text-gray-300">
+            <div class="bg-gray-800 p-3 rounded-lg border border-gray-700 text-xs">
+              💡 <span class="font-semibold text-blue-400">Sistem:</span> Klik tombol di bawah untuk meminta AI menganalisis kondisi udara terkini.
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick AI Analyze Button & Input -->
+        <div class="space-y-2">
+          <button onclick="analyzeCurrentAir()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg">
+            <span>🔍 Analisis Kondisi Sekarang</span>
+          </button>
+          <div class="flex gap-2">
+            <input type="text" id="aiInput" placeholder="Tanyakan sesuatu..." class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+            <button onclick="sendCustomPrompt()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-xl text-xs font-semibold text-white transition">Kirim</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Konfigurasi MQTT EMQX Cloud (WSS Port 8084 / 8083)
     const brokerUrl = "wss://h181dd71.ala.asia-southeast1.emqxsl.com:8084/mqtt";
     const topic = "kualitas_udara/data";
     
+    let currentData = { aqi: '--', pm25: '--', co2: '--' };
+
     const options = {
       clientId: 'Web_Dashboard_' + Math.random().toString(16).substr(2, 8),
       username: 'Daniel',
@@ -85,7 +122,6 @@
       connectTimeout: 4000,
     };
 
-    // Inisialisasi Chart.js
     const ctx = document.getElementById('aqiChart').getContext('2d');
     const aqiChart = new Chart(ctx, {
       type: 'line',
@@ -123,7 +159,6 @@
       }
     });
 
-    // Menghubungkan ke EMQX Cloud via WebSocket SSL
     const client = mqtt.connect(brokerUrl, options);
 
     client.on('connect', () => {
@@ -142,14 +177,12 @@
     client.on('message', (receivedTopic, message) => {
       try {
         const data = JSON.parse(message.toString());
-        console.log("Data Diterima:", data);
+        currentData = data;
 
-        // Update nilai UI
         document.getElementById('valPm25').innerText = data.pm25;
         document.getElementById('valCo2').innerText = data.co2;
         document.getElementById('valAqi').innerText = data.aqi;
 
-        // Label Kualitas Udara berdasarkan AQI
         const statusAqiEl = document.getElementById('statusAqi');
         if (data.aqi <= 50) {
           statusAqiEl.innerText = "Kategori: Baik 😊";
@@ -162,7 +195,6 @@
           statusAqiEl.className = "text-xs font-medium text-red-400";
         }
 
-        // Update Grafik
         const now = new Date().toLocaleTimeString();
         if (aqiChart.data.labels.length > 10) {
           aqiChart.data.labels.shift();
@@ -186,6 +218,63 @@
       statusEl.className = "px-4 py-2 rounded-full text-xs font-bold bg-red-600 text-red-100 flex items-center gap-2";
       statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-300"></span> Disconnected`;
     });
+
+    // Fungsi Interaksi AI
+    async function fetchAIResponse(promptText) {
+      const chatBox = document.getElementById('aiChatBox');
+      
+      const userMsg = document.createElement('div');
+      userMsg.className = "bg-blue-950 border border-blue-800 p-2.5 rounded-lg text-xs text-blue-200";
+      userMsg.innerHTML = `👤 <span class="font-semibold">Kamu:</span> ${promptText}`;
+      chatBox.appendChild(userMsg);
+
+      const loadingMsg = document.createElement('div');
+      loadingMsg.className = "bg-gray-800 p-2.5 rounded-lg border border-gray-700 text-xs animate-pulse text-gray-400";
+      loadingMsg.id = "aiLoading";
+      loadingMsg.innerHTML = "🤖 AI sedang berpikir...";
+      chatBox.appendChild(loadingMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: promptText })
+        });
+        const json = await res.json();
+
+        document.getElementById('aiLoading')?.remove();
+
+        const aiMsg = document.createElement('div');
+        aiMsg.className = "bg-gray-800 border border-gray-700 p-2.5 rounded-lg text-xs text-gray-200";
+        aiMsg.innerHTML = `🤖 <span class="font-semibold text-blue-400">AI Analytics:</span> ${json.answer || 'Tidak ada tanggapan'}`;
+        chatBox.appendChild(aiMsg);
+      } catch (err) {
+        document.getElementById('aiLoading')?.remove();
+        const errorMsg = document.createElement('div');
+        errorMsg.className = "bg-red-950 border border-red-800 p-2.5 rounded-lg text-xs text-red-300";
+        errorMsg.innerHTML = `❌ Gagal memanggil API AI: ${err.message}`;
+        chatBox.appendChild(errorMsg);
+      }
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function analyzeCurrentAir() {
+      if (currentData.aqi === '--') {
+        alert("Menunggu data sensor pertama kali masuk...");
+        return;
+      }
+      const prompt = `Analisis kondisi udara saat ini: AQI ${currentData.aqi}, PM2.5 ${currentData.pm25} ug/m3, CO2 ${currentData.co2} PPM. Berikan analisis singkat dan saran aksi kesehatan.`;
+      fetchAIResponse(prompt);
+    }
+
+    function sendCustomPrompt() {
+      const input = document.getElementById('aiInput');
+      if (input.value.trim() !== '') {
+        fetchAIResponse(input.value.trim());
+        input.value = '';
+      }
+    }
   </script>
 </body>
 </html>
