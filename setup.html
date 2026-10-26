@@ -42,35 +42,33 @@
     const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
     let bleCharacteristic;
 
- async function connectBLE() {
-  try {
-    document.getElementById('status').innerText = "Mencari ESP32_AQI_BLE...";
-    
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ services: [SERVICE_UUID] }]
-    });
-    
-    document.getElementById('status').innerText = "Menghubungkan GATT Server ke " + (device.name || "ESP32") + "...";
-    const server = await device.gatt.connect();
-    
-    // Jeda 1 detik agar stack Bluetooth Windows/Browser stabil
-    document.getElementById('status').innerText = "Menstabilkan koneksi...";
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    async function connectBLE() {
+      try {
+        document.getElementById('status').innerText = "Mencari perangkat Bluetooth di sekitar...";
+        
+        // Membuka scan semua perangkat agar tidak diblokir Windows Chrome
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        document.getElementById('status').innerText = "Menghubungkan ke " + (device.name || "Perangkat") + "...";
+        const server = await device.gatt.connect();
+        
+        // Jeda penstabilan koneksi GATT
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-    if (!server.connected) {
-      throw new Error("GATT Server terputus. Coba klik ulang tombol.");
+        document.getElementById('status').innerText = "Mengambil Service Bluetooth...";
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        bleCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+        
+        document.getElementById('status').innerText = "✅ Terhubung ke ESP32! Silakan isi data Wi-Fi.";
+        document.getElementById('btnSend').disabled = false;
+      } catch (error) {
+        console.error(error);
+        document.getElementById('status').innerText = "❌ Gagal terhubung: " + error.message;
+      }
     }
-
-    document.getElementById('status').innerText = "Membaca Service ESP32...";
-    const service = await server.getPrimaryService(SERVICE_UUID);
-    bleCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-    
-    document.getElementById('status').innerText = "✅ Terhubung ke Bluetooth ESP32! Silakan isi data Wi-Fi.";
-    document.getElementById('btnSend').disabled = false;
-  } catch (error) {
-    document.getElementById('status').innerText = "❌ Gagal terhubung: " + error.message;
-  }
-}
 
     async function sendWifiData() {
       const ssid = document.getElementById('ssid').value;
@@ -85,11 +83,11 @@
       const encoder = new TextEncoder();
       
       try {
-        document.getElementById('status').innerText = "Mengirim kredensial Wi-Fi ke ESP32...";
+        document.getElementById('status').innerText = "Mengirim data Wi-Fi ke ESP32...";
         await bleCharacteristic.writeValue(encoder.encode(payload));
-        document.getElementById('status').innerText = "🎉 Sukses! Kredensial terkirim. ESP32 sedang restart & terhubung ke Wi-Fi.";
+        document.getElementById('status').innerText = "🎉 Kredensial terkirim! ESP32 sedang restart & terhubung ke Wi-Fi.";
       } catch (error) {
-        document.getElementById('status').innerText = "❌ Gagal mengirim data: " + error;
+        document.getElementById('status').innerText = "❌ Gagal mengirim: " + error.message;
       }
     }
   </script>
