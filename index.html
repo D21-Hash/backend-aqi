@@ -3,111 +3,189 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitoring Kualitas Udara & AI Assistant</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>Air Quality Monitoring Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- MQTT.js CDN -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-6 flex flex-col items-center">
-  <h1 class="text-3xl font-bold mb-6 text-blue-400">Dasbor AQI & AI Assistant</h1>
+<body class="bg-gray-900 text-white min-h-screen p-6">
 
-  <!-- Dashboard Realtime -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mb-6">
-    <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
-      <p class="text-gray-400 mb-2">Indeks AQI</p>
-      <h2 id="aqi-val" class="text-5xl font-extrabold text-green-400">--</h2>
-    </div>
-    <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
-      <p class="text-gray-400 mb-2">PM2.5 (µg/m³)</p>
-      <h2 id="pm25-val" class="text-5xl font-extrabold text-yellow-400">--</h2>
-    </div>
-    <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
-      <p class="text-gray-400 mb-2">CO2 (PPM)</p>
-      <h2 id="co2-val" class="text-5xl font-extrabold text-red-400">--</h2>
-    </div>
-  </div>
-
-  <p id="status-time" class="text-sm text-gray-500 mb-8">Menunggu data terbaru...</p>
-
-  <!-- Section Chatbot AI -->
-  <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 w-full max-w-4xl">
-    <h2 class="text-xl font-bold mb-4 text-purple-400">🤖 Tanya AI Asisten Udara</h2>
-    
-    <div id="chat-box" class="h-64 overflow-y-auto bg-gray-900 p-4 rounded-lg mb-4 space-y-3 border border-gray-700 text-sm">
-      <div class="bg-gray-800 p-3 rounded-lg max-w-xs text-gray-300">
-        Halo! Tanya aku apa saja tentang tren dan analisis riwayat kualitas udara di lokasi ini.
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-gray-800 pb-4 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-blue-400">🍃 Monitoring Kualitas Udara Real-Time</h1>
+        <p class="text-gray-400 text-sm mt-1">Sistem Monitoring Terintegrasi ESP32 & EMQX Cloud</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div id="connectionStatus" class="px-4 py-2 rounded-full text-xs font-bold bg-yellow-600 text-yellow-100 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-yellow-300 animate-ping"></span>
+          Connecting to MQTT...
+        </div>
+        <a href="/setup.html" class="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs text-gray-300 px-4 py-2 rounded-lg transition">
+          ⚙️ Setup Wi-Fi
+        </a>
       </div>
     </div>
 
-    <div class="flex gap-2">
-      <input type="text" id="chat-input" placeholder="Tanya AI (misal: Bagaimana tren AQI saat ini?)..." 
-             class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500">
-      <button onclick="sendQuestion()" id="send-btn" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-bold">Kirim</button>
+    <!-- Real-time Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- AQI Card -->
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
+        <div class="flex justify-between items-center text-gray-400 text-sm font-semibold">
+          <span>INDEKS KUALITAS UDARA (AQI)</span>
+          <span>📊</span>
+        </div>
+        <div id="valAqi" class="text-5xl font-extrabold my-4 text-blue-400">--</div>
+        <div id="statusAqi" class="text-xs font-medium text-gray-400">Menunggu data...</div>
+      </div>
+
+      <!-- PM2.5 Card -->
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
+        <div class="flex justify-between items-center text-gray-400 text-sm font-semibold">
+          <span>PARTIKEL PM2.5</span>
+          <span>💨</span>
+        </div>
+        <div id="valPm25" class="text-5xl font-extrabold my-4 text-emerald-400">--</div>
+        <div class="text-xs text-gray-400">Satuan: µg/m³</div>
+      </div>
+
+      <!-- CO2 Card -->
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
+        <div class="flex justify-between items-center text-gray-400 text-sm font-semibold">
+          <span>KARBON DIOKSIDA (CO2)</span>
+          <span>🌿</span>
+        </div>
+        <div id="valCo2" class="text-5xl font-extrabold my-4 text-purple-400">--</div>
+        <div class="text-xs text-gray-400">Satuan: PPM</div>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
+      <h2 class="text-lg font-bold text-gray-200 mb-4">📈 Grafik Tren Kualitas Udara (Real-time)</h2>
+      <div class="relative w-full h-80">
+        <canvas id="aqiChart"></canvas>
+      </div>
     </div>
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://rkhbttzscoqceeuemrlq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJraGJ0dHpzY29xY2VldWVtcmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MTIxNTUsImV4cCI6MjEwODI4ODE1NX0.T5SFF5XNgOYh2WF4JRIqJoGN02lT6pXhSAoPlXCQXqs';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Konfigurasi MQTT EMQX Cloud (WSS Port 8084 / 8083)
+    const brokerUrl = "wss://h181dd71.ala.asia-southeast1.emqxsl.com:8084/mqtt";
+    const topic = "kualitas_udara/data";
+    
+    const options = {
+      clientId: 'Web_Dashboard_' + Math.random().toString(16).substr(2, 8),
+      username: 'Daniel',
+      password: 'ESLS',
+      clean: true,
+      connectTimeout: 4000,
+    };
 
-    function updateUI(data) {
-      document.getElementById('aqi-val').innerText = data.aqi ?? '--';
-      document.getElementById('pm25-val').innerText = data.pm25 ?? '--';
-      document.getElementById('co2-val').innerText = data.co2 ?? '--';
-      document.getElementById('status-time').innerText = 'Pembaruan terakhir: ' + new Date(data.created_at).toLocaleTimeString();
-    }
-
-    async function fetchLatestData() {
-      const { data } = await _supabase
-        .from('log_kualitas_udara')
-        .select('*')
-        .order('id', { ascending: false })
-        .limit(1);
-
-      if (data && data.length > 0) updateUI(data[0]);
-    }
-
-    _supabase
-      .channel('schema-db-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'log_kualitas_udara' }, payload => {
-        updateUI(payload.new);
-      })
-      .subscribe();
-
-    fetchLatestData();
-
-    // Fungsi Pengiriman Pesan ke Backend Gemini AI
-    async function sendQuestion() {
-      const input = document.getElementById('chat-input');
-      const message = input.value.trim();
-      if (!message) return;
-
-      const chatBox = document.getElementById('chat-box');
-      const btn = document.getElementById('send-btn');
-
-      chatBox.innerHTML += `<div class="bg-purple-600 p-3 rounded-lg max-w-xs ml-auto text-white">${message}</div>`;
-      input.value = '';
-      btn.disabled = true;
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      try {
-        const res = await fetch('http://127.0.0.1:3000/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message })
-        });
-
-        const data = await res.json();
-        const answer = data.answer || 'Gagal mendapat jawaban.';
-
-        chatBox.innerHTML += `<div class="bg-gray-800 p-3 rounded-lg max-w-md text-gray-200">${answer.replace(/\n/g, '<br>')}</div>`;
-      } catch (err) {
-        chatBox.innerHTML += `<div class="bg-red-800 p-3 rounded-lg max-w-xs text-white">Error koneksi server!</div>`;
+    // Inisialisasi Chart.js
+    const ctx = document.getElementById('aqiChart').getContext('2d');
+    const aqiChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'PM2.5 (µg/m³)',
+            borderColor: '#34d399',
+            backgroundColor: 'rgba(52, 211, 153, 0.1)',
+            data: [],
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'CO2 (PPM)',
+            borderColor: '#c084fc',
+            backgroundColor: 'rgba(192, 132, 252, 0.1)',
+            data: [],
+            fill: true,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
+          y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }
+        },
+        plugins: {
+          legend: { labels: { color: '#e5e7eb' } }
+        }
       }
+    });
 
-      btn.disabled = false;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    // Menghubungkan ke EMQX Cloud via WebSocket SSL
+    const client = mqtt.connect(brokerUrl, options);
+
+    client.on('connect', () => {
+      console.log('✅ Connected to EMQX WebSocket!');
+      const statusEl = document.getElementById('connectionStatus');
+      statusEl.className = "px-4 py-2 rounded-full text-xs font-bold bg-green-600 text-green-100 flex items-center gap-2";
+      statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-green-300"></span> Live Connected`;
+
+      client.subscribe(topic, (err) => {
+        if (!err) {
+          console.log(`Subscribed to topic: ${topic}`);
+        }
+      });
+    });
+
+    client.on('message', (receivedTopic, message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log("Data Diterima:", data);
+
+        // Update nilai UI
+        document.getElementById('valPm25').innerText = data.pm25;
+        document.getElementById('valCo2').innerText = data.co2;
+        document.getElementById('valAqi').innerText = data.aqi;
+
+        // Label Kualitas Udara berdasarkan AQI
+        const statusAqiEl = document.getElementById('statusAqi');
+        if (data.aqi <= 50) {
+          statusAqiEl.innerText = "Kategori: Baik 😊";
+          statusAqiEl.className = "text-xs font-medium text-green-400";
+        } else if (data.aqi <= 100) {
+          statusAqiEl.innerText = "Kategori: Sedang 😐";
+          statusAqiEl.className = "text-xs font-medium text-yellow-400";
+        } else {
+          statusAqiEl.innerText = "Kategori: Tidak Sehat 😷";
+          statusAqiEl.className = "text-xs font-medium text-red-400";
+        }
+
+        // Update Grafik
+        const now = new Date().toLocaleTimeString();
+        if (aqiChart.data.labels.length > 10) {
+          aqiChart.data.labels.shift();
+          aqiChart.data.datasets[0].data.shift();
+          aqiChart.data.datasets[1].data.shift();
+        }
+
+        aqiChart.data.labels.push(now);
+        aqiChart.data.datasets[0].data.push(data.pm25);
+        aqiChart.data.datasets[1].data.push(data.co2);
+        aqiChart.update();
+
+      } catch (e) {
+        console.error("Gagal parsing JSON data:", e);
+      }
+    });
+
+    client.on('error', (err) => {
+      console.error('Connection error: ', err);
+      const statusEl = document.getElementById('connectionStatus');
+      statusEl.className = "px-4 py-2 rounded-full text-xs font-bold bg-red-600 text-red-100 flex items-center gap-2";
+      statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-300"></span> Disconnected`;
+    });
   </script>
 </body>
 </html>
