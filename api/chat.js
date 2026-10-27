@@ -14,12 +14,37 @@ export default async function handler(req, res) {
       return res.status(500).json({ answer: 'API Key (GEMINI_API_KEY) belum dipasang di Vercel.' });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    
     const prompt = `Kamu adalah AI Analytics untuk sistem monitoring kualitas udara real-time. Berikan analisis atau jawaban yang singkat, padat, helpful, dan ramah dalam bahasa Indonesia berdasarkan data/pertanyaan berikut:\n\n${message}`;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    // Nama model resmi dari dokumentasi ai.google.dev/gemini-api/docs/models
+    const modelsToTry = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-pro'
+    ];
+
+    let responseText = null;
+    let lastError = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        responseText = result.response.text();
+
+        if (responseText) {
+          break; // Berhasil, keluar dari loop
+        }
+      } catch (err) {
+        console.warn(`Model ${modelName} tidak merespons, mencoba model cadangan... Error: ${err.message}`);
+        lastError = err;
+      }
+    }
+
+    if (!responseText) {
+      throw new Error(lastError ? lastError.message : 'Semua model Gemini tidak merespons.');
+    }
 
     return res.status(200).json({ answer: responseText });
   } catch (err) {
