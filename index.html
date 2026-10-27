@@ -268,7 +268,7 @@ async function fetchLatestData() {
   if (!supabase) return;
   try {
     const { data, error } = await supabase
-      .from('sensor_logs') // <-- Diubah ke sensor_logs
+      .from('sensor_logs') // Sesuaikan nama tabel Supabase
       .select('*')
       .order('created_at', { ascending: false })
       .limit(1);
@@ -281,9 +281,9 @@ async function fetchLatestData() {
   }
 }
 
-    // Jalankan polling data setiap 5 detik
-    setInterval(fetchLatestData, 5000);
-    fetchLatestData();
+// Jalankan perbaikan setiap 5 detik
+setInterval(fetchLatestData, 5000);
+fetchLatestData();
 
     // --- 5. LOGIKA AI ANALYTICS ---
     async function fetchAIResponse(promptText) {
