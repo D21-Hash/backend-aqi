@@ -264,7 +264,7 @@
     }
 
     // --- 4. BACA DATA TERAKHIR DARI SUPABASE ---
-    async function fetchLatestData() {
+async function fetchLatestData() {
   if (!supabase) return;
   try {
     const { data, error } = await supabase
