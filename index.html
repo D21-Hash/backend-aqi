@@ -265,21 +265,21 @@
 
     // --- 4. BACA DATA TERAKHIR DARI SUPABASE ---
     async function fetchLatestData() {
-      if (!supabase) return;
-      try {
-        const { data, error } = await supabase
-          .from('kualitas_udara')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1);
+  if (!supabase) return;
+  try {
+    const { data, error } = await supabase
+      .from('sensor_logs') // <-- Diubah ke sensor_logs
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1);
 
-        if (data && data.length > 0) {
-          updateUI(data[0]);
-        }
-      } catch (err) {
-        console.error('Gagal mengambil data Supabase:', err);
-      }
+    if (data && data.length > 0) {
+      updateUI(data[0]);
     }
+  } catch (err) {
+    console.error('Gagal mengambil data Supabase:', err);
+  }
+}
 
     // Jalankan polling data setiap 5 detik
     setInterval(fetchLatestData, 5000);
