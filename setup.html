@@ -5,84 +5,229 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pengaturan Wi-Fi ESP32</title>
   <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white min-h-screen p-6 flex flex-col items-center justify-center">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap');
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
 
-  <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 w-full max-w-md shadow-2xl">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-xl font-bold text-blue-400">⚙️ Provisioning Wi-Fi ESP32</h1>
-      <a href="/" class="text-xs text-gray-400 hover:text-white underline">Kembali ke Dasbor</a>
+    /* Custom scrollbar halus */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen p-6 flex flex-col items-center justify-center antialiased selection:bg-blue-900/50 selection:text-white">
+
+  <!-- Card Utama -->
+  <div class="bg-slate-900/80 backdrop-blur-sm p-8 rounded-2xl border border-slate-800/60 w-full max-w-md shadow-2xl shadow-black/30 transition-all duration-300">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-xl font-semibold tracking-tight text-slate-100">
+        <span class="text-blue-400">⚙️</span> Provisioning Wi-Fi
+      </h1>
+      <a href="/" class="text-xs text-slate-500 hover:text-slate-300 underline decoration-slate-700 underline-offset-2 transition-colors">
+        Kembali ke Dasbor
+      </a>
     </div>
 
-    <button id="btnConnect" onclick="connectBLE()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-4 transition">
-      1. Hubungkan Bluetooth
+    <!-- Tombol Connect Bluetooth -->
+    <button id="btnConnect" onclick="connectBLE()" 
+      class="w-full bg-blue-600/90 hover:bg-blue-600 text-white font-medium py-3 rounded-xl mb-5 transition-all duration-200 shadow-lg shadow-blue-900/20 border border-blue-500/30 flex items-center justify-center gap-2 group">
+      <span class="text-lg">📶</span>
+      <span>1. Hubungkan Bluetooth</span>
     </button>
 
+    <!-- Form Input -->
     <div class="space-y-4">
+      
+      <!-- SSID -->
       <div>
-        <label class="block text-xs text-gray-400 mb-1">NAMA WI-FI (SSID)</label>
-        <input type="text" id="ssid" placeholder="Contoh: MyHomeWiFi" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+        <label class="block text-xs font-medium text-slate-400 mb-1.5 tracking-wide">NAMA WI-FI (SSID)</label>
+        <input type="text" id="ssid" placeholder="Contoh: MyHomeWiFi"
+          class="w-full bg-slate-950/70 border border-slate-700/70 rounded-xl p-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/70 focus:ring-1 focus:ring-blue-500/30 transition-all duration-200 text-sm">
       </div>
+
+      <!-- Password dengan Toggle Mata -->
       <div>
-        <label class="block text-xs text-gray-400 mb-1">PASSWORD WI-FI</label>
-        <input type="password" id="pass" placeholder="Ketik kata sandi..." class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+        <label class="block text-xs font-medium text-slate-400 mb-1.5 tracking-wide">PASSWORD WI-FI</label>
+        <div class="relative">
+          <input type="password" id="pass" placeholder="Ketik kata sandi..."
+            class="w-full bg-slate-950/70 border border-slate-700/70 rounded-xl p-3 pr-12 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/70 focus:ring-1 focus:ring-blue-500/30 transition-all duration-200 text-sm">
+          
+          <!-- Tombol Toggle Mata -->
+          <button type="button" onclick="togglePassword()" 
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors duration-200 focus:outline-none focus:text-blue-400"
+            aria-label="Tampilkan/sembunyikan password">
+            <!-- Ikon Mata (Open) -->
+            <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <!-- Ikon Mata (Closed) -->
+            <svg id="eyeClosed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+            </svg>
+          </button>
+        </div>
       </div>
-      <button id="btnSend" onclick="sendWifiData()" disabled class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition">
-        2. Kirim Kredensial ke ESP32
+
+      <!-- Tombol Kirim -->
+      <button id="btnSend" onclick="sendWifiData()" disabled 
+        class="w-full bg-emerald-600/90 hover:bg-emerald-600 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed disabled:border-slate-800 text-white font-medium py-3 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-900/20 border border-emerald-500/30 flex items-center justify-center gap-2 mt-2">
+        <span class="text-lg">📤</span>
+        <span>2. Kirim Kredensial ke ESP32</span>
       </button>
     </div>
 
-    <div id="status" class="mt-6 p-4 bg-gray-900 border border-gray-700 rounded-lg text-sm text-gray-300 text-center break-words">
+    <!-- Status -->
+    <div id="status" class="mt-6 p-4 bg-slate-950/50 border border-slate-800/60 rounded-xl text-xs text-slate-400 text-center break-words leading-relaxed transition-all duration-300">
       Status: Belum Terhubung
+    </div>
+
+    <!-- Tombol Bantuan -->
+    <div class="mt-4 flex justify-center">
+      <button onclick="openHelpModal()" 
+        class="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-200 flex items-center gap-1.5 underline decoration-slate-700 underline-offset-2">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+        </svg>
+        Bantuan & Panduan
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Bantuan -->
+  <div id="helpModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity duration-300" onclick="closeHelpModal()"></div>
+    
+    <!-- Konten Modal -->
+    <div class="relative bg-slate-900 border border-slate-700/70 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-black/50 transition-all duration-300 transform scale-95 opacity-0" id="helpModalContent">
+      
+      <!-- Header Modal -->
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-slate-100 flex items-center gap-2">
+          <span class="text-blue-400">📖</span> Panduan Penggunaan
+        </h2>
+        <button onclick="closeHelpModal()" class="text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-lg hover:bg-slate-800/60">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Langkah-langkah -->
+      <div class="space-y-3 text-sm text-slate-300">
+        
+        <div class="flex gap-3 p-3 bg-slate-950/50 rounded-xl border border-slate-800/60">
+          <span class="flex-shrink-0 w-6 h-6 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center text-xs font-bold border border-blue-500/30">1</span>
+          <p class="leading-relaxed">Aktifkan <span class="text-blue-300 font-medium">Wifi</span> pada perangkat Anda.</p>
+        </div>
+
+        <div class="flex gap-3 p-3 bg-slate-950/50 rounded-xl border border-slate-800/60">
+          <span class="flex-shrink-0 w-6 h-6 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center text-xs font-bold border border-blue-500/30">2</span>
+          <p class="leading-relaxed">Cari Wifi dengan nama <span class="text-blue-300 font-medium">"AQI ..."</span> lalu hubungkan.</p>
+        </div>
+
+        <div class="flex gap-3 p-3 bg-slate-950/50 rounded-xl border border-slate-800/60">
+          <span class="flex-shrink-0 w-6 h-6 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center text-xs font-bold border border-blue-500/30">3</span>
+          <p class="leading-relaxed">Kamu akan di arahkan ke web login. Silakan daftar koneksi yang ingin di masukkan, dapat berupa Wifi dan lainnya.</p>
+        </div>
+
+        <div class="flex gap-3 p-3 bg-slate-950/50 rounded-xl border border-slate-800/60">
+          <span class="flex-shrink-0 w-6 h-6 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center text-xs font-bold border border-blue-500/30">4</span>
+          <p class="leading-relaxed">Setelah login, koneksi kamu akan kembali seperti sebelumnya apabila kamu mengakses wifi AQI, dengan WIFI yang sedang aktif.</p>
+        </div>
+
+      </div>
+
+      <!-- Footer Modal -->
+      <button onclick="closeHelpModal()" 
+        class="mt-5 w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-2.5 rounded-xl transition-all duration-200 border border-slate-700/60 text-sm">
+        Mengerti
+      </button>
     </div>
   </div>
 
   <script>
+    // ===== Konfigurasi BLE =====
     const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
     const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
     let bleCharacteristic;
 
+    // ===== Toggle Password =====
+    function togglePassword() {
+      const passInput = document.getElementById('pass');
+      const eyeOpen = document.getElementById('eyeOpen');
+      const eyeClosed = document.getElementById('eyeClosed');
+
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeOpen.classList.add('hidden');
+        eyeClosed.classList.remove('hidden');
+      } else {
+        passInput.type = 'password';
+        eyeOpen.classList.remove('hidden');
+        eyeClosed.classList.add('hidden');
+      }
+    }
+
+    // ===== BLE Connect =====
     async function connectBLE() {
+      const statusEl = document.getElementById('status');
       try {
-        document.getElementById('status').innerText = "Mencari perangkat Bluetooth...";
+        statusEl.innerText = "Mencari perangkat Bluetooth...";
         
         const device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
           optionalServices: [SERVICE_UUID]
         });
         
-        document.getElementById('status').innerText = "Menghubungkan ke " + (device.name || "ESP32") + "...";
+        statusEl.innerText = "Menghubungkan ke " + (device.name || "ESP32") + "...";
         
-        // Retry loop untuk mengatasi masalah GATT Server disconnect di Windows
         let server = device.gatt;
         let attempts = 0;
         
         while (!server.connected && attempts < 3) {
           attempts++;
           try {
-            document.getElementById('status').innerText = `Mencoba koneksi GATT (${attempts}/3)...`;
+            statusEl.innerText = `Mencoba koneksi GATT (${attempts}/3)...`;
             await server.connect();
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Jeda stabilisasi
+            await new Promise(resolve => setTimeout(resolve, 1500));
           } catch (e) {
             console.warn(`Attempt ${attempts} failed:`, e);
             if (attempts === 3) throw e;
           }
         }
 
-        document.getElementById('status').innerText = "Mengambil Primary Service...";
+        statusEl.innerText = "Mengambil Primary Service...";
         const service = await server.getPrimaryService(SERVICE_UUID);
         
-        document.getElementById('status').innerText = "Mengambil Characteristic...";
+        statusEl.innerText = "Mengambil Characteristic...";
         bleCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
         
-        document.getElementById('status').innerText = "✅ Terhubung ke ESP32! Silakan isi data Wi-Fi.";
+        statusEl.innerText = "✅ Terhubung ke ESP32! Silakan isi data Wi-Fi.";
         document.getElementById('btnSend').disabled = false;
       } catch (error) {
         console.error(error);
-        document.getElementById('status').innerText = "❌ Gagal terhubung: " + error.message;
+        statusEl.innerText = "❌ Gagal terhubung: " + error.message;
       }
     }
 
+    // ===== Kirim Data WiFi =====
     async function sendWifiData() {
       const ssid = document.getElementById('ssid').value;
       const pass = document.getElementById('pass').value;
@@ -94,15 +239,49 @@
 
       const payload = `${ssid}|${pass}`;
       const encoder = new TextEncoder();
+      const statusEl = document.getElementById('status');
       
       try {
-        document.getElementById('status').innerText = "Mengirim data Wi-Fi ke ESP32...";
+        statusEl.innerText = "Mengirim data Wi-Fi ke ESP32...";
         await bleCharacteristic.writeValue(encoder.encode(payload));
-        document.getElementById('status').innerText = "🎉 Kredensial terkirim! ESP32 sedang restart & terhubung ke Wi-Fi.";
+        statusEl.innerText = "🎉 Kredensial terkirim! ESP32 sedang restart & terhubung ke Wi-Fi.";
       } catch (error) {
-        document.getElementById('status').innerText = "❌ Gagal mengirim: " + error.message;
+        statusEl.innerText = "❌ Gagal mengirim: " + error.message;
       }
     }
+
+    // ===== Modal Help =====
+    function openHelpModal() {
+      const modal = document.getElementById('helpModal');
+      const content = document.getElementById('helpModalContent');
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      
+      // Animasi masuk
+      setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeHelpModal() {
+      const modal = document.getElementById('helpModal');
+      const content = document.getElementById('helpModalContent');
+      
+      content.classList.remove('scale-100', 'opacity-100');
+      content.classList.add('scale-95', 'opacity-0');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 200);
+    }
+
+    // Tutup modal dengan ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeHelpModal();
+    });
   </script>
 </body>
 </html>
