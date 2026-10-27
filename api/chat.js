@@ -13,13 +13,18 @@ export default async function handler(req, res) {
 
     const prompt = `Kamu adalah AI Analytics untuk sistem monitoring kualitas udara real-time. Berikan analisis atau jawaban yang singkat, padat, helpful, dan ramah dalam bahasa Indonesia berdasarkan data/pertanyaan berikut:\n\n${message}`;
 
-    // Daftar model Gemini dari seri 3.0, 2.5, hingga fallback 2.0
+    // Hanya menggunakan daftar model yang kamu tentukan
     const modelsToTry = [
-      'gemini-3.0-flash',
-      'gemini-3.0-pro',
+      'gemini-4-argon',
+      'gemini-3.8-flash',
+      'gemini-3.6-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite',
+      'gemini-3.1-pro-preview',
+      'gemini-3-flash-preview',
       'gemini-2.5-flash',
-      'gemini-2.5-pro',
-    
+      'gemini-2.5-flash-lite',
+      'gemini-2.5-pro'
     ];
 
     let responseText = null;
@@ -52,7 +57,7 @@ export default async function handler(req, res) {
     }
 
     if (!responseText) {
-      throw new Error(lastError || 'Semua versi model Gemini tidak merespons.');
+      throw new Error(lastError || 'Semua model Gemini yang ditentukan gagal merespons.');
     }
 
     return res.status(200).json({ answer: responseText });
