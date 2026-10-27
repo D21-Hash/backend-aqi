@@ -15,7 +15,10 @@ app.get('/setup.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'setup.html'));
 });
 
-// Endpoint backend AI Chatbot (dengan Fallback Model otomatis)
+// Helper function untuk jeda waktu (delay)
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Endpoint backend AI Chatbot (Menggunakan Model Gemini 3.x yang Aktif)
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
@@ -25,56 +28,64 @@ app.post('/api/chat', async (req, res) => {
       return res.status(500).json({ answer: 'API Key (GEMINI_API_KEY) belum terpasang di Vercel.' });
     }
 
-    // Daftar model cadangan jika model utama sedang tinggi beban (high demand)
+    // Daftar model aktif resmi dari Google Gemini API (Oktober 2026)
     const models = [
-      'gemini-2.5-flash',
-      'gemini-2.0-flash',
-      'gemini-1.5-flash',
-      'gemini-1.5-pro'
+      'gemini-3.8-flash',
+      'gemini-3.6-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite'
     ];
 
-    let lastError = null;
+    let lastError = '';
     let reply = null;
 
     for (const model of models) {
-      try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: `Kamu adalah AI Analytics untuk sistem monitoring kualitas udara real-time. Berikan analisis atau jawaban yang singkat, padat, helpful, dan ramah dalam bahasa Indonesia:\n\n${message}`
-                    }
-                  ]
-                }
-              ]
-            })
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [
+                      {
+                        text: `Kamu adalah AI Analytics untuk sistem monitoring kualitas udara real-time. Berikan analisis atau jawaban yang singkat, padat, helpful, dan ramah dalam bahasa Indonesia:\n\n${message}`
+                      }
+                    ]
+                  }
+                ]
+              })
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.error) {
+            lastError = data.error.message;
+            if (data.error.code === 429 || data.error.message?.includes('demand')) {
+              await sleep(1000);
+              continue;
+            }
+            break;
           }
-        );
 
-        const data = await response.json();
-
-        if (data.error) {
-          lastError = data.error.message;
-          continue; // Jika model ini sibuk / error, otomatis ganti ke model berikutnya
+          reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (reply) break;
+        } catch (err) {
+          lastError = err.message;
         }
-
-        reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (reply) break; // Berhasil mendapat respon, hentikan loop
-      } catch (err) {
-        lastError = err.message;
       }
+
+      if (reply) break;
     }
 
     if (reply) {
       return res.json({ answer: reply });
     } else {
-      return res.status(500).json({ answer: `Error Gemini API: ${lastError || 'Semua model sedang sibuk, silakan coba beberapa saat lagi.'}` });
+      return res.status(500).json({ answer: `⚠️ Gemini Error: ${lastError || 'Layanan sedang sibuk, silakan coba beberapa saat lagi.'}` });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
