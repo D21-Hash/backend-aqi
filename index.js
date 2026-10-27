@@ -15,7 +15,7 @@ app.get('/setup.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'setup.html'));
 });
 
-// Endpoint backend AI Chatbot (Terintegrasi Gemini API)
+// Endpoint backend AI Chatbot (Menggunakan Gemini 2.5 Flash)
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
@@ -26,7 +26,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
