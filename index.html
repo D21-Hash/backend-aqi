@@ -221,43 +221,43 @@
 
     // Fungsi Interaksi AI
     async function fetchAIResponse(promptText) {
-      const chatBox = document.getElementById('aiChatBox');
-      
-      const userMsg = document.createElement('div');
-      userMsg.className = "bg-blue-950 border border-blue-800 p-2.5 rounded-lg text-xs text-blue-200";
-      userMsg.innerHTML = `👤 <span class="font-semibold">Kamu:</span> ${promptText}`;
-      chatBox.appendChild(userMsg);
+  const chatBox = document.getElementById('aiChatBox');
+  
+  const userMsg = document.createElement('div');
+  userMsg.className = "bg-blue-950 border border-blue-800 p-2.5 rounded-lg text-xs text-blue-200";
+  userMsg.innerHTML = `👤 <span class="font-semibold">Kamu:</span> ${promptText}`;
+  chatBox.appendChild(userMsg);
 
-      const loadingMsg = document.createElement('div');
-      loadingMsg.className = "bg-gray-800 p-2.5 rounded-lg border border-gray-700 text-xs animate-pulse text-gray-400";
-      loadingMsg.id = "aiLoading";
-      loadingMsg.innerHTML = "🤖 AI sedang berpikir...";
-      chatBox.appendChild(loadingMsg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+  const loadingMsg = document.createElement('div');
+  loadingMsg.className = "bg-gray-800 p-2.5 rounded-lg border border-gray-700 text-xs animate-pulse text-gray-400";
+  loadingMsg.id = "aiLoading";
+  loadingMsg.innerHTML = "🤖 AI sedang berpikir...";
+  chatBox.appendChild(loadingMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: promptText })
-        });
-        const json = await res.json();
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: promptText })
+    });
+    const json = await res.json();
 
-        document.getElementById('aiLoading')?.remove();
+    document.getElementById('aiLoading')?.remove();
 
-        const aiMsg = document.createElement('div');
-        aiMsg.className = "bg-gray-800 border border-gray-700 p-2.5 rounded-lg text-xs text-gray-200";
-        aiMsg.innerHTML = `🤖 <span class="font-semibold text-blue-400">AI Analytics:</span> ${json.answer || 'Tidak ada tanggapan'}`;
-        chatBox.appendChild(aiMsg);
-      } catch (err) {
-        document.getElementById('aiLoading')?.remove();
-        const errorMsg = document.createElement('div');
-        errorMsg.className = "bg-red-950 border border-red-800 p-2.5 rounded-lg text-xs text-red-300";
-        errorMsg.innerHTML = `❌ Gagal memanggil API AI: ${err.message}`;
-        chatBox.appendChild(errorMsg);
-      }
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    const aiMsg = document.createElement('div');
+    aiMsg.className = "bg-gray-800 border border-gray-700 p-2.5 rounded-lg text-xs text-gray-200";
+    aiMsg.innerHTML = `🤖 <span class="font-semibold text-blue-400">AI Analytics:</span> ${json.answer || 'Tidak ada tanggapan'}`;
+    chatBox.appendChild(aiMsg);
+  } catch (err) {
+    document.getElementById('aiLoading')?.remove();
+    const errorMsg = document.createElement('div');
+    errorMsg.className = "bg-red-950 border border-red-800 p-2.5 rounded-lg text-xs text-red-300";
+    errorMsg.innerHTML = `❌ Gagal memanggil API AI: ${err.message}`;
+    chatBox.appendChild(errorMsg);
+  }
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
     function analyzeCurrentAir() {
       if (currentData.aqi === '--') {
