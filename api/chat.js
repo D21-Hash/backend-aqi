@@ -11,20 +11,18 @@ export default async function handler(req, res) {
       return res.status(500).json({ answer: 'API Key (GEMINI_API_KEY) belum dipasang di Vercel.' });
     }
 
-    const prompt = `Kamu adalah AI Analytics untuk sistem monitoring kualitas udara real-time. Berikan analisis atau jawaban yang singkat, padat, helpful, dan ramah dalam bahasa Indonesia berdasarkan data/pertanyaan berikut:\n\n${message}`;
+    // Prompt dibuat ringkas agar waktu pemrosesan AI jauh lebih cepat
+    const prompt = `Kamu adalah AI Analytics kualitas udara. Berikan analisis singkat (maksimal 2-3 kalimat) dan saran kesehatan ramah dalam bahasa Indonesia berdasarkan data berikut:\n\n${message}`;
 
-    // Hanya menggunakan daftar model yang kamu tentukan
+    // Khusus model seri 3.0 ke atas, diurutkan dari yang tercepat (Lite/Flash)
     const modelsToTry = [
-      'gemini-4-argon',
-      'gemini-3.8-flash',
-      'gemini-3.6-flash',
       'gemini-3.5-flash-lite',
       'gemini-3.1-flash-lite',
-      'gemini-3.1-pro-preview',
+      'gemini-3.8-flash',
+      'gemini-3.6-flash',
       'gemini-3-flash-preview',
-      'gemini-2.5-flash',
-      'gemini-2.5-flash-lite',
-      'gemini-2.5-pro'
+      'gemini-3.1-pro-preview',
+      'gemini-4-argon'
     ];
 
     let responseText = null;
@@ -47,7 +45,7 @@ export default async function handler(req, res) {
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
           responseText = data.candidates[0].content.parts[0].text;
-          break; // Berhasil mendapatkan respons dari model aktif
+          break; // Berhasil, keluar dari loop
         } else {
           lastError = data.error?.message || `HTTP status ${response.status} pada ${modelName}`;
         }
@@ -57,7 +55,7 @@ export default async function handler(req, res) {
     }
 
     if (!responseText) {
-      throw new Error(lastError || 'Semua model Gemini yang ditentukan gagal merespons.');
+      throw new Error(lastError || 'Semua model Gemini 3.0+ gagal merespons.');
     }
 
     return res.status(200).json({ answer: responseText });
