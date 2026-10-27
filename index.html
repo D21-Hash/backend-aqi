@@ -269,53 +269,32 @@
     setInterval(fetchLatestData, 5000);
     fetchLatestData();
 
-    // 5. AUTO-DETEKSI LOKASI REAL-TIME (Riau, Kab. Meranti, Kecamatan)
-function autoDetectLocation() {
+    // 5. AUTO-DETEKSI LOKASI REAL-TIME 
+async function autoDetectLocation() {
   const locElement = document.getElementById('userLocation');
-  const failText = "📍 Deteksi lokasi gagal";
 
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          // Batas waktu fetch API maksimal 3 detik
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Batas waktu respons 3 detik
 
-          const response = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`,
-            { signal: controller.signal }
-          );
-          clearTimeout(timeoutId);
+    const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+    clearTimeout(timeoutId);
 
-          if (!response.ok) throw new Error("Gagal mengambil nama lokasi");
+    if (!response.ok) throw new Error("Gagal mengambil data lokasi IP");
 
-          const geodata = await response.json();
-          const prov = geodata.principalSubdivision;
-          const kab = geodata.locality || geodata.city;
-          const kec = geodata.localityInfo?.administrative?.[3]?.name || geodata.localityInfo?.administrative?.[2]?.name;
+    const data = await response.json();
+    const prov = data.region;
+    const kab = data.city;
 
-          if (prov || kab) {
-            locElement.innerText = `📍 ${prov || ''}${kab ? ', ' + kab : ''}${kec ? ', ' + kec : ''}`;
-          } else {
-            locElement.innerText = failText;
-          }
-        } catch (err) {
-          locElement.innerText = failText;
-        }
-      },
-      (error) => {
-        // Jika izin ditolak, timeout, atau GPS mati
-        locElement.innerText = failText;
-      },
-      { timeout: 3000, maximumAge: 60000 } // Batas waktu respons GPS browser 3 detik
-    );
-  } else {
-    locElement.innerText = failText;
+    if (prov || kab) {
+      locElement.innerText = `📍 ${prov ? prov : ''}${kab ? ', ' + kab : ''}`;
+    } else {
+      locElement.innerText = "📍 Deteksi lokasi gagal";
+    }
+  } catch (err) {
+    locElement.innerText = "📍 Deteksi lokasi gagal";
   }
 }
-
     autoDetectLocation();
 
     // 6. CHAT AI ANALYTICS
