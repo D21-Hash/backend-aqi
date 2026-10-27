@@ -19,9 +19,8 @@ export default async function handler(req, res) {
     // Nama model resmi dari dokumentasi ai.google.dev/gemini-api/docs/models
     const modelsToTry = [
       'gemini-2.5-flash',
-      'gemini-2.0-flash',
-      'gemini-1.5-flash-latest',
-      'gemini-1.5-pro'
+      'gemini-2.5-pro',
+      'gemini-2.5-flash-lite',
     ];
 
     let responseText = null;
