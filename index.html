@@ -172,177 +172,181 @@
   </main>
 
   <script>
-    // --- 1. INISIALISASI SUPABASE CLIENT ---
-    const SUPABASE_URL = 'https://rkhbttzscoqceeuemrlq.supabase.co'; // Ganti dengan URL Supabase kamu
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJraGJ0dHpzY29xY2VldWVtcmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MTIxNTUsImV4cCI6MjEwODI4ODE1NX0.T5SFF5XNgOYh2WF4JRIqJoGN02lT6pXhSAoPlXCQXqs';             // Ganti dengan Anon Key Supabase kamu
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  // 1. INISIALISASI SUPABASE CLIENT (Hanya 1 kali deklarasi)
+  const SUPABASE_URL = 'https://rkhbttzcoqceeuemrlq.supabase.co'; // Tanpa /rest/v1 di akhir
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Ganti dengan Anon Key Supabase kamu
+  
+  // Menggunakan nama variabel client 'supabaseClient' agar tidak bentrok
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // --- 2. INISIALISASI CHART.JS ---
-    const ctx = document.getElementById('airChart').getContext('2d');
-    const airChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: 'AQI',
-            data: [],
-            borderColor: '#f59e0b',
-            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-            borderWidth: 2,
-            tension: 0.3,
-            fill: true
-          },
-          {
-            label: 'PM2.5 (µg/m³)',
-            data: [],
-            borderColor: '#10b981',
-            backgroundColor: 'transparent',
-            borderWidth: 2,
-            tension: 0.3
-          },
-          {
-            label: 'MQ-2 (Gas)',
-            data: [],
-            borderColor: '#a855f7',
-            backgroundColor: 'transparent',
-            borderWidth: 2,
-            tension: 0.3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+  // 2. INISIALISASI CHART.JS
+  const ctx = document.getElementById('airChart').getContext('2d');
+  const airChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: 'AQI',
+          data: [],
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
         },
-        scales: {
-          x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-          y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        {
+          label: 'PM2.5 (µg/m³)',
+          data: [],
+          borderColor: '#10b981',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          tension: 0.3
+        },
+        {
+          label: 'MQ-2 (Gas)',
+          data: [],
+          borderColor: '#a855f7',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          tension: 0.3
         }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
       }
-    });
+    }
+  });
 
-    // --- 3. FUNGSI UPDATE TAMPILAN DASBOR ---
-    function updateUI(data) {
-      const timeLabel = new Date(data.created_at || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      
-      document.getElementById('aqiValue').innerText = data.aqi ?? '--';
-      document.getElementById('pm25Value').innerText = data.pm25 ?? '--';
-      document.getElementById('mq2Value').innerText = data.mq2 ?? '--';
+  // 3. FUNGSI UPDATE UI
+  function updateUI(data) {
+    const timeLabel = new Date(data.created_at || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    document.getElementById('aqiValue').innerText = data.aqi ?? '--';
+    document.getElementById('pm25Value').innerText = data.pm25 ?? '--';
+    document.getElementById('mq2Value').innerText = data.mq2 ?? '--';
 
-      const aqiCard = document.getElementById('aqiCard');
-      const aqiStatus = document.getElementById('aqiStatus');
+    const aqiCard = document.getElementById('aqiCard');
+    const aqiStatus = document.getElementById('aqiStatus');
 
-      if (data.aqi > 100) {
-        aqiCard.className = "glass-card glow-unhealthy p-6 rounded-2xl flex flex-col justify-between";
-        aqiStatus.innerText = "Kategori: BAHAYA ⚠️";
-        aqiStatus.className = "mt-2 text-xs font-medium text-red-400";
-      } else if (data.aqi > 50) {
-        aqiCard.className = "glass-card glow-moderate p-6 rounded-2xl flex flex-col justify-between";
-        aqiStatus.innerText = "Kategori: WASPADA 🙄";
-        aqiStatus.className = "mt-2 text-xs font-medium text-amber-300";
-      } else {
-        aqiCard.className = "glass-card glow-good p-6 rounded-2xl flex flex-col justify-between";
-        aqiStatus.innerText = "Kategori: AMAN 😊";
-        aqiStatus.className = "mt-2 text-xs font-medium text-emerald-400";
-      }
-
-      // Update data pada grafik
-      airChart.data.labels.push(timeLabel);
-      airChart.data.datasets[0].data.push(data.aqi);
-      airChart.data.datasets[1].data.push(data.pm25);
-      airChart.data.datasets[2].data.push(data.mq2);
-
-      // Batasi maksimal 12 titik data di grafik
-      if (airChart.data.labels.length > 12) {
-        airChart.data.labels.shift();
-        airChart.data.datasets.forEach(ds => ds.data.shift());
-      }
-      airChart.update();
+    if (data.aqi > 100) {
+      if (aqiCard) aqiCard.className = "glass-card glow-unhealthy p-6 rounded-2xl flex flex-col justify-between";
+      if (aqiStatus) { aqiStatus.innerText = "Kategori: BAHAYA ⚠️"; aqiStatus.className = "mt-2 text-xs font-medium text-red-400"; }
+    } else if (data.aqi > 50) {
+      if (aqiCard) aqiCard.className = "glass-card glow-moderate p-6 rounded-2xl flex flex-col justify-between";
+      if (aqiStatus) { aqiStatus.innerText = "Kategori: WASPADA 🙄"; aqiStatus.className = "mt-2 text-xs font-medium text-amber-300"; }
+    } else {
+      if (aqiCard) aqiCard.className = "glass-card glow-good p-6 rounded-2xl flex flex-col justify-between";
+      if (aqiStatus) { aqiStatus.innerText = "Kategori: AMAN 😊"; aqiStatus.className = "mt-2 text-xs font-medium text-emerald-400"; }
     }
 
-    // --- 4. BACA DATA TERAKHIR DARI SUPABASE ---
-async function fetchLatestData() {
-  if (!supabase) return;
-  try {
-    const { data, error } = await supabase
-      .from('sensor_logs') // Sesuaikan nama tabel Supabase
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1);
+    // Push data ke grafik
+    airChart.data.labels.push(timeLabel);
+    airChart.data.datasets[0].data.push(data.aqi);
+    airChart.data.datasets[1].data.push(data.pm25);
+    airChart.data.datasets[2].data.push(data.mq2);
 
-    if (data && data.length > 0) {
-      updateUI(data[0]);
+    if (airChart.data.labels.length > 12) {
+      airChart.data.labels.shift();
+      airChart.data.datasets.forEach(ds => ds.data.shift());
     }
-  } catch (err) {
-    console.error('Gagal mengambil data Supabase:', err);
+    airChart.update();
   }
-}
 
-// Jalankan perbaikan setiap 5 detik
-setInterval(fetchLatestData, 5000);
-fetchLatestData();
+  // 4. FETCH DATA DARI TABEL SENSOR_LOGS
+  async function fetchLatestData() {
+    if (!supabaseClient) return;
+    try {
+      const { data, error } = await supabaseClient
+        .from('sensor_logs') // Memanggil tabel sensor_logs dari Supabase
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-    // --- 5. LOGIKA AI ANALYTICS ---
-    async function fetchAIResponse(promptText) {
-      const chatBox = document.getElementById('aiChatBox');
-      
-      const userMsg = document.createElement('div');
-      userMsg.className = "chat-bubble-user p-3 rounded-xl text-xs text-blue-100";
-      userMsg.innerHTML = `👤 <span class="font-semibold">Kamu:</span> ${promptText}`;
-      chatBox.appendChild(userMsg);
-
-      const loadingMsg = document.createElement('div');
-      loadingMsg.className = "bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 text-xs animate-pulse text-slate-400";
-      loadingMsg.id = "aiLoading";
-      loadingMsg.innerHTML = "🤖 AI sedang menganalisis...";
-      chatBox.appendChild(loadingMsg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: promptText })
-        });
-        const json = await res.json();
-
-        document.getElementById('aiLoading')?.remove();
-
-        const aiMsg = document.createElement('div');
-        aiMsg.className = "chat-bubble-ai p-3 rounded-xl text-xs text-slate-200";
-        aiMsg.innerHTML = `🤖 <span class="font-semibold text-blue-400">AI Analytics:</span> ${json.answer || 'Tidak ada tanggapan'}`;
-        chatBox.appendChild(aiMsg);
-      } catch (err) {
-        document.getElementById('aiLoading')?.remove();
-        const errorMsg = document.createElement('div');
-        errorMsg.className = "bg-red-950/80 border border-red-800/80 p-3 rounded-xl text-xs text-red-300";
-        errorMsg.innerHTML = `❌ Gagal memanggil AI: ${err.message}`;
-        chatBox.appendChild(errorMsg);
+      if (error) {
+        console.error('Supabase Query Error:', error);
+        return;
       }
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
 
-    function quickAnalyze() {
-      const aqi = document.getElementById('aqiValue').innerText;
-      const pm25 = document.getElementById('pm25Value').innerText;
-      const mq2 = document.getElementById('mq2Value').innerText;
-      const prompt = `Data sensor saat ini: AQI=${aqi}, PM2.5=${pm25} µg/m³, MQ-2 Gas=${mq2}. Berikan analisis singkat dan saran kesehatan.`;
-      fetchAIResponse(prompt);
-    }
-
-    function handleChatSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('chatInput');
-      const val = input.value.trim();
-      if (val) {
-        fetchAIResponse(val);
-        input.value = '';
+      if (data && data.length > 0) {
+        updateUI(data[0]);
       }
+    } catch (err) {
+      console.error('Gagal mengambil data Supabase:', err);
     }
-  </script>
+  }
+
+  // Jalankan polling setiap 5 detik
+  setInterval(fetchLatestData, 5000);
+  fetchLatestData();
+
+  // 5. CHAT AI ANALYTICS
+  async function fetchAIResponse(promptText) {
+    const chatBox = document.getElementById('aiChatBox');
+    if (!chatBox) return;
+
+    const userMsg = document.createElement('div');
+    userMsg.className = "chat-bubble-user p-3 rounded-xl text-xs text-blue-100";
+    userMsg.innerHTML = `👤 <span class="font-semibold">Kamu:</span> ${promptText}`;
+    chatBox.appendChild(userMsg);
+
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = "bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 text-xs animate-pulse text-slate-400";
+    loadingMsg.id = "aiLoading";
+    loadingMsg.innerHTML = "🤖 AI sedang menganalisis...";
+    chatBox.appendChild(loadingMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: promptText })
+      });
+      const json = await res.json();
+
+      document.getElementById('aiLoading')?.remove();
+
+      const aiMsg = document.createElement('div');
+      aiMsg.className = "chat-bubble-ai p-3 rounded-xl text-xs text-slate-200";
+      aiMsg.innerHTML = `🤖 <span class="font-semibold text-blue-400">AI Analytics:</span> ${json.answer || 'Tidak ada tanggapan'}`;
+      chatBox.appendChild(aiMsg);
+    } catch (err) {
+      document.getElementById('aiLoading')?.remove();
+      const errorMsg = document.createElement('div');
+      errorMsg.className = "bg-red-950/80 border border-red-800/80 p-3 rounded-xl text-xs text-red-300";
+      errorMsg.innerHTML = `❌ Gagal memanggil AI: ${err.message}`;
+      chatBox.appendChild(errorMsg);
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function quickAnalyze() {
+    const aqi = document.getElementById('aqiValue')?.innerText || '--';
+    const pm25 = document.getElementById('pm25Value')?.innerText || '--';
+    const mq2 = document.getElementById('mq2Value')?.innerText || '--';
+    const prompt = `Data sensor saat ini: AQI=${aqi}, PM2.5=${pm25} µg/m³, MQ-2 Gas=${mq2}. Berikan analisis singkat dan saran kesehatan.`;
+    fetchAIResponse(prompt);
+  }
+
+  function handleChatSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('chatInput');
+    const val = input?.value.trim();
+    if (val) {
+      fetchAIResponse(val);
+      input.value = '';
+    }
+  }
+</script>
 
 </body>
 </html>
