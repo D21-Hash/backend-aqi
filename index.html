@@ -13,9 +13,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* ===== [ SEMUA CSS DARI FILE 1 TETAP UTUH ] ===== */
-    /* (Salin seluruh blok <style> dari file !doctype html.txt pertama di sini tanpa perubahan) */
-    /* Saya ringkas di sini agar fokus ke integrasi JS, tapi saat deploy, COPY FULL CSS-nya */
     :root {
       color-scheme: dark;
       --bg: #0e141c; --panel: rgba(25, 34, 46, .78); --panel-solid: #19222e;
@@ -51,6 +48,8 @@
     }
     a { color: var(--accent); }
     .app-container { max-width: 1320px; padding-left: clamp(18px, 2.2vw, 30px); padding-right: clamp(18px, 2.2vw, 30px); }
+
+    /* NAVBAR & HEADER */
     .topbar {
       position: sticky; top: 0; z-index: 1020;
       background: color-mix(in srgb, var(--bg) 78%, transparent);
@@ -74,20 +73,14 @@
       padding: .5rem .68rem !important; font-size: .8rem; line-height: 1.25; font-weight: 620;
       transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease;
     }
-    .nav-link:hover, .nav-link:focus-visible {
-      color: var(--text) !important; background: var(--soft) !important;
-      border-color: var(--line); outline: none;
-    }
-    .nav-link.active {
-      color: var(--text) !important;
-      background: color-mix(in srgb, var(--accent) 11%, var(--panel-solid)) !important;
-      border-color: color-mix(in srgb, var(--accent) 13%, var(--line));
-    }
+    .nav-link:hover, .nav-link:focus-visible { color: var(--text) !important; background: var(--soft) !important; border-color: var(--line); outline: none; }
+    .nav-link.active { color: var(--text) !important; background: color-mix(in srgb, var(--accent) 11%, var(--panel-solid)) !important; border-color: color-mix(in srgb, var(--accent) 13%, var(--line)); }
     .navbar-toggler { color: var(--text) !important; background: var(--soft) !important; border-color: var(--line) !important; }
+
+    /* BUTTONS */
     .btn-glass, .btn-glass:visited {
       color: var(--text) !important; background: var(--soft) !important;
-      border: 1px solid var(--line) !important;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+      border: 1px solid var(--line) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
       font-family: inherit; font-size: .8rem; line-height: 1.25; font-weight: 620;
       border-radius: 11px; padding: .54rem .7rem;
       transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
@@ -106,14 +99,15 @@
       transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
     }
     html[data-theme="light"] .btn-accent { color: #fff !important; }
-    .btn-accent:hover, .btn-accent:focus-visible {
-      filter: brightness(1.045); transform: translateY(-1px);
-      box-shadow: 0 8px 21px color-mix(in srgb, var(--accent-strong) 20%, transparent); outline: none;
-    }
+    .btn-accent:hover, .btn-accent:focus-visible { filter: brightness(1.045); transform: translateY(-1px); box-shadow: 0 8px 21px color-mix(in srgb, var(--accent-strong) 20%, transparent); outline: none; }
+
+    /* STATUS & CHIPS */
     .status-chip { display: inline-flex; align-items: center; gap: .42rem; color: var(--muted); background: var(--soft); border: 1px solid var(--line); border-radius: 999px; font-size: .72rem; line-height: 1.25; font-weight: 600; padding: .42rem .66rem; white-space: nowrap; }
     .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warn); display: inline-block; }
     .live-dot.connected { background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 15%, transparent); animation: pulseDot 2s ease-in-out infinite; }
     @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+    /* GLASS CARDS */
     .glass {
       background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow);
       border-radius: 20px; overflow: hidden;
@@ -125,6 +119,8 @@
     .eyebrow { color: var(--muted); font-size: .66rem; line-height: 1.25; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .55rem !important; }
     .page-title { font-size: clamp(1.75rem,2.65vw,2.25rem); line-height: 1.08; font-weight: 820; letter-spacing: -.06em; margin-bottom: .45rem !important; }
     .muted { color: var(--muted) !important; line-height: 1.42; }
+
+    /* HERO AQI */
     .hero {
       height: 100%; min-height: 0; padding: clamp(1.05rem, 1.4vw, 1.3rem);
       position: relative; overflow: hidden;
@@ -132,85 +128,79 @@
         radial-gradient(ellipse at 95% 2%, color-mix(in srgb, var(--amber) 12%, transparent), transparent 47%),
         radial-gradient(ellipse at 0% 100%, color-mix(in srgb, var(--accent-strong) 11%, transparent), transparent 53%),
         var(--panel);
-      border-top: 0;
     }
     .hero::after {
       content:""; position:absolute; width:180px; height:180px; border-radius:50%;
       right:-95px; top:80px; pointer-events:none; opacity:.24;
       border:1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-      box-shadow:0 0 0 18px color-mix(in srgb, var(--accent) 4%, transparent),
-                 0 0 0 38px color-mix(in srgb, var(--accent) 3%, transparent);
+      box-shadow:0 0 0 18px color-mix(in srgb, var(--accent) 4%, transparent), 0 0 0 38px color-mix(in srgb, var(--accent) 3%, transparent);
     }
     .hero > * { position:relative; z-index:1; }
     .hero-number { font-size: clamp(3.8rem, 5vw, 5rem); font-weight: 830; line-height: .92; letter-spacing: -.075em; }
-    .hero-status {
-      display:inline-flex; align-items:center; gap:.4rem;
-      padding:.4rem .68rem; border-radius:999px; font-size:.9rem; line-height:1.2; font-weight: 650;
-      background:color-mix(in srgb, var(--warn) 14%, transparent); color:var(--warn);
-    }
+    .hero-status { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .68rem; border-radius:999px; font-size:.9rem; line-height:1.2; font-weight: 650; background:color-mix(in srgb, var(--warn) 14%, transparent); color:var(--warn); }
     .hero-status.good { background:color-mix(in srgb, var(--good) 14%, transparent); color:var(--good); }
     .hero-status.bad { background:color-mix(in srgb, var(--bad) 14%, transparent); color:var(--bad); }
     .hero-status.offline { background:var(--soft); color:var(--muted); }
-    .metric-icon {
-      width: 35px; height: 35px; display:grid; place-items:center; border-radius:11px;
-      border:1px solid var(--line);
-      color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 7%, var(--panel-solid));
-    }
-    .aqi-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg,#45c68b 0 20%,#d7d94e 20% 40%,#f4bd45 40% 60%,#ed8a50 60% 80%,#df6672 80%); position: relative; margin-top: .85rem; box-shadow:0 0 18px rgba(245,198,94,.13); }
-    .aqi-marker { position:absolute; top:50%; left:var(--marker, 35%); width:15px; height:15px; border:3px solid var(--panel-solid); background:var(--text); border-radius:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 1px var(--line); transition:left .5s ease; }
+
+    /* METRIC CARDS */
     .metric-card { position: relative; overflow: hidden; min-height: 0; height: 100%; padding: clamp(1rem, 1.25vw, 1.2rem); background: var(--panel); border-top-width: 2px !important; }
-    .metric-card::after {
-      content:""; position:absolute; width:112px; height:112px; border-radius:50%;
-      right:-49px; bottom:-59px; pointer-events:none;
-      background:radial-gradient(circle, color-mix(in srgb, var(--card-accent, var(--accent)) 20%, transparent), transparent 70%);
-    }
-    .metric-card > * { position:relative; z-index:1; }
-    .metric-card.pm-card { --card-accent: var(--aqua); border-top:2px solid color-mix(in srgb, var(--aqua) 62%, transparent); }
-    .metric-card.gas-card { --card-accent: var(--violet); border-top:2px solid color-mix(in srgb, var(--violet) 62%, transparent); }
-    .metric-card.pm-card .metric-icon { color:var(--aqua); background:color-mix(in srgb, var(--aqua) 12%, var(--soft)); }
-    .metric-card.gas-card .metric-icon { color:var(--violet); background:color-mix(in srgb, var(--violet) 12%, var(--soft)); }
+    .metric-icon { width: 35px; height: 35px; display:grid; place-items:center; border-radius:11px; border:1px solid var(--line); color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--panel-solid)); }
     .metric-value { font-size: clamp(1.95rem, 2.9vw, 2.5rem); font-weight: 820; letter-spacing: -.065em; line-height: 1; }
-    .metric-card.pm-card .metric-value { color: var(--aqua); }
-    .metric-card.gas-card .metric-value { color: var(--violet); }
     .metric-unit { font-size: .72rem; line-height: 1.2; white-space: nowrap; }
+
+    .metric-card.pm-card { border-top: 2px solid var(--aqua); }
+    .metric-card.pm-card .metric-icon { color:var(--aqua); background:color-mix(in srgb, var(--aqua) 12%, var(--soft)); }
+    .metric-card.pm-card .metric-value { color:var(--aqua); }
+
+    .metric-card.gas-card { border-top: 2px solid var(--violet); }
+    .metric-card.gas-card .metric-icon { color:var(--violet); background:color-mix(in srgb, var(--violet) 12%, var(--soft)); }
+    .metric-card.gas-card .metric-value { color:var(--violet); }
+
+    .metric-card.temp-card { border-top: 2px solid var(--amber); }
+    .metric-card.temp-card .metric-icon { color:var(--amber); background:color-mix(in srgb, var(--amber) 12%, var(--soft)); }
+    .metric-card.temp-card .metric-value { color:var(--amber); }
+
+    .metric-card.hum-card { border-top: 2px solid #63a1ff; }
+    .metric-card.hum-card .metric-icon { color:#63a1ff; background:color-mix(in srgb, #63a1ff 12%, var(--soft)); }
+    .metric-card.hum-card .metric-value { color:#63a1ff; }
+
+    /* SECTION & CHART */
     .section-heading { font-size: 1rem; line-height: 1.28; font-weight: 800; letter-spacing: -.03em; }
     .chart-wrap { height: clamp(230px, 26vw, 320px); position: relative; margin-top: .25rem; }
+    .chart-wrap.sm { height: clamp(190px, 20vw, 240px); }
+    .chart-now { font-size: 1.35rem; font-weight: 820; letter-spacing: -.05em; line-height: 1; white-space: nowrap; }
+    .chart-now.temp { color: var(--amber); }
+    .chart-now.hum { color: #63a1ff; }
     .chart-legend { display:flex; gap:1rem; flex-wrap:wrap; font-size:.75rem; line-height:1.35; color:var(--muted); }
     .legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:.35rem; }
+
+    /* CHAT AI */
     .chat-box { min-height: 180px; max-height: 310px; overflow: auto; display: flex; flex-direction: column; gap: .7rem; padding-right: .2rem; }
     .chat-message { max-width:94%; border:1px solid var(--line); border-radius:16px; padding:.75rem .85rem; font-size:.83rem; line-height:1.5; animation: riseSoft .42s cubic-bezier(.2,.7,.25,1) both; white-space:pre-wrap; overflow-wrap:anywhere; }
     .chat-message.ai { align-self:flex-start; background:var(--soft); }
     .chat-message.user { align-self:flex-end; background:color-mix(in srgb, var(--accent) 15%, var(--panel)); }
     .chat-role { display:block; color:var(--muted); font-size:.7rem; font-weight:700; margin-bottom:.25rem; }
     .chat-message.error { border-color: var(--bad) !important; }
+
+    /* FORM & SCROLLBAR */
     .form-control, .form-control:focus { color: var(--text); background: var(--soft); border-color: var(--line); box-shadow: none; font-family: inherit; font-size: .85rem; line-height: 1.4; }
     .form-control:focus { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); box-shadow: 0 0 0 .18rem color-mix(in srgb, var(--accent) 12%, transparent); }
     .form-control::placeholder { color: var(--muted); opacity: .8; }
-    .quick-prompt { color:var(--muted); background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:.4rem .65rem; font-size:.72rem; text-align:left; transition:.2s ease; }
-    .quick-prompt:hover:not(:disabled), .quick-prompt:focus-visible:not(:disabled) { color:var(--text); background:var(--panel-hover); border-color:color-mix(in srgb, var(--accent) 30%, var(--line)); outline: none; }
-    .quick-prompt:disabled { opacity: .5; cursor: wait; }
-    .section-anchor { scroll-margin-top: 100px; }
-    @keyframes riseSoft { from { opacity: 0; transform: translate3d(0, 8px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
-    .fade-in { animation: riseSoft .42s cubic-bezier(.2,.7,.25,1) both; }
-    .delay-1 { animation-delay: .045s; } .delay-2 { animation-delay: .09s; } .delay-3 { animation-delay: .135s; }
-    .footer { color:var(--muted); font-size:.73rem; line-height:1.45; }
-    .location-chip { display:inline-flex; align-items:center; gap:.42rem; max-width:min(100%, 290px); padding:.4rem .68rem; border:1px solid var(--line); border-radius:999px; background:var(--soft); color:var(--text); font-size:.75rem; font-weight:600; }
-    .location-chip i { color:var(--accent); flex:0 0 auto; animation:locationPulse 2.8s ease-in-out infinite; }
-    .location-chip #userLocation { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .location-note { display:block; color:var(--muted); font-size:.66rem; margin-top:.28rem; }
-    @keyframes locationPulse { 0%,100% { transform:translateY(0); opacity:.8; } 50% { transform:translateY(-1px); opacity:1; } }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* GRID SETUP (V6 OVERVIEW) */
     .row { --bs-gutter-x: 1.15rem; --bs-gutter-y: 1.15rem; }
     main.app-container { padding-top: clamp(1.4rem, 2.6vw, 2.15rem) !important; }
     #overview > .d-flex:first-child { display: grid !important; grid-template-columns: minmax(0, 1fr) auto; align-items: end !important; column-gap: 2rem; row-gap: .65rem; width: 100%; margin-bottom: 1.15rem !important; }
-    #overview > .d-flex:first-child > div:first-child { min-width: 0; max-width: 100%; }
-    #overview > .d-flex:first-child > div:last-child { min-width: 132px; align-self: end; padding-bottom: .15rem; }
-    /* V6 Overview Grid */
+
     @media (min-width: 992px) {
-      #overview > .row { display: grid !important; grid-template-columns: minmax(0, .72fr) minmax(0, 1fr); gap: 1rem; width: 100%; margin: 0 !important; align-items: stretch; --bs-gutter-x: 0; --bs-gutter-y: 0; }
+      #overview > .row { display: grid !important; grid-template-columns: minmax(0, .72fr) minmax(0, 1fr); gap: 1rem; width: 100%; margin: 0 !important; align-items: stretch; }
       #overview > .row > .col-12.col-lg-5, #overview > .row > .col-12.col-lg-7 { width: auto !important; max-width: none !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important; }
-      #overview > .row > .col-12.col-lg-5 > .hero { width: 100%; height: 100%; min-height: 0; margin: 0; }
-      #overview > .row > .col-12.col-lg-7 > .row { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(145px, 1fr) minmax(112px, .72fr); gap: 1rem; width: 100%; height: 100%; min-width: 0; margin: 0 !important; padding: 0 !important; align-content: stretch; --bs-gutter-x: 0; --bs-gutter-y: 0; }
+      #overview > .row > .col-12.col-lg-5 > .hero { width: 100%; height: 100%; margin: 0; }
+      #overview > .row > .col-12.col-lg-7 > .row { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(130px, 1fr) minmax(130px, 1fr) minmax(100px, .8fr); gap: 1rem; width: 100%; height: 100%; min-width: 0; margin: 0 !important; padding: 0 !important; align-content: stretch; }
       #overview > .row > .col-12.col-lg-7 > .row > .col-6, #overview > .row > .col-12.col-lg-7 > .row > .col-12 { display: flex; width: auto !important; max-width: none !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important; }
       #overview > .row > .col-12.col-lg-7 > .row > .col-6 > article, #overview > .row > .col-12.col-lg-7 > .row > .col-12 > article { width: 100%; min-width: 0; height: 100%; margin: 0; }
       #overview > .row > .col-12.col-lg-7 > .row > .col-12 { grid-column: 1 / -1; }
@@ -218,7 +208,7 @@
     @media (max-width: 991.98px) {
       #overview > .row { display: flex !important; width: auto; margin-left: calc(var(--bs-gutter-x) * -.5); margin-right: calc(var(--bs-gutter-x) * -.5); }
       #overview > .row > .col-12.col-lg-5, #overview > .row > .col-12.col-lg-7 { width: 100%; max-width: 100%; }
-      #overview > .row > .col-12.col-lg-7 > .row { display: flex !important; height: auto; margin-top: calc(var(--bs-gutter-y) * -.5); margin-bottom: calc(var(--bs-gutter-y) * -.5); }
+      #overview > .row > .col-12.col-lg-7 > .row { display: flex !important; height: auto; }
       #overview > .row > .col-12.col-lg-7 > .row > .col-6, #overview > .row > .col-12.col-lg-7 > .row > .col-12 { padding-left: calc(var(--bs-gutter-x) * .5) !important; padding-right: calc(var(--bs-gutter-x) * .5) !important; margin-top: calc(var(--bs-gutter-y) * .5) !important; margin-bottom: calc(var(--bs-gutter-y) * .5) !important; }
     }
     @media (max-width: 575.98px) {
@@ -226,16 +216,15 @@
       .row { --bs-gutter-x: .8rem; --bs-gutter-y: .8rem; }
       .page-title { font-size: 1.7rem; }
       .hero, .metric-card { padding: 1rem; }
-      .glass.p-3, .glass.p-3.p-md-4 { padding: 1rem !important; }
       #overview > .d-flex:first-child { grid-template-columns: minmax(0,1fr); align-items: start !important; gap: .8rem; }
-      #overview > .d-flex:first-child > div:last-child { min-width: 0; text-align: left !important; padding-bottom: 0; }
     }
-    /* Floating AI */
+
+    /* FLOATING AI */
     .assistant-fab {
       position:fixed; right:24px; bottom:24px; z-index:1080;
       display:flex; align-items:center; gap:.62rem; padding:.62rem .88rem .62rem .62rem;
       border:1px solid color-mix(in srgb,var(--accent) 27%,var(--line));
-      border-radius:999px; color:var(--text); font-family: inherit;
+      border-radius:999px; color:var(--text);
       background:color-mix(in srgb,var(--panel-solid) 86%,transparent);
       box-shadow:0 10px 30px rgba(0,0,0,.17), inset 0 1px 0 rgba(255,255,255,.06);
       backdrop-filter:blur(26px) saturate(170%); -webkit-backdrop-filter:blur(26px) saturate(170%);
@@ -267,7 +256,6 @@
     .mini-msg.user { align-self:flex-end; background:color-mix(in srgb,var(--accent) 16%,var(--panel)); }
     .mini-msg.error { border-color: var(--bad) !important; }
     .assistant-section-jump { font-size:.75rem; color:var(--accent); text-decoration:none; font-weight:700; }
-    .assistant-section-jump:hover { color: var(--accent-strong); }
     @media (max-width:575.98px) {
       .assistant-fab { right:14px; bottom:14px; }
       .assistant-panel { right:10px; bottom:82px; width:calc(100vw - 20px); max-height:calc(100vh - 105px); }
@@ -278,13 +266,14 @@
   </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <nav class="topbar navbar navbar-expand-lg">
     <div class="container app-container py-2">
-      <a class="navbar-brand d-flex align-items-center gap-2 me-lg-4" href="#overview" aria-label="Weather-Cube beranda">
+      <a class="navbar-brand d-flex align-items-center gap-2 me-lg-4" href="#overview">
         <span class="brand-symbol"><i class="bi bi-wind"></i></span>
         <span><span class="brand-title d-block">Weather-Cube</span><span class="brand-subtitle d-block">AIR MONITORING</span></span>
       </a>
-      <button class="navbar-toggler btn-glass" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Buka navigasi">
+      <button class="navbar-toggler btn-glass" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
         <i class="bi bi-list fs-5"></i>
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
@@ -294,20 +283,23 @@
           <a class="nav-link" href="#assistant">AI Assistant</a>
         </div>
         <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-          <span class="status-chip" title="Status koneksi sensor">
+          <span class="status-chip">
             <span class="live-dot" id="connectionDot"></span>
             <span id="connectionText">Menunggu data sensor</span>
           </span>
-          <button type="button" id="themeToggle" class="btn-glass d-inline-flex align-items-center gap-2" aria-label="Ganti tema" title="Ganti tema">
-            <i class="bi bi-sun" id="themeIcon" aria-hidden="true"></i><span class="d-none d-sm-inline" id="themeLabel">Mode terang</span>
+          <button type="button" id="themeToggle" class="btn-glass d-inline-flex align-items-center gap-2">
+            <i class="bi bi-sun" id="themeIcon"></i><span class="d-none d-sm-inline" id="themeLabel">Mode terang</span>
           </button>
-          <a class="btn-glass text-decoration-none" href="/setup.html" title="Pengaturan Wi-Fi"><i class="bi bi-gear"></i><span class="visually-hidden">Pengaturan Wi-Fi</span></a>
+          <a class="btn-glass text-decoration-none" href="/setup.html" title="Pengaturan Wi-Fi"><i class="bi bi-gear"></i></a>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- MAIN -->
   <main class="container app-container py-4 py-lg-5">
+
+    <!-- OVERVIEW -->
     <section id="overview" class="section-anchor mb-4">
       <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4 fade-in">
         <div>
@@ -316,8 +308,10 @@
           <p class="muted mb-0">AQI, partikel halus, dan tren pembacaan — langsung terlihat tanpa menu yang berlebihan.</p>
         </div>
         <div class="text-md-end">
-          <span class="location-chip" title="Perkiraan lokasi berdasarkan IP pengunjung"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i><span id="userLocation">Mendeteksi lokasi...</span></span>
-          <span class="location-note">Perkiraan lokasi jaringan pengunjung</span>
+          <span class="status-chip" style="font-size:.75rem; border-radius:999px;">
+            <i class="bi bi-geo-alt-fill" style="color:var(--accent)"></i>
+            <span id="userLocation">Mendeteksi lokasi...</span>
+          </span>
           <div class="small muted mt-2">Waktu lokal</div>
           <div class="fs-5 fw-semibold" id="currentTime">--:--:--</div>
           <div class="small muted">UI diperbarui <span id="lastUiUpdate">--:--:--</span></div>
@@ -325,6 +319,7 @@
       </div>
 
       <div class="row g-3 g-lg-4">
+        <!-- HERO AQI -->
         <div class="col-12 col-lg-5 fade-in delay-1">
           <article class="glass hero h-100" id="aqiCard">
             <div class="d-flex justify-content-between align-items-start gap-3">
@@ -341,17 +336,19 @@
               </div>
               <div class="metric-icon mt-1"><i class="bi bi-activity fs-5"></i></div>
             </div>
-            <div class="aqi-track" id="aqiTrack" style="--marker:0%"><span class="aqi-marker"></span></div>
+            <div style="height: 7px; border-radius: 999px; background: linear-gradient(90deg,#45c68b 0 20%,#d7d94e 20% 40%,#f4bd45 40% 60%,#ed8a50 60% 80%,#df6672 80%); position: relative; margin-top: 1rem; box-shadow:0 0 18px rgba(245,198,94,.13);">
+              <span id="aqiMarker" style="position:absolute; top:50%; left:0%; width:15px; height:15px; border:3px solid var(--panel-solid); background:var(--text); border-radius:50%; transform:translate(-50%,-50%); transition:left .5s ease;"></span>
+            </div>
             <div class="d-flex justify-content-between small muted mt-2"><span>Baik</span><span>Sedang</span><span>Buruk</span></div>
             <hr style="border-color:var(--line);margin:.9rem 0 .8rem">
             <div class="d-flex justify-content-between align-items-center gap-3">
               <span class="muted small">Status pembacaan</span>
-              <span class="status-chip"><i class="bi bi-info-circle"></i> <span id="dataMode">Menunggu koneksi</span></span>
+              <span class="status-chip"><i class="bi bi-info-circle"></i> <span id="dataMode">Menunggu</span></span>
             </div>
-            <p class="muted small mt-3 mb-0" id="aqiFootnote">*AQI akan ditampilkan setelah perangkat ESP32 terhubung dan mengirim data.</p>
           </article>
         </div>
 
+        <!-- METRIC GRID (2x2) -->
         <div class="col-12 col-lg-7">
           <div class="row g-3 h-100">
             <div class="col-6 fade-in delay-1">
@@ -372,6 +369,25 @@
                 <div class="small muted mt-2">Deteksi asap & gas</div>
               </article>
             </div>
+            <div class="col-6 fade-in delay-1">
+              <article class="glass metric-card temp-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <span class="small muted">Suhu Ruangan</span><span class="metric-icon"><i class="bi bi-thermometer-half"></i></span>
+                </div>
+                <div><span class="metric-value" id="tempValue">--</span> <span class="metric-unit">°C</span></div>
+                <div class="small muted mt-2">Sensor DHT22</div>
+              </article>
+            </div>
+            <div class="col-6 fade-in delay-2">
+              <article class="glass metric-card hum-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <span class="small muted">Kelembapan</span><span class="metric-icon"><i class="bi bi-droplet-half"></i></span>
+                </div>
+                <div><span class="metric-value" id="humValue">--</span> <span class="metric-unit">%</span></div>
+                <div class="small muted mt-2">Sensor DHT22</div>
+              </article>
+            </div>
+
             <div class="col-12 fade-in delay-3">
               <article class="glass p-3 p-md-4 h-100">
                 <div class="d-flex align-items-center justify-content-between gap-3">
@@ -379,7 +395,7 @@
                     <span class="metric-icon"><i class="bi bi-shield-check fs-5"></i></span>
                     <div><div class="fw-semibold">Ringkasan kondisi</div><div class="small muted">Status sistem dan catatan pembacaan</div></div>
                   </div>
-                  <span class="status-chip" id="systemChip"><span class="live-dot"></span> <span id="systemChipText">Offline</span></span>
+                  <span class="status-chip" id="systemChip"><span class="live-dot" id="systemDot"></span> <span id="systemChipText">Offline</span></span>
                 </div>
                 <div class="small muted mt-3" id="systemNote">Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.</div>
               </article>
@@ -389,32 +405,49 @@
       </div>
     </section>
 
+    <!-- TRENDS -->
     <section id="trends" class="section-anchor mb-4">
+      <!-- Grafik utama: AQI, PM2.5, Gas -->
       <article class="glass p-3 p-md-4 fade-in">
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3 mb-3">
           <div>
             <div class="section-heading">Tren pembacaan</div>
-            <p class="small muted mb-0 mt-1">Grafik real-time dari Supabase. Data diperbarui setiap 5 detik.</p>
-          </div>
-          <div class="dropdown">
-            <button class="btn-glass dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-sliders2 me-2"></i>Parameter grafik</button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
-              <li><button class="dropdown-item" type="button" data-chart-mode="both">Semua parameter</button></li>
-              <li><button class="dropdown-item" type="button" data-chart-mode="aqi">AQI saja</button></li>
-              <li><button class="dropdown-item" type="button" data-chart-mode="pm25">PM2.5 saja</button></li>
-              <li><button class="dropdown-item" type="button" data-chart-mode="gas">Gas (MQ-2) saja</button></li>
-            </ul>
+            <p class="small muted mb-0 mt-1">Grafik real-time dari Supabase. Data diperbarui setiap 5 detik. Klik legenda untuk memfilter parameter.</p>
           </div>
         </div>
-        <div class="chart-legend mb-2">
-          <span><i class="legend-dot" style="background:#f5c65e"></i>AQI</span>
-          <span><i class="legend-dot" style="background:#63e1d0"></i>PM2.5 (µg/m³)</span>
-          <span><i class="legend-dot" style="background:#b2a0ff"></i>Gas (ADC)</span>
-        </div>
-        <div class="chart-wrap"><canvas id="airChart" aria-label="Grafik pembacaan kualitas udara" role="img"></canvas></div>
+        <div class="chart-wrap"><canvas id="airChart" aria-label="Grafik AQI, PM2.5 dan gas" role="img"></canvas></div>
       </article>
+
+      <!-- Grafik suhu & kelembapan -->
+      <div class="row g-3 g-lg-4 mt-0">
+        <div class="col-12 col-md-6 fade-in">
+          <article class="glass p-3 p-md-4 h-100">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+              <div class="d-flex align-items-center gap-3">
+                <span class="metric-icon" style="color:var(--amber); background:color-mix(in srgb, var(--amber) 12%, var(--soft));"><i class="bi bi-thermometer-half"></i></span>
+                <div><div class="section-heading">Suhu</div><div class="small muted">Riwayat sensor DHT22</div></div>
+              </div>
+              <div class="chart-now temp"><span id="tempNow">--</span> <span class="metric-unit muted">°C</span></div>
+            </div>
+            <div class="chart-wrap sm"><canvas id="tempChart" aria-label="Grafik suhu" role="img"></canvas></div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 fade-in">
+          <article class="glass p-3 p-md-4 h-100">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+              <div class="d-flex align-items-center gap-3">
+                <span class="metric-icon" style="color:#63a1ff; background:color-mix(in srgb, #63a1ff 12%, var(--soft));"><i class="bi bi-droplet-half"></i></span>
+                <div><div class="section-heading">Kelembapan</div><div class="small muted">Riwayat sensor DHT22</div></div>
+              </div>
+              <div class="chart-now hum"><span id="humNow">--</span> <span class="metric-unit muted">%</span></div>
+            </div>
+            <div class="chart-wrap sm"><canvas id="humChart" aria-label="Grafik kelembapan" role="img"></canvas></div>
+          </article>
+        </div>
+      </div>
     </section>
 
+    <!-- AI ASSISTANT -->
     <section id="assistant" class="section-anchor mb-4">
       <article class="glass p-3 p-md-4 fade-in">
         <div class="row g-4">
@@ -426,8 +459,8 @@
             <p class="small muted mb-3">AI dapat membantu menjelaskan parameter dan memberi saran umum. Responsnya bukan diagnosis medis.</p>
             <button id="btnQuickAnalyze" type="button" class="btn btn-accent w-100 py-2"><i class="bi bi-lightning-charge me-2"></i>Analisis tampilan saat ini</button>
             <div class="d-flex flex-wrap gap-2 mt-3">
-              <button class="quick-prompt" type="button" data-prompt="Jelaskan arti PM2.5 secara sederhana.">Apa itu PM2.5?</button>
-              <button class="quick-prompt" type="button" data-prompt="Bagaimana cara membaca AQI dengan benar?">Cara baca AQI</button>
+              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Jelaskan arti PM2.5 secara sederhana." style="font-size:.72rem; border-radius:99px;">Apa itu PM2.5?</button>
+              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Bagaimana cara membaca AQI dengan benar?" style="font-size:.72rem; border-radius:99px;">Cara baca AQI</button>
             </div>
           </div>
           <div class="col-12 col-lg-8">
@@ -437,7 +470,7 @@
             <form id="chatForm" class="d-flex gap-2">
               <label for="chatInput" class="visually-hidden">Pertanyaan untuk AI</label>
               <input type="text" id="chatInput" class="form-control rounded-3 px-3" placeholder="Tulis pertanyaan…" autocomplete="off" maxlength="1000">
-              <button type="submit" class="btn btn-accent px-3" aria-label="Kirim pesan"><i class="bi bi-arrow-up"></i><span class="d-none d-sm-inline ms-2">Kirim</span></button>
+              <button type="submit" class="btn btn-accent px-3" aria-label="Kirim pesan"><i class="bi bi-arrow-up"></i></button>
             </form>
             <div class="small muted mt-2" id="chatStatus">Endpoint AI: /api/chat</div>
           </div>
@@ -445,6 +478,14 @@
       </article>
     </section>
 
+    <!-- FOOTER -->
+    <footer class="footer d-flex flex-column flex-sm-row justify-content-between gap-2 py-3">
+      <span>© <span id="currentYear"></span> Weather-Cube · Air Monitoring</span>
+      <span>Data dari Supabase · refresh tiap 5 detik</span>
+    </footer>
+  </main>
+
+  <!-- FLOATING AI PANEL -->
   <section class="assistant-panel" id="floatingAssistant" role="dialog" aria-modal="false" aria-labelledby="floatingAssistantTitle" aria-hidden="true">
     <div class="assistant-panel-head">
       <div class="d-flex align-items-center gap-2">
@@ -461,8 +502,8 @@
         <div class="mini-msg ai">Halo! Ada yang ingin diketahui tentang AQI atau parameter sensor?</div>
       </div>
       <div class="d-flex flex-wrap gap-2 mb-3">
-        <button class="quick-prompt" type="button" data-mini-prompt="Jelaskan arti PM2.5 secara sederhana.">Apa itu PM2.5?</button>
-        <button class="quick-prompt" type="button" data-mini-prompt="Bagaimana cara membaca AQI dengan benar?">Cara membaca AQI</button>
+        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Jelaskan arti PM2.5 secara sederhana." style="font-size:.72rem; border-radius:99px;">Apa itu PM2.5?</button>
+        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Bagaimana cara membaca AQI dengan benar?" style="font-size:.72rem; border-radius:99px;">Cara membaca AQI</button>
       </div>
       <form id="floatingAIForm" class="d-flex gap-2">
         <label for="floatingAIInput" class="visually-hidden">Tulis pertanyaan untuk AI</label>
@@ -475,47 +516,92 @@
       </div>
     </div>
   </section>
+
   <button type="button" class="assistant-fab" id="assistantFab" aria-expanded="false" aria-controls="floatingAssistant">
     <span class="assistant-fab-icon"><i class="bi bi-stars"></i></span>
     <span class="assistant-fab-copy"><strong>AI Assistant</strong><small>Tanya tentang kualitas udara</small></span>
   </button>
-
-    <footer class="footer d-flex flex-column flex-sm-row justify-content-between gap-2 py-3">
-      <span>© <span id="currentYear"></span> Weather-Cube · Air Monitoring</span>
-      <span>Data dari Supabase · refresh tiap 5 detik · offline timeout 15 detik</span>
-    </footer>
-  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   (() => {
     'use strict';
 
-    /* ============================================================
-       ===== [ SUPABASE CLIENT & KONFIGURASI DARI FILE 2 ] =====
-       ============================================================ */
+    // ==========================================
+    // 1. KONFIGURASI
+    // ==========================================
     const SUPABASE_URL = 'https://rkhbttzscoqceeuemrlq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJraGJ0dHpzY29xY2VldWVtcmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MTIxNTUsImV4cCI6MjEwODI4ODE1NX0.T5SFF5XNgOYh2WF4JRIqJoGN02lT6pXhSAoPlXCQXqs';
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-    const OFFLINE_TIMEOUT_SECONDS = 15;
 
-    /* ============================================================
-       ===== [ THEME MANAGEMENT (FILE 1) ] =====
-       ============================================================ */
+    // ESP32 mengirim data tiap ~19 detik, jadi batas offline harus lebih besar dari itu
+    const OFFLINE_TIMEOUT_SECONDS = 45;
+    const MAX_POINTS = 30;
+    const POLL_MS = 5000;
+    const CACHE_KEY = 'wc_records_v2';
+    const CHAT_KEY = 'wc_chat_main_v1';
+    const MINI_KEY = 'wc_chat_mini_v1';
+
+    // Deklarasi di atas agar aman dipakai oleh applyTheme()
+    const charts = [];
+    let airChart = null, tempChart = null, humChart = null;
+
+    const store = {
+      get(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (_) { return fallback; } },
+      set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} }
+    };
+
+    // ==========================================
+    // 2. THEME, CLOCK, LOKASI
+    // ==========================================
     const root = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     const themeLabel = document.getElementById('themeLabel');
-    let airChart = null;
 
-    function readSavedTheme() {
-      try {
-        const saved = localStorage.getItem('weatherCubeTheme');
-        if (saved === 'light' || saved === 'dark') return saved;
-      } catch (_) {}
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    function applyTheme(theme, save = false) {
+      const normalized = theme === 'light' ? 'light' : 'dark';
+      root.dataset.theme = normalized;
+      root.style.colorScheme = normalized;
+      const isLight = normalized === 'light';
+      themeIcon.className = 'bi ' + (isLight ? 'bi-moon-stars' : 'bi-sun');
+      themeLabel.textContent = isLight ? 'Mode gelap' : 'Mode terang';
+      if (save) localStorage.setItem('weatherCubeTheme', normalized);
+      updateChartTheme();
     }
 
+    themeToggle.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true));
+    applyTheme(localStorage.getItem('weatherCubeTheme') || 'dark');
+
+    const timeFormat = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('currentTime').textContent = timeFormat.format(now);
+      document.getElementById('lastUiUpdate').textContent = timeFormat.format(now);
+      document.getElementById('currentYear').textContent = now.getFullYear();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    async function autoDetectLocation() {
+      const el = document.getElementById('userLocation');
+      const cached = sessionStorage.getItem('wc_location');
+      if (cached) { el.textContent = cached; return; }
+      try {
+        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3500) });
+        const data = await res.json();
+        const label = [data.city || '', data.region || ''].filter(Boolean).join(', ');
+        el.textContent = label || 'Lokasi tidak tersedia';
+        if (label) sessionStorage.setItem('wc_location', label);
+      } catch (_) {
+        el.textContent = 'Lokasi tidak tersedia';
+      }
+    }
+    autoDetectLocation();
+
+    // ==========================================
+    // 3. CHART.JS
+    // ==========================================
     function chartColors() {
       const style = getComputedStyle(root);
       return {
@@ -527,255 +613,233 @@
     }
 
     function updateChartTheme() {
-      if (!airChart) return;
       const c = chartColors();
-      ['x', 'y', 'y1'].forEach(axis => {
-        if (!airChart.options.scales[axis]) return;
-        airChart.options.scales[axis].ticks.color = c.text;
-        airChart.options.scales[axis].grid.color = c.grid;
-        if (airChart.options.scales[axis].title) airChart.options.scales[axis].title.color = c.text;
+      charts.forEach(chart => {
+        Object.values(chart.options.scales).forEach(scale => {
+          if (scale.ticks) scale.ticks.color = c.text;
+          if (scale.grid && scale.grid.drawOnChartArea !== false) scale.grid.color = c.grid;
+          if (scale.title) scale.title.color = c.text;
+        });
+        chart.options.plugins.legend.labels.color = c.text;
+        chart.options.plugins.tooltip.backgroundColor = c.tooltip;
+        chart.options.plugins.tooltip.titleColor = c.tooltipText;
+        chart.options.plugins.tooltip.bodyColor = c.tooltipText;
+        chart.update('none');
       });
-      airChart.options.plugins.tooltip.backgroundColor = c.tooltip;
-      airChart.options.plugins.tooltip.titleColor = c.tooltipText;
-      airChart.options.plugins.tooltip.bodyColor = c.tooltipText;
-      airChart.options.plugins.tooltip.borderColor = c.grid;
-      airChart.update('none');
     }
 
-    function applyTheme(theme, save = false) {
-      const normalized = theme === 'light' ? 'light' : 'dark';
-      root.dataset.theme = normalized;
-      root.style.colorScheme = normalized;
-      const isLight = normalized === 'light';
-      themeIcon.className = 'bi ' + (isLight ? 'bi-moon-stars' : 'bi-sun');
-      themeLabel.textContent = isLight ? 'Mode gelap' : 'Mode terang';
-      themeToggle.setAttribute('aria-label', isLight ? 'Aktifkan mode gelap' : 'Aktifkan mode terang');
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', isLight ? '#edf2f8' : '#10151d');
-      if (save) { try { localStorage.setItem('weatherCubeTheme', normalized); } catch (_) {} }
-      updateChartTheme();
+    function ds(label, color, extra = {}) {
+      return Object.assign({ label, data: [], borderColor: color, backgroundColor: 'transparent', tension: .36, borderWidth: 2.4, pointRadius: 2, pointHoverRadius: 5, spanGaps: true }, extra);
     }
-    themeToggle.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true));
-    applyTheme(readSavedTheme());
 
-    /* ============================================================
-       ===== [ CLOCK & LOCATION (FILE 1 + FILE 2) ] =====
-       ============================================================ */
-    const timeFormat = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('currentTime').textContent = timeFormat.format(now);
-      document.getElementById('lastUiUpdate').textContent = timeFormat.format(now);
-      document.getElementById('currentYear').textContent = now.getFullYear();
-    }
-    updateClock();
-    window.setInterval(updateClock, 1000);
-
-    async function autoDetectLocation() {
-      const locationElement = document.getElementById('userLocation');
-      if (!locationElement) return;
-      const controller = new AbortController();
-      const timeoutId = window.setTimeout(() => controller.abort(), 3500);
-      try {
-        const response = await fetch('https://ipapi.co/json/', { signal: controller.signal, cache: 'no-store' });
-        if (!response.ok) throw new Error('Location lookup unavailable');
-        const data = await response.json();
-        const label = [data.city || '', data.region || ''].filter(Boolean).join(', ');
-        locationElement.textContent = label || 'Lokasi tidak tersedia';
-        locationElement.title = label ? `Perkiraan lokasi IP: ${label}. Bukan lokasi GPS sensor.` : 'Lokasi tidak tersedia';
-      } catch (_) {
-        locationElement.textContent = 'Lokasi tidak tersedia';
-      } finally {
-        window.clearTimeout(timeoutId);
-      }
-    }
-    autoDetectLocation();
-
-    /* ============================================================
-       ===== [ CHART.JS DENGAN 3 DATASET (DARI FILE 2) ] =====
-       ============================================================ */
-    const canvas = document.getElementById('airChart');
-    if (canvas && window.Chart) {
-      const colors = chartColors();
-      airChart = new Chart(canvas, {
+    function createChart(canvasId, datasets, scales) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return null;
+      const c = chartColors();
+      const chart = new Chart(canvas, {
         type: 'line',
-        data: {
-          labels: [],
-          datasets: [
-            { label: 'AQI', data: [], borderColor: '#f5c65e', backgroundColor: 'rgba(245,198,94,.10)', fill: true, tension: .36, borderWidth: 2.4, pointRadius: 2, pointHoverRadius: 5, yAxisID: 'y' },
-            { label: 'PM2.5 (µg/m³)', data: [], borderColor: '#63e1d0', backgroundColor: 'transparent', tension: .36, borderWidth: 2.4, pointRadius: 2, pointHoverRadius: 5, yAxisID: 'y' },
-            { label: 'MQ-2 (ADC)', data: [], borderColor: '#b2a0ff', backgroundColor: 'transparent', tension: .36, borderWidth: 2.4, pointRadius: 2, pointHoverRadius: 5, yAxisID: 'y1' }
-          ]
-        },
+        data: { labels: [], datasets },
         options: {
           responsive: true, maintainAspectRatio: false,
-          animation: { duration: 420, easing: 'easeOutQuart' },
+          animation: { duration: 420 },
           interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: { display: false },
-            tooltip: { backgroundColor: colors.tooltip, titleColor: colors.tooltipText, bodyColor: colors.tooltipText, borderColor: colors.grid, borderWidth: 1, padding: 11, displayColors: true }
+            legend: { display: true, labels: { color: c.text, usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
+            tooltip: { backgroundColor: c.tooltip, titleColor: c.tooltipText, bodyColor: c.tooltipText, borderColor: c.grid, borderWidth: 1, padding: 11, displayColors: true }
           },
-          scales: {
-            x: { grid: { color: colors.grid }, ticks: { color: colors.text, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } },
-            y: { beginAtZero: true, position: 'left', grid: { color: colors.grid }, ticks: { color: colors.text, maxTicksLimit: 5 }, title: { display: true, text: 'AQI / PM2.5', color: colors.text, font: { size: 10 } } },
-            y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false, color: colors.grid }, ticks: { color: colors.text, maxTicksLimit: 5 }, title: { display: true, text: 'Gas · ADC', color: colors.text, font: { size: 10 } } }
-          }
+          scales: Object.assign({
+            x: { grid: { color: c.grid }, ticks: { color: c.text, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } }
+          }, scales(c))
         }
       });
+      charts.push(chart);
+      return chart;
     }
 
-    document.querySelectorAll('[data-chart-mode]').forEach(button => {
-      button.addEventListener('click', () => {
-        if (!airChart) return;
-        const mode = button.dataset.chartMode;
-        airChart.data.datasets[0].hidden = (mode === 'pm25' || mode === 'gas');
-        airChart.data.datasets[1].hidden = (mode === 'aqi' || mode === 'gas');
-        airChart.data.datasets[2].hidden = (mode === 'aqi' || mode === 'pm25');
-        airChart.update();
-      });
-    });
+    airChart = createChart('airChart', [
+      ds('AQI', '#f5c65e', { backgroundColor: 'rgba(245,198,94,.10)', fill: true, yAxisID: 'y' }),
+      ds('PM2.5', '#63e1d0', { yAxisID: 'y' }),
+      ds('Gas (ADC)', '#b2a0ff', { yAxisID: 'y1' })
+    ], c => ({
+      y: { beginAtZero: true, position: 'left', grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: 'AQI / PM2.5', color: c.text, font: { size: 10 } } },
+      y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: 'Gas ADC', color: c.text, font: { size: 10 } } }
+    }));
 
-    /* ============================================================
-       ===== [ STATUS CONNECTION & UI UPDATE (FILE 2) ] =====
-       ============================================================ */
-    const connDot = document.getElementById('connectionDot');
-    const connText = document.getElementById('connectionText');
-    const aqiCard = document.getElementById('aqiCard');
-    const aqiValue = document.getElementById('aqiValue');
-    const aqiStatus = document.getElementById('aqiStatus');
-    const aqiStatusText = document.getElementById('aqiStatusText');
-    const aqiTrack = document.getElementById('aqiTrack');
-    const pm25Value = document.getElementById('pm25Value');
-    const mq2Value = document.getElementById('mq2Value');
-    const dataMode = document.getElementById('dataMode');
-    const aqiFootnote = document.getElementById('aqiFootnote');
-    const systemChip = document.getElementById('systemChip');
-    const systemChipText = document.getElementById('systemChipText');
-    const systemNote = document.getElementById('systemNote');
+    tempChart = createChart('tempChart', [
+      ds('Suhu (°C)', '#ffd166', { backgroundColor: 'rgba(255,209,102,.10)', fill: true })
+    ], c => ({
+      y: { grace: '15%', grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: '°C', color: c.text, font: { size: 10 } } }
+    }));
 
-    function setDisconnectedState() {
-      if (connDot) connDot.classList.remove('connected');
-      if (connText) connText.textContent = 'Menunggu data sensor';
-      if (aqiValue) { aqiValue.textContent = '--'; aqiValue.style.color = 'var(--muted)'; }
-      if (pm25Value) { pm25Value.textContent = '--'; pm25Value.style.color = 'var(--muted)'; }
-      if (mq2Value) { mq2Value.textContent = '--'; mq2Value.style.color = 'var(--muted)'; }
-      if (aqiStatus) { aqiStatus.className = 'hero-status mt-2 offline'; }
-      if (aqiStatusText) aqiStatusText.textContent = 'Perangkat Disconnected';
-      if (aqiTrack) aqiTrack.style.setProperty('--marker', '0%');
-      if (dataMode) dataMode.textContent = 'Offline';
-      if (aqiFootnote) aqiFootnote.textContent = '*Perangkat ESP32 belum mengirim data baru (lebih dari ' + OFFLINE_TIMEOUT_SECONDS + ' detik).';
-      if (systemChip) { systemChip.innerHTML = '<span class="live-dot"></span> <span id="systemChipText">Offline</span>'; }
-      if (systemNote) systemNote.textContent = 'Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.';
+    humChart = createChart('humChart', [
+      ds('Kelembapan (%)', '#63a1ff', { backgroundColor: 'rgba(99,161,255,.10)', fill: true })
+    ], c => ({
+      y: { grace: '15%', grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: '%', color: c.text, font: { size: 10 } } }
+    }));
+
+    updateChartTheme();
+
+    // ==========================================
+    // 4. DATA STORE (tahan pindah tab / reload)
+    // ==========================================
+    let records = store.get(CACHE_KEY, []);
+    if (!Array.isArray(records)) records = [];
+
+    const fmtTime = iso => new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const num = v => (v === null || v === undefined || v === '' || !isFinite(Number(v))) ? null : Number(v);
+
+    function mergeRecords(list) {
+      const map = new Map(records.map(r => [r.created_at, r]));
+      list.forEach(r => { if (r && r.created_at) map.set(r.created_at, r); });
+      records = [...map.values()]
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .slice(-MAX_POINTS);
+      store.set(CACHE_KEY, records);
     }
 
-    function setConnectedState() {
-      if (connDot) connDot.classList.add('connected');
-      if (connText) connText.textContent = 'Live Connected';
+    function renderCharts() {
+      const labels = records.map(r => fmtTime(r.created_at));
+      const col = key => records.map(r => num(r[key]));
+      const fill = (chart, keys) => {
+        if (!chart) return;
+        chart.data.labels = labels;
+        keys.forEach((k, i) => { chart.data.datasets[i].data = col(k); });
+        chart.update('none');
+      };
+      fill(airChart, ['aqi', 'pm25', 'mq2']);
+      fill(tempChart, ['temp']);
+      fill(humChart, ['hum']);
     }
 
-    function updateUI(data) {
-      setConnectedState();
+    // ==========================================
+    // 5. UI
+    // ==========================================
+    const $ = id => document.getElementById(id);
+    const el = {
+      connDot: $('connectionDot'), connText: $('connectionText'),
+      aqiValue: $('aqiValue'), aqiStatus: $('aqiStatus'), aqiStatusText: $('aqiStatusText'), aqiMarker: $('aqiMarker'),
+      pm25Value: $('pm25Value'), mq2Value: $('mq2Value'), tempValue: $('tempValue'), humValue: $('humValue'),
+      tempNow: $('tempNow'), humNow: $('humNow'),
+      dataMode: $('dataMode'), systemDot: $('systemDot'), systemChipText: $('systemChipText'), systemNote: $('systemNote')
+    };
 
-      const timeLabel = new Date(data.created_at || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      const aqi = Number(data.aqi);
-      const pm25 = Number(data.pm25);
-      const mq2 = Number(data.mq2);
-
-      if (aqiValue) { aqiValue.textContent = isFinite(aqi) ? aqi : '--'; aqiValue.style.color = ''; }
-      if (pm25Value) { pm25Value.textContent = isFinite(pm25) ? pm25 : '--'; pm25Value.style.color = ''; }
-      if (mq2Value) { mq2Value.textContent = isFinite(mq2) ? mq2 : '--'; mq2Value.style.color = ''; }
-
-      // Kategori AQI + marker posisi
-      if (aqiStatus && aqiStatusText) {
-        if (!isFinite(aqi) || aqi <= 0) {
-          aqiStatus.className = 'hero-status mt-2 offline';
-          aqiStatusText.textContent = 'Menunggu data valid';
-        } else if (aqi > 100) {
-          aqiStatus.className = 'hero-status mt-2 bad';
-          aqiStatusText.textContent = 'Kategori: Bahaya';
-        } else if (aqi > 50) {
-          aqiStatus.className = 'hero-status mt-2';
-          aqiStatusText.textContent = 'Kategori: Waspada';
-        } else {
-          aqiStatus.className = 'hero-status mt-2 good';
-          aqiStatusText.textContent = 'Kategori: Aman';
-        }
-      }
-
-      if (aqiTrack) {
-        let pct = 0;
-        if (isFinite(aqi)) pct = Math.max(0, Math.min(100, aqi));
-        aqiTrack.style.setProperty('--marker', pct + '%');
-      }
-
-      if (dataMode) dataMode.textContent = 'Live dari Supabase';
-      if (aqiFootnote) aqiFootnote.textContent = '*Data berasal dari Supabase (tabel sensor_logs), diperbarui otomatis setiap 5 detik.';
-      if (systemChipText) systemChipText.textContent = 'Live';
-      if (systemNote) systemNote.textContent = 'Data sensor aktif. Terakhir diterima: ' + timeLabel + '.';
-
-      // Push ke chart
-      if (airChart) {
-        airChart.data.labels.push(timeLabel);
-        airChart.data.datasets[0].data.push(isFinite(aqi) ? aqi : null);
-        airChart.data.datasets[1].data.push(isFinite(pm25) ? pm25 : null);
-        airChart.data.datasets[2].data.push(isFinite(mq2) ? mq2 : null);
-        if (airChart.data.labels.length > 12) {
-          airChart.data.labels.shift();
-          airChart.data.datasets.forEach(ds => ds.data.shift());
-        }
-        airChart.update();
-      }
+    function showValues(data) {
+      const aqi = num(data.aqi), pm25 = num(data.pm25), mq2 = num(data.mq2), temp = num(data.temp), hum = num(data.hum);
+      const show = v => v === null ? '--' : v;
+      el.aqiValue.textContent = show(aqi);
+      el.pm25Value.textContent = show(pm25);
+      el.mq2Value.textContent = show(mq2);
+      el.tempValue.textContent = show(temp);
+      el.humValue.textContent = show(hum);
+      el.tempNow.textContent = show(temp);
+      el.humNow.textContent = show(hum);
+      if (aqi !== null) el.aqiMarker.style.left = Math.max(0, Math.min(100, aqi)) + '%';
+      return aqi;
     }
 
-    /* ============================================================
-       ===== [ FETCH DARI SUPABASE (FILE 2) ] =====
-       ============================================================ */
-    async function fetchLatestData() {
-      if (!supabaseClient) {
-        setDisconnectedState();
-        if (systemNote) systemNote.textContent = 'Supabase client tidak ter-load. Periksa koneksi internet / CDN.';
-        return;
+    function setOnline(data, aqi) {
+      el.connDot.classList.add('connected');
+      el.systemDot.classList.add('connected');
+      el.connText.textContent = 'Live Connected';
+      if (aqi === null || aqi <= 0) {
+        el.aqiStatus.className = 'hero-status mt-2 offline';
+        el.aqiStatusText.textContent = 'Menunggu data valid';
+      } else if (aqi > 100) {
+        el.aqiStatus.className = 'hero-status mt-2 bad';
+        el.aqiStatusText.textContent = 'Kategori: Bahaya';
+      } else if (aqi > 50) {
+        el.aqiStatus.className = 'hero-status mt-2';
+        el.aqiStatusText.textContent = 'Kategori: Waspada';
+      } else {
+        el.aqiStatus.className = 'hero-status mt-2 good';
+        el.aqiStatusText.textContent = 'Kategori: Aman';
       }
+      el.dataMode.textContent = 'Live Supabase';
+      el.systemChipText.textContent = 'Live';
+      el.systemNote.textContent = 'Data sensor aktif. Terakhir diterima: ' + fmtTime(data.created_at) + '.';
+    }
+
+    function setOffline(data) {
+      el.connDot.classList.remove('connected');
+      el.systemDot.classList.remove('connected');
+      el.connText.textContent = 'Menunggu data sensor';
+      el.aqiStatus.className = 'hero-status mt-2 offline';
+      el.aqiStatusText.textContent = 'Perangkat Disconnected';
+      el.dataMode.textContent = 'Offline';
+      el.systemChipText.textContent = 'Offline';
+      el.systemNote.textContent = data
+        ? 'Perangkat tidak mengirim data. Data terakhir diterima: ' + fmtTime(data.created_at) + '.'
+        : 'Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.';
+    }
+
+    // Tampilkan record terbaru. Nilai terakhir tetap tampil walau perangkat offline.
+    function applyLatest(latest) {
+      if (!latest) { setOffline(null); return; }
+      const aqi = showValues(latest);
+      const age = (Date.now() - new Date(latest.created_at).getTime()) / 1000;
+      if (age > OFFLINE_TIMEOUT_SECONDS) setOffline(latest);
+      else setOnline(latest, aqi);
+    }
+
+    // Render instan dari cache saat halaman dibuka / dikembalikan
+    if (records.length) {
+      renderCharts();
+      applyLatest(records[records.length - 1]);
+    }
+
+    // ==========================================
+    // 6. FETCH SUPABASE
+    // ==========================================
+    let fetching = false;
+    async function refreshData() {
+      if (!supabaseClient || fetching) return;
+      fetching = true;
       try {
         const { data, error } = await supabaseClient
           .from('sensor_logs')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(1);
+          .limit(MAX_POINTS);
 
-        if (error || !data || data.length === 0) {
-          setDisconnectedState();
-          return;
+        if (error) throw error;
+        if (data && data.length) {
+          mergeRecords(data);
+          renderCharts();
         }
-
-        const latestRecord = data[0];
-        const lastTimestamp = new Date(latestRecord.created_at).getTime();
-        const diffInSeconds = (Date.now() - lastTimestamp) / 1000;
-
-        if (diffInSeconds > OFFLINE_TIMEOUT_SECONDS) {
-          setDisconnectedState();
-        } else {
-          updateUI(latestRecord);
-        }
+        // Hanya hitung offline berdasarkan umur data, bukan karena error jaringan
+        applyLatest(records[records.length - 1]);
       } catch (err) {
         console.error('Fetch Error:', err);
-        setDisconnectedState();
+      } finally {
+        fetching = false;
       }
     }
 
-    setInterval(fetchLatestData, 5000);
-    fetchLatestData();
+    refreshData();
+    setInterval(refreshData, POLL_MS);
 
-    /* ============================================================
-       ===== [ AI CHAT - FULL SECTION (FILE 1 + FILE 2) ] =====
-       ============================================================ */
-    const chatBox = document.getElementById('aiChatBox');
-    const chatInput = document.getElementById('chatInput');
-    const chatForm = document.getElementById('chatForm');
-    const sendButton = chatForm.querySelector('button[type="submit"]');
-    const quickButton = document.getElementById('btnQuickAnalyze');
+    // Saat kembali ke tab ini, langsung sinkron tanpa menunggu timer
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (records.length) applyLatest(records[records.length - 1]);
+        refreshData();
+      }
+    });
+    window.addEventListener('focus', refreshData);
+    window.addEventListener('pageshow', refreshData);
+
+    // ==========================================
+    // 7. AI CHAT (riwayat tersimpan)
+    // ==========================================
+    const chatBox = $('aiChatBox');
+    const chatInput = $('chatInput');
+    const chatForm = $('chatForm');
+    const quickButton = $('btnQuickAnalyze');
     let chatBusy = false;
+    let chatLog = store.get(CHAT_KEY, []);
+    if (!Array.isArray(chatLog)) chatLog = [];
 
-    function appendMessage(role, messageText, isError = false) {
+    function appendMessage(role, messageText, isError = false, temp = false) {
       const item = document.createElement('div');
       item.className = 'chat-message ' + (role === 'user' ? 'user' : 'ai') + (isError ? ' error' : '');
       const label = document.createElement('span');
@@ -786,19 +850,30 @@
       item.append(label, body);
       chatBox.appendChild(item);
       chatBox.scrollTop = chatBox.scrollHeight;
+      if (!temp) {
+        chatLog.push({ role, text: messageText, error: isError });
+        chatLog = chatLog.slice(-40);
+        store.set(CHAT_KEY, chatLog);
+      }
       return item;
     }
+
+    // Pulihkan riwayat chat tanpa menyimpan ulang
+    (() => {
+      const saved = chatLog.slice();
+      chatLog = [];
+      saved.forEach(m => appendMessage(m.role, m.text, m.error, true));
+      chatLog = saved;
+    })();
 
     async function fetchAIResponse(prompt) {
       const clean = String(prompt || '').trim();
       if (!clean || chatBusy) return;
       appendMessage('user', clean);
-      const loading = appendMessage('ai', 'AI sedang menyiapkan jawaban…');
+      const loading = appendMessage('ai', 'AI sedang menyiapkan jawaban…', false, true);
       chatBusy = true;
-      sendButton.disabled = true;
-      quickButton.disabled = true;
-      document.querySelectorAll('[data-prompt]').forEach(button => button.disabled = true);
-      document.getElementById('chatStatus').textContent = 'Menghubungi endpoint AI…';
+      if (quickButton) quickButton.disabled = true;
+
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
@@ -808,57 +883,60 @@
         let data = {};
         try { data = await response.json(); } catch (_) {}
         loading.remove();
-        if (!response.ok) appendMessage('ai', data.answer || data.error || `Permintaan gagal (HTTP ${response.status}).`, true);
+        if (!response.ok) appendMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
         else appendMessage('ai', data.answer || 'Belum ada tanggapan dari AI.');
-        document.getElementById('chatStatus').textContent = response.ok ? 'Respons diterima dari /api/chat' : 'Layanan AI mengembalikan error';
       } catch (error) {
         loading.remove();
-        appendMessage('ai', `Tidak dapat menghubungi layanan AI. Periksa koneksi dan endpoint /api/chat. Detail: ${error.message}`, true);
-        document.getElementById('chatStatus').textContent = 'Koneksi ke layanan AI gagal';
+        appendMessage('ai', 'Tidak dapat menghubungi layanan AI.', true);
       } finally {
         chatBusy = false;
-        sendButton.disabled = false;
-        quickButton.disabled = false;
-        document.querySelectorAll('[data-prompt]').forEach(button => button.disabled = false);
+        if (quickButton) quickButton.disabled = false;
       }
     }
 
-    // Quick Analyze: menggunakan data live dari DOM (diisi oleh updateUI)
-    quickButton.addEventListener('click', () => {
-      const locationText = document.getElementById('userLocation')?.textContent || 'lokasi tidak diketahui';
-      const aqi = aqiValue?.textContent || '--';
-      const pm25 = pm25Value?.textContent || '--';
-      const mq2 = mq2Value?.textContent || '--';
+    if (quickButton) {
+      quickButton.addEventListener('click', () => {
+        const loc = $('userLocation')?.textContent || 'lokasi tidak diketahui';
+        const aqi = el.aqiValue.textContent;
+        const pm25 = el.pm25Value.textContent;
+        const mq2 = el.mq2Value.textContent;
+        const temp = el.tempValue.textContent;
+        const hum = el.humValue.textContent;
 
-      if (aqi === '--') {
-        fetchAIResponse(`Perangkat saat ini sedang Disconnected di ${locationText}. Berikan imbauan umum tentang pentingnya memantau kualitas udara, dan jelaskan bahwa data sensor belum tersedia.`);
-        return;
-      }
-      fetchAIResponse(`Data sensor live di ${locationText}: AQI=${aqi}, PM2.5=${pm25} µg/m³, MQ-2 Gas=${mq2} ADC. Berikan analisis singkat kondisi kualitas udara dan saran kesehatan yang relevan.`);
-    });
+        if (aqi === '--') {
+          fetchAIResponse('Perangkat Offline. Berikan imbauan umum tentang memantau kualitas udara.');
+          return;
+        }
+        fetchAIResponse(`Data live di ${loc}: AQI=${aqi}, PM2.5=${pm25} µg/m³, Gas=${mq2} ADC, Suhu=${temp}°C, Lembap=${hum}%. Berikan analisis singkat & saran kesehatan.`);
+      });
+    }
 
-    chatForm.addEventListener('submit', event => {
-      event.preventDefault();
-      const value = chatInput.value.trim();
-      if (!value || chatBusy) return;
-      chatInput.value = '';
-      fetchAIResponse(value);
-    });
+    if (chatForm) {
+      chatForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const value = chatInput.value.trim();
+        if (!value || chatBusy) return;
+        chatInput.value = '';
+        fetchAIResponse(value);
+      });
+    }
+
     document.querySelectorAll('[data-prompt]').forEach(button => {
       button.addEventListener('click', () => fetchAIResponse(button.dataset.prompt));
     });
 
-    /* ============================================================
-       ===== [ FLOATING AI PANEL (FILE 1) ] =====
-       ============================================================ */
-    const assistantFab = document.getElementById('assistantFab');
-    const floatingPanel = document.getElementById('floatingAssistant');
-    const closeFloatingAI = document.getElementById('closeFloatingAI');
-    const floatingAIForm = document.getElementById('floatingAIForm');
-    const floatingAIInput = document.getElementById('floatingAIInput');
-    const floatingAIMessages = document.getElementById('floatingAIMessages');
-    const floatingAIStatus = document.getElementById('floatingAIStatus');
+    // ==========================================
+    // 8. FLOATING AI PANEL
+    // ==========================================
+    const assistantFab = $('assistantFab');
+    const floatingPanel = $('floatingAssistant');
+    const closeFloatingAI = $('closeFloatingAI');
+    const floatingAIForm = $('floatingAIForm');
+    const floatingAIInput = $('floatingAIInput');
+    const floatingAIMessages = $('floatingAIMessages');
     let floatingBusy = false;
+    let miniLog = store.get(MINI_KEY, []);
+    if (!Array.isArray(miniLog)) miniLog = [];
 
     function setFloatingOpen(open) {
       floatingPanel.classList.toggle('open', open);
@@ -869,32 +947,41 @@
         : '<span class="assistant-fab-icon"><i class="bi bi-stars"></i></span><span class="assistant-fab-copy"><strong>AI Assistant</strong><small>Tanya tentang kualitas udara</small></span>';
       if (open) window.setTimeout(() => floatingAIInput.focus(), 170);
     }
-    assistantFab.addEventListener('click', () => setFloatingOpen(!floatingPanel.classList.contains('open')));
-    closeFloatingAI.addEventListener('click', () => setFloatingOpen(false));
+
+    if (assistantFab) assistantFab.addEventListener('click', () => setFloatingOpen(!floatingPanel.classList.contains('open')));
+    if (closeFloatingAI) closeFloatingAI.addEventListener('click', () => setFloatingOpen(false));
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && floatingPanel.classList.contains('open')) {
-        setFloatingOpen(false);
-        assistantFab.focus();
-      }
+      if (event.key === 'Escape' && floatingPanel.classList.contains('open')) setFloatingOpen(false);
     });
 
-    function appendMiniMessage(role, text, error = false) {
+    function appendMiniMessage(role, text, error = false, temp = false) {
       const bubble = document.createElement('div');
       bubble.className = 'mini-msg ' + (role === 'user' ? 'user' : 'ai') + (error ? ' error' : '');
       bubble.textContent = text;
       floatingAIMessages.appendChild(bubble);
       floatingAIMessages.scrollTop = floatingAIMessages.scrollHeight;
-      return bubble;
+      if (!temp) {
+        miniLog.push({ role, text, error });
+        miniLog = miniLog.slice(-40);
+        store.set(MINI_KEY, miniLog);
+      }
+      return bubble; // sebelumnya tidak dikembalikan sehingga pending.remove() error
     }
+
+    (() => {
+      const saved = miniLog.slice();
+      miniLog = [];
+      saved.forEach(m => appendMiniMessage(m.role, m.text, m.error, true));
+      miniLog = saved;
+    })();
 
     async function sendFloatingPrompt(prompt) {
       const clean = String(prompt || '').trim();
       if (!clean || floatingBusy) return;
       appendMiniMessage('user', clean);
-      const pending = appendMiniMessage('ai', 'Sedang menyiapkan jawaban…');
+      const pending = appendMiniMessage('ai', 'Sedang menyiapkan jawaban…', false, true);
       floatingBusy = true;
-      floatingAIForm.querySelector('button').disabled = true;
-      floatingAIStatus.textContent = 'Menghubungi AI…';
+
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
@@ -904,40 +991,42 @@
         let data = {};
         try { data = await response.json(); } catch (_) {}
         pending.remove();
-        if (!response.ok) appendMiniMessage('ai', data.answer || data.error || `Permintaan gagal (HTTP ${response.status}).`, true);
+        if (!response.ok) appendMiniMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
         else appendMiniMessage('ai', data.answer || 'AI belum mengirimkan jawaban.');
-        floatingAIStatus.textContent = response.ok ? 'Jawaban diterima' : 'Layanan AI mengalami kendala';
       } catch (error) {
         pending.remove();
-        appendMiniMessage('ai', 'Tidak dapat menghubungi /api/chat. Periksa koneksi atau deployment backend.', true);
-        floatingAIStatus.textContent = 'Koneksi gagal';
+        appendMiniMessage('ai', 'Tidak dapat menghubungi /api/chat.', true);
       } finally {
         floatingBusy = false;
-        floatingAIForm.querySelector('button').disabled = false;
         floatingAIInput.focus();
       }
     }
 
-    floatingAIForm.addEventListener('submit', event => {
-      event.preventDefault();
-      const value = floatingAIInput.value.trim();
-      if (!value || floatingBusy) return;
-      floatingAIInput.value = '';
-      sendFloatingPrompt(value);
-    });
+    if (floatingAIForm) {
+      floatingAIForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const value = floatingAIInput.value.trim();
+        if (!value || floatingBusy) return;
+        floatingAIInput.value = '';
+        sendFloatingPrompt(value);
+      });
+    }
+
     document.querySelectorAll('[data-mini-prompt]').forEach(button => {
       button.addEventListener('click', () => {
         setFloatingOpen(true);
         sendFloatingPrompt(button.dataset.miniPrompt);
       });
     });
-    document.getElementById('jumpToFullAI').addEventListener('click', () => setFloatingOpen(false));
 
-    /* ============================================================
-       ===== [ NAV SECTION HIGHLIGHT (FILE 1) ] =====
-       ============================================================ */
+    const jumpToFullAI = $('jumpToFullAI');
+    if (jumpToFullAI) jumpToFullAI.addEventListener('click', () => setFloatingOpen(false));
+
+    // ==========================================
+    // 9. HIGHLIGHT NAV
+    // ==========================================
     const navLinks = [...document.querySelectorAll('.navbar .nav-link[href^="#"]')];
-    const sections = ['overview', 'trends', 'assistant'].map(id => document.getElementById(id)).filter(Boolean);
+    const sections = ['overview', 'trends', 'assistant'].map(id => $(id)).filter(Boolean);
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
