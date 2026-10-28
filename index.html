@@ -142,6 +142,10 @@
     .hero-status.bad { background:color-mix(in srgb, var(--bad) 14%, transparent); color:var(--bad); }
     .hero-status.offline { background:var(--soft); color:var(--muted); }
 
+    /* GAUGE: Aman | Waspada | Bahaya (sinkron dengan Arduino) */
+    .aqi-gauge { height: 7px; border-radius: 999px; position: relative; margin-top: 1rem; background: linear-gradient(90deg,#45c68b 0 33.333%,#f4bd45 33.333% 66.666%,#df6672 66.666% 100%); box-shadow: 0 0 18px rgba(245,198,94,.13); }
+    .aqi-marker { position:absolute; top:50%; left:0%; width:15px; height:15px; border:3px solid var(--panel-solid); background:var(--text); border-radius:50%; transform:translate(-50%,-50%); transition:left .5s ease; }
+
     /* METRIC CARDS */
     .metric-card { position: relative; overflow: hidden; min-height: 0; height: 100%; padding: clamp(1rem, 1.25vw, 1.2rem); background: var(--panel); border-top-width: 2px !important; }
     .metric-icon { width: 35px; height: 35px; display:grid; place-items:center; border-radius:11px; border:1px solid var(--line); color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--panel-solid)); }
@@ -181,6 +185,7 @@
     .chat-message.user { align-self:flex-end; background:color-mix(in srgb, var(--accent) 15%, var(--panel)); }
     .chat-role { display:block; color:var(--muted); font-size:.7rem; font-weight:700; margin-bottom:.25rem; }
     .chat-message.error { border-color: var(--bad) !important; }
+    @keyframes riseSoft { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:none } }
 
     /* FORM & SCROLLBAR */
     .form-control, .form-control:focus { color: var(--text); background: var(--soft); border-color: var(--line); box-shadow: none; font-family: inherit; font-size: .85rem; line-height: 1.4; }
@@ -336,10 +341,10 @@
               </div>
               <div class="metric-icon mt-1"><i class="bi bi-activity fs-5"></i></div>
             </div>
-            <div style="height: 7px; border-radius: 999px; background: linear-gradient(90deg,#45c68b 0 20%,#d7d94e 20% 40%,#f4bd45 40% 60%,#ed8a50 60% 80%,#df6672 80%); position: relative; margin-top: 1rem; box-shadow:0 0 18px rgba(245,198,94,.13);">
-              <span id="aqiMarker" style="position:absolute; top:50%; left:0%; width:15px; height:15px; border:3px solid var(--panel-solid); background:var(--text); border-radius:50%; transform:translate(-50%,-50%); transition:left .5s ease;"></span>
+            <div class="aqi-gauge">
+              <span id="aqiMarker" class="aqi-marker"></span>
             </div>
-            <div class="d-flex justify-content-between small muted mt-2"><span>Baik</span><span>Sedang</span><span>Buruk</span></div>
+            <div class="d-flex justify-content-between small muted mt-2"><span>Aman (≤50)</span><span>Waspada (51–100)</span><span>Bahaya (&gt;100)</span></div>
             <hr style="border-color:var(--line);margin:.9rem 0 .8rem">
             <div class="d-flex justify-content-between align-items-center gap-3">
               <span class="muted small">Status pembacaan</span>
@@ -456,16 +461,17 @@
               <span class="metric-icon"><i class="bi bi-stars fs-5"></i></span>
               <div><h2 class="section-heading mb-1">AI Assistant</h2><div class="small muted">Tanya atau minta penjelasan</div></div>
             </div>
-            <p class="small muted mb-3">AI dapat membantu menjelaskan parameter dan memberi saran umum. Responsnya bukan diagnosis medis.</p>
-            <button id="btnQuickAnalyze" type="button" class="btn btn-accent w-100 py-2"><i class="bi bi-lightning-charge me-2"></i>Analisis tampilan saat ini</button>
+            <p class="small muted mb-3">AI membaca data sensor terbaru langsung dari database, bahkan saat perangkat sedang offline. Responsnya bukan diagnosis medis.</p>
+            <button id="btnQuickAnalyze" type="button" class="btn btn-accent w-100 py-2"><i class="bi bi-lightning-charge me-2"></i>Analisis kondisi terbaru</button>
             <div class="d-flex flex-wrap gap-2 mt-3">
               <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Jelaskan arti PM2.5 secara sederhana." style="font-size:.72rem; border-radius:99px;">Apa itu PM2.5?</button>
               <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Bagaimana cara membaca AQI dengan benar?" style="font-size:.72rem; border-radius:99px;">Cara baca AQI</button>
+              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Bagaimana situasi udara sekarang?" style="font-size:.72rem; border-radius:99px;">Situasi sekarang</button>
             </div>
           </div>
           <div class="col-12 col-lg-8">
             <div id="aiChatBox" class="chat-box mb-3" aria-live="polite">
-              <div class="chat-message ai"><span class="chat-role"><i class="bi bi-stars me-1"></i>Weather-Cube AI</span>Halo! Saya bisa membantu menjelaskan data dan parameter kualitas udara. Data sensor akan muncul otomatis saat perangkat terhubung.</div>
+              <div class="chat-message ai"><span class="chat-role"><i class="bi bi-stars me-1"></i>Weather-Cube AI</span>Halo! Saya bisa membaca data sensor terakhir dari database dan menjelaskan kondisi udara, termasuk saat perangkat sedang offline.</div>
             </div>
             <form id="chatForm" class="d-flex gap-2">
               <label for="chatInput" class="visually-hidden">Pertanyaan untuk AI</label>
@@ -503,7 +509,7 @@
       </div>
       <div class="d-flex flex-wrap gap-2 mb-3">
         <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Jelaskan arti PM2.5 secara sederhana." style="font-size:.72rem; border-radius:99px;">Apa itu PM2.5?</button>
-        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Bagaimana cara membaca AQI dengan benar?" style="font-size:.72rem; border-radius:99px;">Cara membaca AQI</button>
+        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Bagaimana situasi udara sekarang?" style="font-size:.72rem; border-radius:99px;">Situasi sekarang</button>
       </div>
       <form id="floatingAIForm" class="d-flex gap-2">
         <label for="floatingAIInput" class="visually-hidden">Tulis pertanyaan untuk AI</label>
@@ -534,15 +540,13 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJraGJ0dHpzY29xY2VldWVtcmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MTIxNTUsImV4cCI6MjEwODI4ODE1NX0.T5SFF5XNgOYh2WF4JRIqJoGN02lT6pXhSAoPlXCQXqs';
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // ESP32 mengirim data tiap ~19 detik, jadi batas offline harus lebih besar dari itu
     const OFFLINE_TIMEOUT_SECONDS = 45;
     const MAX_POINTS = 30;
     const POLL_MS = 5000;
-    const CACHE_KEY = 'wc_records_v2';
+    const CACHE_KEY = 'wc_records_v3';   // v3: AQI kini dihitung ulang di sisi klien
     const CHAT_KEY = 'wc_chat_main_v1';
     const MINI_KEY = 'wc_chat_mini_v1';
 
-    // Deklarasi di atas agar aman dipakai oleh applyTheme()
     const charts = [];
     let airChart = null, tempChart = null, humChart = null;
 
@@ -550,6 +554,43 @@
       get(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (_) { return fallback; } },
       set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} }
     };
+
+    const num = v => (v === null || v === undefined || v === '' || !isFinite(Number(v))) ? null : Number(v);
+
+    // ==========================================
+    // 1b. AQI & STATUS (SAMA PERSIS DENGAN ARDUINO & chat.js)
+    //   AMAN    : AQI <= 50   (PM2.5 <= 50  dan Gas <= 1000)
+    //   WASPADA : AQI 51-100  (PM2.5 > 50   atau Gas > 1000)
+    //   BAHAYA  : AQI > 100   (PM2.5 > 150  atau Gas > 2000)
+    // ==========================================
+    function calcAqi(pm25, mq2) {
+      const pm = num(pm25), gas = num(mq2);
+      if (pm === null && gas === null) return null;
+      const p = Math.max(0, pm ?? 0), g = Math.max(0, gas ?? 0);
+      const aqiPm = p <= 50 ? p : p <= 150 ? 50 + (p - 50) * 0.5 : 100 + (p - 150);
+      const aqiGas = g <= 1000 ? g * 0.05 : g <= 2000 ? 50 + (g - 1000) * 0.05 : 100 + (g - 2000) * 0.05;
+      return Math.min(500, Math.max(aqiPm, aqiGas));
+    }
+
+    function classify(aqi) {
+      if (aqi === null) return null;
+      if (aqi > 100) return { key: 'bahaya', label: 'Bahaya', cls: 'bad' };
+      if (aqi > 50)  return { key: 'waspada', label: 'Waspada', cls: '' };
+      return { key: 'aman', label: 'Aman', cls: 'good' };
+    }
+
+    function triggerNote(pm25, mq2) {
+      const pm = num(pm25), gas = num(mq2);
+      const lv = (v, w, b) => v > b ? 2 : v > w ? 1 : 0;
+      const pl = pm === null ? 0 : lv(pm, 50, 150);
+      const gl = gas === null ? 0 : lv(gas, 1000, 2000);
+      const worst = Math.max(pl, gl);
+      if (worst === 0) return 'Semua parameter dalam batas aman.';
+      const names = [];
+      if (pl === worst) names.push('PM2.5 (' + pm + ' µg/m³)');
+      if (gl === worst) names.push('Gas MQ-2 (' + gas + ' ADC)');
+      return 'Status ' + (worst === 2 ? 'bahaya' : 'waspada') + ' dipicu oleh ' + names.join(' dan ') + '.';
+    }
 
     // ==========================================
     // 2. THEME, CLOCK, LOKASI
@@ -686,7 +727,6 @@
     if (!Array.isArray(records)) records = [];
 
     const fmtTime = iso => new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const num = v => (v === null || v === undefined || v === '' || !isFinite(Number(v))) ? null : Number(v);
 
     function mergeRecords(list) {
       const map = new Map(records.map(r => [r.created_at, r]));
@@ -699,7 +739,10 @@
 
     function renderCharts() {
       const labels = records.map(r => fmtTime(r.created_at));
-      const col = key => records.map(r => num(r[key]));
+      const col = key => records.map(r => {
+        if (key === 'aqi') { const a = calcAqi(r.pm25, r.mq2); return a === null ? num(r.aqi) : Math.round(a); }
+        return num(r[key]);
+      });
       const fill = (chart, keys) => {
         if (!chart) return;
         chart.data.labels = labels;
@@ -723,43 +766,47 @@
       dataMode: $('dataMode'), systemDot: $('systemDot'), systemChipText: $('systemChipText'), systemNote: $('systemNote')
     };
 
+    // Tampilkan nilai; AQI dihitung dari PM2.5 + Gas agar sinkron dengan status di ESP32
     function showValues(data) {
-      const aqi = num(data.aqi), pm25 = num(data.pm25), mq2 = num(data.mq2), temp = num(data.temp), hum = num(data.hum);
+      const pm25 = num(data.pm25), mq2 = num(data.mq2), temp = num(data.temp), hum = num(data.hum);
+      let aqiF = calcAqi(pm25, mq2);
+      if (aqiF === null) aqiF = num(data.aqi);  // cadangan jika PM2.5 & gas sama-sama kosong
       const show = v => v === null ? '--' : v;
-      el.aqiValue.textContent = show(aqi);
+      el.aqiValue.textContent = aqiF === null ? '--' : Math.round(aqiF);
       el.pm25Value.textContent = show(pm25);
       el.mq2Value.textContent = show(mq2);
       el.tempValue.textContent = show(temp);
       el.humValue.textContent = show(hum);
       el.tempNow.textContent = show(temp);
       el.humNow.textContent = show(hum);
-      if (aqi !== null) el.aqiMarker.style.left = Math.max(0, Math.min(100, aqi)) + '%';
-      return aqi;
+      // Gauge 0-150: 0-50 hijau, 50-100 kuning, 100-150 merah
+      if (aqiF !== null) el.aqiMarker.style.left = (Math.max(0, Math.min(150, aqiF)) / 150 * 100) + '%';
+      return aqiF;
     }
 
-    function setOnline(data, aqi) {
-      el.connDot.classList.add('connected');
-      el.systemDot.classList.add('connected');
-      el.connText.textContent = 'Live Connected';
-      if (aqi === null || aqi <= 0) {
+    function renderStatus(data, aqi, online) {
+      const cat = classify(aqi);
+      el.connDot.classList.toggle('connected', online);
+      el.systemDot.classList.toggle('connected', online);
+      el.connText.textContent = online ? 'Live Connected' : 'Menunggu data sensor';
+      el.dataMode.textContent = online ? 'Live Supabase' : 'Offline';
+      el.systemChipText.textContent = online ? 'Live' : 'Offline';
+
+      if (!cat) {
         el.aqiStatus.className = 'hero-status mt-2 offline';
-        el.aqiStatusText.textContent = 'Menunggu data valid';
-      } else if (aqi > 100) {
-        el.aqiStatus.className = 'hero-status mt-2 bad';
-        el.aqiStatusText.textContent = 'Kategori: Bahaya';
-      } else if (aqi > 50) {
-        el.aqiStatus.className = 'hero-status mt-2';
-        el.aqiStatusText.textContent = 'Kategori: Waspada';
+        el.aqiStatusText.textContent = online ? 'Menunggu data valid' : 'Perangkat Disconnected';
       } else {
-        el.aqiStatus.className = 'hero-status mt-2 good';
-        el.aqiStatusText.textContent = 'Kategori: Aman';
+        el.aqiStatus.className = 'hero-status mt-2 ' + cat.cls;
+        el.aqiStatusText.textContent = 'Kategori: ' + cat.label + (online ? '' : ' (data terakhir)');
       }
-      el.dataMode.textContent = 'Live Supabase';
-      el.systemChipText.textContent = 'Live';
-      el.systemNote.textContent = 'Data sensor aktif. Terakhir diterima: ' + fmtTime(data.created_at) + '.';
+
+      const note = triggerNote(data.pm25, data.mq2);
+      el.systemNote.textContent = online
+        ? 'Data sensor aktif. Terakhir diterima: ' + fmtTime(data.created_at) + '. ' + note
+        : 'Perangkat tidak mengirim data. Data terakhir diterima: ' + fmtTime(data.created_at) + '. ' + note;
     }
 
-    function setOffline(data) {
+    function setNoData() {
       el.connDot.classList.remove('connected');
       el.systemDot.classList.remove('connected');
       el.connText.textContent = 'Menunggu data sensor';
@@ -767,21 +814,17 @@
       el.aqiStatusText.textContent = 'Perangkat Disconnected';
       el.dataMode.textContent = 'Offline';
       el.systemChipText.textContent = 'Offline';
-      el.systemNote.textContent = data
-        ? 'Perangkat tidak mengirim data. Data terakhir diterima: ' + fmtTime(data.created_at) + '.'
-        : 'Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.';
+      el.systemNote.textContent = 'Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.';
     }
 
     // Tampilkan record terbaru. Nilai terakhir tetap tampil walau perangkat offline.
     function applyLatest(latest) {
-      if (!latest) { setOffline(null); return; }
+      if (!latest) { setNoData(); return; }
       const aqi = showValues(latest);
       const age = (Date.now() - new Date(latest.created_at).getTime()) / 1000;
-      if (age > OFFLINE_TIMEOUT_SECONDS) setOffline(latest);
-      else setOnline(latest, aqi);
+      renderStatus(latest, aqi, age <= OFFLINE_TIMEOUT_SECONDS);
     }
 
-    // Render instan dari cache saat halaman dibuka / dikembalikan
     if (records.length) {
       renderCharts();
       applyLatest(records[records.length - 1]);
@@ -806,7 +849,6 @@
           mergeRecords(data);
           renderCharts();
         }
-        // Hanya hitung offline berdasarkan umur data, bukan karena error jaringan
         applyLatest(records[records.length - 1]);
       } catch (err) {
         console.error('Fetch Error:', err);
@@ -818,7 +860,6 @@
     refreshData();
     setInterval(refreshData, POLL_MS);
 
-    // Saat kembali ke tab ini, langsung sinkron tanpa menunggu timer
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         if (records.length) applyLatest(records[records.length - 1]);
@@ -829,8 +870,25 @@
     window.addEventListener('pageshow', refreshData);
 
     // ==========================================
-    // 7. AI CHAT (riwayat tersimpan)
+    // 7. AI CHAT (server membaca Supabase sendiri)
     // ==========================================
+    // Snapshot tampilan dashboard hanya sebagai CADANGAN jika server gagal membaca Supabase.
+    function buildContext() {
+      if (el.aqiValue.textContent === '--') return '';
+      return `AQI=${el.aqiValue.textContent}, PM2.5=${el.pm25Value.textContent} µg/m³, Gas=${el.mq2Value.textContent} ADC, Suhu=${el.tempValue.textContent}°C, Lembap=${el.humValue.textContent}%, Status=${el.aqiStatusText.textContent}`;
+    }
+
+    async function askAI(message) {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, context: buildContext() })
+      });
+      let data = {};
+      try { data = await response.json(); } catch (_) {}
+      return { ok: response.ok, data };
+    }
+
     const chatBox = $('aiChatBox');
     const chatInput = $('chatInput');
     const chatForm = $('chatForm');
@@ -858,7 +916,6 @@
       return item;
     }
 
-    // Pulihkan riwayat chat tanpa menyimpan ulang
     (() => {
       const saved = chatLog.slice();
       chatLog = [];
@@ -870,20 +927,14 @@
       const clean = String(prompt || '').trim();
       if (!clean || chatBusy) return;
       appendMessage('user', clean);
-      const loading = appendMessage('ai', 'AI sedang menyiapkan jawaban…', false, true);
+      const loading = appendMessage('ai', 'AI sedang membaca data sensor…', false, true);
       chatBusy = true;
       if (quickButton) quickButton.disabled = true;
 
       try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: clean })
-        });
-        let data = {};
-        try { data = await response.json(); } catch (_) {}
+        const { ok, data } = await askAI(clean);
         loading.remove();
-        if (!response.ok) appendMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
+        if (!ok) appendMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
         else appendMessage('ai', data.answer || 'Belum ada tanggapan dari AI.');
       } catch (error) {
         loading.remove();
@@ -896,18 +947,9 @@
 
     if (quickButton) {
       quickButton.addEventListener('click', () => {
-        const loc = $('userLocation')?.textContent || 'lokasi tidak diketahui';
-        const aqi = el.aqiValue.textContent;
-        const pm25 = el.pm25Value.textContent;
-        const mq2 = el.mq2Value.textContent;
-        const temp = el.tempValue.textContent;
-        const hum = el.humValue.textContent;
-
-        if (aqi === '--') {
-          fetchAIResponse('Perangkat Offline. Berikan imbauan umum tentang memantau kualitas udara.');
-          return;
-        }
-        fetchAIResponse(`Data live di ${loc}: AQI=${aqi}, PM2.5=${pm25} µg/m³, Gas=${mq2} ADC, Suhu=${temp}°C, Lembap=${hum}%. Berikan analisis singkat & saran kesehatan.`);
+        // Tanpa menyisipkan angka: server mengambil data terbaru dari Supabase,
+        // sehingga tetap bekerja walau perangkat sedang offline.
+        fetchAIResponse('Analisis kondisi kualitas udara terbaru dan berikan saran kesehatan singkat.');
       });
     }
 
@@ -965,7 +1007,7 @@
         miniLog = miniLog.slice(-40);
         store.set(MINI_KEY, miniLog);
       }
-      return bubble; // sebelumnya tidak dikembalikan sehingga pending.remove() error
+      return bubble;
     }
 
     (() => {
@@ -979,19 +1021,13 @@
       const clean = String(prompt || '').trim();
       if (!clean || floatingBusy) return;
       appendMiniMessage('user', clean);
-      const pending = appendMiniMessage('ai', 'Sedang menyiapkan jawaban…', false, true);
+      const pending = appendMiniMessage('ai', 'Sedang membaca data sensor…', false, true);
       floatingBusy = true;
 
       try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: clean })
-        });
-        let data = {};
-        try { data = await response.json(); } catch (_) {}
+        const { ok, data } = await askAI(clean);
         pending.remove();
-        if (!response.ok) appendMiniMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
+        if (!ok) appendMiniMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
         else appendMiniMessage('ai', data.answer || 'AI belum mengirimkan jawaban.');
       } catch (error) {
         pending.remove();
