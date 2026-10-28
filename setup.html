@@ -29,6 +29,13 @@
     <div class="mb-6 p-4 bg-red-950/20 border border-red-900/40 rounded-xl">
       <h3 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-1">Kontrol Reset Jaringan Jarak Jauh</h3>
       <p class="text-xs text-slate-400 mb-3">Paksa ESP32 menghapus kredensial Wi-Fi aktif dan kembali ke mode pasif Access Point (AQI_Sensor_Setup).</p>
+      
+      <!-- INPUT IP ESP32 (Opsional untuk Reset Via HTTP Lokal) -->
+      <div class="mb-3">
+        <label class="block text-[10px] text-slate-500 mb-1">IP Lokal ESP32 (Kosongkan jika via MQTT)</label>
+        <input type="text" id="espIp" placeholder="Contoh: 192.168.1.100" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-red-500/50">
+      </div>
+
       <button onclick="sendResetSignal()" id="btnResetRemote" 
         class="w-full bg-red-600/90 hover:bg-red-600 text-white font-medium py-2.5 rounded-xl transition-all border border-red-500/30 flex items-center justify-center gap-2 text-sm shadow-lg shadow-red-900/20">
         <span>🔄 Putus & Reset Jaringan ESP32</span>
@@ -110,15 +117,38 @@
     const MQTT_PASS = "ESLS";
     const TOPIC_CONTROL = "kualitas_udara/control";
 
-    function sendResetSignal() {
+    async function sendResetSignal() {
       if (!confirm("Yakin ingin menghapus koneksi Wi-Fi ESP32 dan mengembalikannya ke mode pasif AP?")) return;
 
       const statusEl = document.getElementById("resetStatus");
       const btnEl = document.getElementById("btnResetRemote");
+      const ipInput = document.getElementById("espIp").value.trim();
 
       statusEl.classList.remove("hidden");
-      statusEl.innerText = "⏳ Menghubungkan ke broker EMQX...";
       btnEl.disabled = true;
+
+      // ==========================================
+      // JALUR 1: COBA RESET VIA HTTP LOKAL (PALING CEPAT)
+      // ==========================================
+      if (ipInput !== "") {
+        statusEl.innerText = "⏳ Mengirim reset via HTTP Lokal...";
+        try {
+          // Mode 'no-cors' agar tidak diblokir browser, kita hanya butuh request terkirim
+          await fetch(`http://${ipInput}/reset`, { mode: 'no-cors', cache: 'no-store' });
+          
+          statusEl.innerText = "✅ Perintah HTTP terkirim! ESP32 sedang restart.";
+          setTimeout(() => { btnEl.disabled = false; }, 4000);
+          return; // Berhenti di sini jika HTTP berhasil terkirim
+        } catch (e) {
+          console.log("HTTP Lokal gagal, beralih ke MQTT...", e);
+          // Lanjut ke MQTT jika HTTP gagal
+        }
+      }
+
+      // ==========================================
+      // JALUR 2: FALLBACK VIA MQTT (JIKA BEDA JARINGAN)
+      // ==========================================
+      statusEl.innerText = "⏳ Menghubungkan ke broker EMQX...";
 
       const clientID = "web_reset_" + Math.random().toString(16).substr(2, 8);
       const client = new Paho.MQTT.Client(MQTT_HOST, MQTT_PORT, clientID);
@@ -128,12 +158,12 @@
         userName: MQTT_USER,
         password: MQTT_PASS,
         onSuccess: function () {
-          statusEl.innerText = "📡 Mengirim sinyal RESET_WIFI...";
+          statusEl.innerText = "📡 Mengirim sinyal RESET_WIFI via MQTT...";
           const message = new Paho.MQTT.Message("RESET_WIFI");
           message.destinationName = TOPIC_CONTROL;
           client.send(message);
 
-          statusEl.innerText = "✅ Perintah dikirim! ESP32 sedang restart ke mode AP.";
+          statusEl.innerText = "✅ Perintah MQTT dikirim! ESP32 sedang restart ke mode AP.";
           setTimeout(() => {
             btnEl.disabled = false;
             statusEl.classList.add("hidden");
