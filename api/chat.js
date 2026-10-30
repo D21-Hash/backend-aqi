@@ -109,6 +109,35 @@ async function fetchSensorContext() {
   }
 }
 
+// ---------- Riwayat percakapan (agar AI paham pertanyaan lanjutan) ----------
+function buildContents(history, finalText) {
+  const out = [];
+  for (const h of (Array.isArray(history) ? history : []).slice(-6)) {
+    const role = h && h.role === 'user' ? 'user' : 'model';
+    const text = String((h && h.text) || '').slice(0, 600).trim();
+    if (!text) continue;
+    if (out.length && out[out.length - 1].role === role) out[out.length - 1].parts[0].text += '\n' + text;
+    else out.push({ role, parts: [{ text }] });
+  }
+  while (out.length && out[0].role !== 'user') out.shift();
+  if (out.length && out[out.length - 1].role === 'user') out.pop(); // hindari dua giliran user berurutan
+  out.push({ role: 'user', parts: [{ text: finalText }] });
+  return out;
+}
+
+// ---------- Rapikan keluaran AI: tanpa tanda bintang markdown ----------
+function cleanAnswer(text) {
+  return String(text || '')
+    .replace(/\r/g, '')
+    .replace(/^\s*[*•]\s+/gm, '- ')      // bullet * -> -
+    .replace(/\*\*(.+?)\*\*/g, '$1')     // **tebal** -> tebal
+    .replace(/(^|\s)\*(\S[^*]*?)\*(?=\s|[.,!?:;)]|$)/g, '$1$2') // *miring*
+    .replace(/\*/g, '')                  // sisa tanda bintang
+    .replace(/^#{1,4}\s+/gm, '')         // heading markdown
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 // ---------- Handler ----------
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -138,16 +167,20 @@ export default async function handler(req, res) {
 
     const systemInstruction = [
       'Kamu adalah Weather-Cube AI, asisten kualitas udara pada dashboard monitoring ESP32.',
-      'Jawab dalam bahasa Indonesia yang ramah dan ringkas (2-5 kalimat).',
+      'Jawab dalam bahasa Indonesia yang ramah dan ringkas.',
       'Kamu SUDAH diberi data sensor terbaru dari database di bagian DATA SENSOR. Gunakan data itu untuk pertanyaan tentang kondisi saat ini. JANGAN meminta pengguna menyebutkan data, lokasi, atau angka AQI.',
       'Jika perangkat OFFLINE, tetap analisis data terakhir dan sebutkan kapan data itu diterima.',
       'Jika tabel kosong atau database gagal dibaca, katakan terus terang bahwa data belum tersedia; jangan mengarang angka.',
       'Kategori status: AMAN (AQI ≤ 50), WASPADA (AQI 51-100), BAHAYA (AQI > 100). AQI gabungan dari PM2.5 dan gas MQ-2, diambil yang terburuk.',
-      'Untuk pertanyaan umum (misal "apa itu PM2.5"), jawab langsung secara sederhana lalu kaitkan singkat dengan data terkini bila relevan.',
+      'FORMAT WAJIB: dilarang memakai tanda bintang (*), markdown tebal/miring, atau heading (#).',
+      'Untuk analisis kondisi: baris pertama berisi ringkasan satu kalimat yang menyebut status dengan huruf kapital (AMAN/WASPADA/BAHAYA) dan nilai AQI. Lalu 2-3 poin singkat, tiap poin diawali "- ". Terakhir satu baris diawali "Saran: ".',
+      'Pisahkan bagian dengan satu baris kosong. Tiap poin maksimal satu kalimat pendek.',
+      'Untuk pertanyaan umum (misal "apa itu PM2.5"), jawab langsung secara sederhana (maks 4 kalimat) lalu kaitkan singkat dengan data terkini bila relevan.',
       'Berikan saran kesehatan umum, bukan diagnosis medis.'
     ].join('\n');
 
     const userText = `DATA SENSOR (dibaca dari Supabase, sekarang ${fmtWib(new Date().toISOString())}):\n${dataBlock}\n\nPERTANYAAN PENGGUNA:\n${message}`;
+    const contents = buildContents(body.history, userText);
 
     let responseText = null;
     let lastError = null;
@@ -162,8 +195,8 @@ export default async function handler(req, res) {
             signal: AbortSignal.timeout(15000),
             body: JSON.stringify({
               systemInstruction: { parts: [{ text: systemInstruction }] },
-              contents: [{ role: 'user', parts: [{ text: userText }] }],
-              generationConfig: { temperature: 0.5, maxOutputTokens: 600 }
+              contents,
+              generationConfig: { temperature: 0.5, maxOutputTokens: 700 }
             })
           }
         );
@@ -186,7 +219,7 @@ export default async function handler(req, res) {
       throw new Error(lastError || 'Semua model Gemini gagal merespons.');
     }
 
-    return res.status(200).json({ answer: responseText });
+    return res.status(200).json({ answer: cleanAnswer(responseText) });
   } catch (err) {
     console.error('Chat API Error:', err);
     return res.status(500).json({ answer: `⚠️ Gagal memproses AI: ${err.message}` });
