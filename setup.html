@@ -1,65 +1,369 @@
-#pragma once
-// Halaman captive portal (dipakai main_fisik.cpp). Simpan sebagai setup_html.h di folder yang sama.
+#ifndef SETUP_HTML_H
+#define SETUP_HTML_H
 
-static const char HTML_PAGE[] = R"rawliteral(
+#include <Arduino.h>
+
+// Halaman captive portal (AQI_Sensor_Setup). Disajikan dari ESP32 tanpa internet,
+// jadi semua gaya, ikon (SVG), dan bahasa ada di dalam file ini.
+// Endpoint yang dipakai: GET /scan[?refresh=1], POST /save, GET /reset.
+
+const char HTML_PAGE[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Setup Wi-Fi · Weather-Cube</title>
+  <title>Weather Cube · Wi-Fi</title>
   <style>
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:18px;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#edf3fa;
-      background:radial-gradient(ellipse at 12% -8%,rgba(104,157,218,.22),transparent 34rem),#0e141c}
-    .card{width:100%;max-width:370px;padding:1.6rem;border-radius:22px;background:rgba(25,34,46,.85);
-      border:1px solid rgba(220,234,252,.12);box-shadow:0 18px 50px rgba(0,0,0,.35)}
-    h2{margin:0 0 .25rem;font-size:1.3rem;letter-spacing:-.03em}
-    p.sub{margin:0 0 1rem;color:#a7b4c4;font-size:.82rem;line-height:1.45}
-    label{display:block;margin-top:1rem;font-size:.7rem;font-weight:700;letter-spacing:.1em;color:#a7b4c4}
-    input{width:100%;margin-top:.3rem;padding:.8rem .85rem;border-radius:12px;border:1px solid rgba(220,234,252,.14);
-      background:rgba(224,237,255,.05);color:#edf3fa;font-size:.95rem;outline:none}
-    input:focus{border-color:#6daeff;box-shadow:0 0 0 3px rgba(109,174,255,.18)}
-    button{width:100%;margin-top:1.3rem;padding:.85rem;border:0;border-radius:12px;font-weight:700;font-size:.95rem;
-      color:#102235;background:linear-gradient(135deg,#a7d1ff,#63e1d0);cursor:pointer}
-    button.ghost{margin-top:.6rem;background:rgba(224,237,255,.07);color:#edf3fa;border:1px solid rgba(220,234,252,.14);font-weight:600}
-    .hint{margin-top:.5rem;font-size:.72rem;color:#a7b4c4}
+    :root{--bg:#0e141c;--panel:#19222e;--line:rgba(220,234,252,.11);--text:#edf3fa;--muted:#a7b4c4;
+      --soft:rgba(224,237,255,.05);--accent:#a7d1ff;--aqua:#63e1d0;--bad:#ff858b;--good:#75d8b0}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;display:flex;padding:16px;color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Arabic","Noto Sans SC",Arial,sans-serif;
+      background:radial-gradient(ellipse at 12% -8%,rgba(104,157,218,.18),transparent 34rem),
+                 radial-gradient(ellipse at 92% 8%,rgba(106,191,174,.09),transparent 28rem),var(--bg)}
+    .card{width:100%;max-width:440px;margin:auto;padding:22px;border-radius:24px;
+      background:rgba(25,34,46,.9);border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+    .ic{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .eyebrow{color:var(--aqua);font-size:.66rem;font-weight:800;letter-spacing:.14em}
+    .step{color:var(--muted);font-size:.66rem;letter-spacing:.06em}
+    h1{margin-top:14px;font-size:1.65rem;font-weight:800;letter-spacing:-.03em;line-height:1.15}
+    .sub{margin-top:8px;color:var(--muted);font-size:.9rem;line-height:1.45}
+    .row{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px}
+    .label{display:block;color:var(--muted);font-size:.7rem;font-weight:800;letter-spacing:.1em}
+    .link{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--aqua);
+      font:700 .78rem inherit;font-family:inherit;cursor:pointer}
+    .link .ic{width:14px;height:14px}
+    .nets{display:grid;gap:10px}
+    .net{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;text-align:start;cursor:pointer;
+      color:var(--text);background:var(--soft);border:1px solid var(--line);border-radius:16px;font-family:inherit;
+      transition:border-color .18s,background .18s}
+    .net:hover{border-color:rgba(167,209,255,.35)}
+    .net.sel{border-color:var(--aqua);background:rgba(99,225,208,.1)}
+    .net .wifi{color:var(--aqua);width:22px;height:22px}
+    .net .meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+    .net b{font-size:.95rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .net small{color:var(--muted);font-size:.75rem}
+    .net .tail{color:var(--muted);width:17px;height:17px}
+    .net.sel .tail{color:var(--aqua)}
+    .note{display:flex;align-items:center;gap:10px;padding:14px 16px;color:var(--muted);font-size:.82rem;
+      border:1px dashed var(--line);border-radius:16px;line-height:1.4}
+    .spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--aqua);animation:sp .8s linear infinite;flex:0 0 auto}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .manual{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:none;border:0;color:var(--muted);
+      font-size:.8rem;font-family:inherit;cursor:pointer}
+    .manual .ic{width:15px;height:15px}
+    .manual:hover{color:var(--text)}
+    .field{display:flex;align-items:center;gap:12px;padding:0 14px;height:52px;margin-top:8px;color:var(--muted);
+      background:rgba(14,20,28,.7);border:1px solid var(--line);border-radius:14px;transition:border-color .18s}
+    .field:focus-within{border-color:var(--aqua)}
+    .field input{flex:1;min-width:0;height:100%;color:var(--text);background:none;border:0;outline:none;font-size:.95rem;font-family:inherit}
+    .field input::placeholder{color:var(--muted);opacity:.75}
+    .field button{display:grid;place-items:center;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px}
+    .field button:hover{color:var(--text)}
+    #ssidManual{margin-top:10px}
+    .hint{margin-top:10px;color:var(--muted);font-size:.78rem;line-height:1.4}
+    .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:54px;margin-top:20px;
+      border-radius:16px;font:800 .92rem inherit;font-family:inherit;cursor:pointer;text-decoration:none;
+      transition:filter .18s,transform .18s}
+    .btn.primary{color:#102235;border:0;background:linear-gradient(135deg,#a7d1ff,#63e1d0);box-shadow:0 8px 24px rgba(99,225,208,.18)}
+    .btn.primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+    .btn.primary:disabled{opacity:.6;transform:none;cursor:default}
+    .btn.ghost{margin-top:12px;height:50px;color:var(--text);background:var(--soft);border:1px solid var(--line)}
+    .btn.ghost:hover{border-color:rgba(167,209,255,.35)}
+    .btn.ghost:disabled{opacity:.5;cursor:default}
+    .btn.ghost .ic,.btn.primary .ic{width:18px;height:18px}
+    .foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+    .foot .links{display:flex;gap:18px}
+    .foot .link{color:var(--muted);font-weight:600}
+    .foot .link:hover{color:var(--text)}
+    .foot .link.danger:hover{color:var(--bad)}
+    select{height:34px;padding:0 10px;color:var(--text);background:var(--soft);border:1px solid var(--line);border-radius:10px;font-size:.78rem;font-family:inherit;outline:none}
+    select option{color:#111;background:#fff}
+    .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(6,10,16,.6);
+      -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    .modal.show{display:flex}
+    .sheet{width:100%;max-width:380px;padding:22px;border-radius:22px;background:#19222e;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+    .sheet h3{font-size:1.02rem;font-weight:800;margin-bottom:12px}
+    .sheet p{color:var(--muted);font-size:.86rem;line-height:1.5}
+    .sheet ol{list-style:none;counter-reset:s;display:grid;gap:10px}
+    .sheet li{counter-increment:s;display:flex;gap:12px;color:#cbd5e1;font-size:.84rem;line-height:1.45}
+    .sheet li::before{content:counter(s);flex:0 0 24px;height:24px;display:grid;place-items:center;border-radius:8px;
+      color:var(--aqua);background:rgba(99,225,208,.12);font-weight:800;font-size:.75rem}
+    .sheet .acts{display:flex;gap:10px;margin-top:18px}
+    .sheet .acts .btn{margin-top:0;height:46px;font-size:.85rem}
+    .btn.danger{color:#2a0a0f;border:0;background:linear-gradient(135deg,#ff9aa0,#ff858b)}
+    .ok{text-align:center;padding:10px 0 2px}
+    .ok .big{width:64px;height:64px;margin:0 auto 14px;display:grid;place-items:center;border-radius:20px;color:var(--good);background:rgba(117,216,176,.12)}
+    .ok .big .ic{width:32px;height:32px}
+    .ok h2{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+    .ok p{color:var(--muted);font-size:.86rem;line-height:1.5}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Setup Wi-Fi</h2>
-    <p class="sub">Hubungkan Weather-Cube ke Wi-Fi rumah/kantor agar data sensor tampil di dashboard.</p>
-    <form action="/save" method="POST">
-      <label for="ssid">NAMA WI-FI (SSID)</label>
-      <input type="text" id="ssid" name="ssid" list="ssids" placeholder="Pilih atau ketik nama Wi-Fi" autocomplete="off" required>
-      <datalist id="ssids"></datalist>
-      <div class="hint" id="scanHint">Memindai jaringan sekitar...</div>
-      <label for="pass">PASSWORD</label>
-      <input type="password" id="pass" name="pass" placeholder="Kata sandi (kosongkan jika terbuka)">
-      <button type="submit">Simpan &amp; Hubungkan</button>
-      <button type="button" class="ghost" id="rescan">Pindai ulang</button>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-wifi" viewBox="0 0 24 24">
+      <path style="opacity:var(--o3,1)" d="M1.42 9a16 16 0 0 1 21.16 0"/>
+      <path style="opacity:var(--o2,1)" d="M5 12.55a11 11 0 0 1 14.08 0"/>
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+      <line x1="12" y1="20" x2="12.01" y2="20"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-party" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  </svg>
+
+  <main class="card" id="mainCard">
+    <div class="top">
+      <span class="eyebrow" data-i="eyebrow"></span>
+      <span class="step" data-i="step"></span>
+    </div>
+    <h1 data-i="title"></h1>
+    <p class="sub" data-i="sub"></p>
+
+    <form id="wifiForm" autocomplete="off">
+      <div class="row">
+        <span class="label" data-i="avail"></span>
+        <button type="button" class="link" id="scanTop"><span data-i="scanShort"></span><svg class="ic"><use href="#i-refresh"/></svg></button>
+      </div>
+      <div class="nets" id="netList"></div>
+
+      <button type="button" class="manual" id="manualBtn"><svg class="ic"><use href="#i-plus"/></svg><span data-i="manual"></span></button>
+      <div class="field" id="manualField" hidden>
+        <input type="text" id="ssidManual" data-ip="manualPh" maxlength="32" autocapitalize="off" autocorrect="off">
+      </div>
+
+      <label class="label" for="pass" style="margin-top:22px" data-i="passLabel"></label>
+      <div class="field">
+        <svg class="ic"><use href="#i-lock"/></svg>
+        <input type="password" id="pass" data-ip="passPh" maxlength="64" autocomplete="off">
+        <button type="button" id="eyeBtn" aria-label="toggle"><svg class="ic" id="eyeIc"><use href="#i-eye"/></svg></button>
+      </div>
+      <p class="hint" data-i="hint"></p>
+
+      <button type="submit" class="btn primary" id="btnSubmit"><span data-i="connect"></span><svg class="ic"><use href="#i-arrow"/></svg></button>
+      <button type="button" class="btn ghost" id="scanBtn"><svg class="ic"><use href="#i-refresh"/></svg><span data-i="scanBtn"></span></button>
     </form>
+
+    <div class="foot">
+      <div class="links">
+        <button type="button" class="link" id="helpBtn" data-i="help"></button>
+        <button type="button" class="link danger" id="resetBtn" data-i="reset"></button>
+      </div>
+      <select id="lang" aria-label="Language">
+        <option value="id">Bahasa Indonesia</option>
+        <option value="en">English</option>
+        <option value="zh">简体中文</option>
+        <option value="es">Español</option>
+        <option value="ar">العربية</option>
+      </select>
+    </div>
+  </main>
+
+  <div class="modal" id="helpModal">
+    <div class="sheet">
+      <h3 data-i="helpTitle"></h3>
+      <ol>
+        <li data-i="h1"></li><li data-i="h2"></li><li data-i="h3"></li>
+        <li data-i="h4"></li><li data-i="h5"></li><li data-i="h6"></li>
+      </ol>
+      <div class="acts"><button type="button" class="btn ghost" id="helpClose" data-i="close"></button></div>
+    </div>
   </div>
+
+  <div class="modal" id="resetModal">
+    <div class="sheet">
+      <h3 data-i="resetTitle"></h3>
+      <p data-i="resetMsg"></p>
+      <div class="acts">
+        <button type="button" class="btn ghost" id="resetNo" data-i="cancel"></button>
+        <button type="button" class="btn danger" id="resetYes" data-i="confirmReset"></button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    async function scan(){
-      const hint=document.getElementById('scanHint');
-      hint.textContent='Memindai jaringan sekitar...';
-      try{
-        const r=await fetch('/scan'); const list=await r.json();
-        const dl=document.getElementById('ssids'); dl.innerHTML='';
-        const seen=new Set();
-        list.sort((a,b)=>b.rssi-a.rssi).forEach(n=>{
-          if(!n.ssid||seen.has(n.ssid))return; seen.add(n.ssid);
-          const o=document.createElement('option'); o.value=n.ssid; o.label=n.ssid+' ('+n.rssi+' dBm)'; dl.appendChild(o);
-        });
-        hint.textContent=seen.size?('Ditemukan '+seen.size+' jaringan. Ketuk kolom SSID untuk memilih.'):'Tidak ada jaringan ditemukan.';
-      }catch(e){ hint.textContent='Gagal memindai. Ketik nama Wi-Fi secara manual.'; }
+    var TARGET_URL = "https://backend-aqi.vercel.app";
+
+    var D = {
+      id: {eyebrow:"01 / KONFIGURASI JARINGAN",step:"LANGKAH 01 DARI 01",title:"Hubungkan ke Wi-Fi",sub:"Pilih jaringan yang ingin digunakan oleh Weather Cube.",avail:"JARINGAN TERSEDIA",scanShort:"Pindai ulang",scanning:"Memindai jaringan…",none:"Tidak ada jaringan ditemukan. Masukkan nama jaringan secara manual.",failScan:"Gagal memindai. Masukkan nama jaringan secara manual.",secured:"Jaringan terkunci",open:"Jaringan terbuka",strong:"Sinyal kuat",medium:"Sinyal sedang",weak:"Sinyal lemah",manual:"Masukkan nama jaringan secara manual",manualPh:"Nama jaringan (SSID)",passLabel:"PASSWORD WI-FI",passPh:"Masukkan password",hint:"Kosongkan jika jaringan yang dipilih tidak menggunakan password.",connect:"Hubungkan Weather Cube",sending:"Mengirim kredensial…",scanBtn:"Pindai jaringan lagi",needSsid:"Pilih jaringan atau masukkan nama jaringan.",help:"Bantuan",reset:"Reset Wi-Fi",helpTitle:"Panduan penggunaan",h1:"Aktifkan Wi-Fi pada perangkat Anda.",h2:"Hubungkan ke Wi-Fi bernama AQI_Sensor_Setup.",h3:"Pilih jaringan rumah/internet Anda, isi password, lalu simpan.",h4:"Setelah tersimpan, sambungkan kembali perangkat Anda ke Wi-Fi utama.",h5:"Tunggu hingga ESP32 selesai restart dan terhubung ke internet.",h6:"Buka dasbor utama untuk melihat data real-time.",close:"Tutup",resetTitle:"Hapus Wi-Fi tersimpan?",resetMsg:"Kredensial Wi-Fi tersimpan akan dihapus dan ESP32 akan restart.",cancel:"Batal",confirmReset:"Hapus & restart",resetDone:"Kredensial dihapus. ESP32 sedang restart.",okTitle:"Wi-Fi berhasil disimpan!",okDesc:"ESP32 sedang restart dan terhubung ke Wi-Fi. Anda akan diarahkan ke dasbor dalam {n} detik…",openDash:"Buka dasbor utama"},
+      en: {eyebrow:"01 / NETWORK CONFIGURATION",step:"STEP 01 OF 01",title:"Connect to Wi-Fi",sub:"Choose the network Weather Cube should use.",avail:"AVAILABLE NETWORKS",scanShort:"Scan again",scanning:"Scanning networks…",none:"No networks found. Enter the network name manually.",failScan:"Scan failed. Enter the network name manually.",secured:"Secured network",open:"Open network",strong:"Strong signal",medium:"Medium signal",weak:"Weak signal",manual:"Enter network name manually",manualPh:"Network name (SSID)",passLabel:"WI-FI PASSWORD",passPh:"Enter your password",hint:"Leave empty if the selected network has no password.",connect:"Connect Weather Cube",sending:"Sending credentials…",scanBtn:"Scan networks again",needSsid:"Select a network or enter a network name.",help:"Help",reset:"Reset Wi-Fi",helpTitle:"How to use",h1:"Turn on Wi-Fi on your device.",h2:"Connect to the Wi-Fi named AQI_Sensor_Setup.",h3:"Pick your home/internet network, enter the password, then save.",h4:"After saving, reconnect your device to your main Wi-Fi.",h5:"Wait for the ESP32 to restart and connect to the internet.",h6:"Open the main dashboard to see real-time data.",close:"Close",resetTitle:"Delete saved Wi-Fi?",resetMsg:"Saved Wi-Fi credentials will be erased and the ESP32 will restart.",cancel:"Cancel",confirmReset:"Erase & restart",resetDone:"Credentials erased. The ESP32 is restarting.",okTitle:"Wi-Fi saved!",okDesc:"The ESP32 is restarting and connecting to Wi-Fi. You will be redirected to the dashboard in {n} seconds…",openDash:"Open main dashboard"},
+      zh: {eyebrow:"01 / 网络配置",step:"第 01 步，共 01 步",title:"连接 Wi-Fi",sub:"选择 Weather Cube 要使用的网络。",avail:"可用网络",scanShort:"重新扫描",scanning:"正在扫描网络…",none:"未找到网络，请手动输入网络名称。",failScan:"扫描失败，请手动输入网络名称。",secured:"加密网络",open:"开放网络",strong:"信号强",medium:"信号中",weak:"信号弱",manual:"手动输入网络名称",manualPh:"网络名称 (SSID)",passLabel:"WI-FI 密码",passPh:"输入密码",hint:"若所选网络没有密码，请留空。",connect:"连接 Weather Cube",sending:"正在发送凭据…",scanBtn:"再次扫描网络",needSsid:"请选择网络或输入网络名称。",help:"帮助",reset:"重置 Wi-Fi",helpTitle:"使用指南",h1:"在您的设备上开启 Wi-Fi。",h2:"连接名为 AQI_Sensor_Setup 的 Wi-Fi。",h3:"选择您的家庭/互联网络，输入密码并保存。",h4:"保存后，请将设备重新连接到您的主 Wi-Fi。",h5:"等待 ESP32 重启并连接互联网。",h6:"打开主仪表盘查看实时数据。",close:"关闭",resetTitle:"删除已保存的 Wi-Fi？",resetMsg:"已保存的 Wi-Fi 凭据将被清除，ESP32 将重启。",cancel:"取消",confirmReset:"清除并重启",resetDone:"凭据已清除，ESP32 正在重启。",okTitle:"Wi-Fi 已保存！",okDesc:"ESP32 正在重启并连接 Wi-Fi。{n} 秒后将跳转到仪表盘…",openDash:"打开主仪表盘"},
+      es: {eyebrow:"01 / CONFIGURACIÓN DE RED",step:"PASO 01 DE 01",title:"Conectar a Wi-Fi",sub:"Elige la red que usará Weather Cube.",avail:"REDES DISPONIBLES",scanShort:"Buscar de nuevo",scanning:"Buscando redes…",none:"No se encontraron redes. Escribe el nombre manualmente.",failScan:"Falló la búsqueda. Escribe el nombre manualmente.",secured:"Red protegida",open:"Red abierta",strong:"Señal fuerte",medium:"Señal media",weak:"Señal débil",manual:"Escribir el nombre de la red manualmente",manualPh:"Nombre de la red (SSID)",passLabel:"CONTRASEÑA WI-FI",passPh:"Introduce la contraseña",hint:"Déjalo vacío si la red seleccionada no tiene contraseña.",connect:"Conectar Weather Cube",sending:"Enviando credenciales…",scanBtn:"Buscar redes de nuevo",needSsid:"Selecciona una red o escribe un nombre.",help:"Ayuda",reset:"Restablecer Wi-Fi",helpTitle:"Guía de uso",h1:"Activa el Wi-Fi en tu dispositivo.",h2:"Conéctate a la red Wi-Fi llamada AQI_Sensor_Setup.",h3:"Elige tu red doméstica/de internet, escribe la contraseña y guarda.",h4:"Tras guardar, vuelve a conectar tu dispositivo a tu Wi-Fi principal.",h5:"Espera a que el ESP32 se reinicie y se conecte a internet.",h6:"Abre el panel principal para ver los datos en tiempo real.",close:"Cerrar",resetTitle:"¿Borrar el Wi-Fi guardado?",resetMsg:"Se borrarán las credenciales guardadas y el ESP32 se reiniciará.",cancel:"Cancelar",confirmReset:"Borrar y reiniciar",resetDone:"Credenciales borradas. El ESP32 se está reiniciando.",okTitle:"¡Wi-Fi guardado!",okDesc:"El ESP32 se está reiniciando y conectando al Wi-Fi. Serás redirigido al panel en {n} segundos…",openDash:"Abrir el panel principal"},
+      ar: {eyebrow:"01 / إعداد الشبكة",step:"الخطوة 01 من 01",title:"الاتصال بشبكة Wi-Fi",sub:"اختر الشبكة التي سيستخدمها Weather Cube.",avail:"الشبكات المتاحة",scanShort:"إعادة المسح",scanning:"جارٍ مسح الشبكات…",none:"لم يتم العثور على شبكات. أدخل اسم الشبكة يدويًا.",failScan:"فشل المسح. أدخل اسم الشبكة يدويًا.",secured:"شبكة محمية",open:"شبكة مفتوحة",strong:"إشارة قوية",medium:"إشارة متوسطة",weak:"إشارة ضعيفة",manual:"إدخال اسم الشبكة يدويًا",manualPh:"اسم الشبكة (SSID)",passLabel:"كلمة مرور Wi-Fi",passPh:"أدخل كلمة المرور",hint:"اتركه فارغًا إذا كانت الشبكة المحددة بلا كلمة مرور.",connect:"ربط Weather Cube",sending:"جارٍ إرسال البيانات…",scanBtn:"مسح الشبكات مرة أخرى",needSsid:"اختر شبكة أو أدخل اسمها.",help:"مساعدة",reset:"إعادة ضبط Wi-Fi",helpTitle:"دليل الاستخدام",h1:"فعّل Wi-Fi على جهازك.",h2:"اتصل بشبكة Wi-Fi باسم AQI_Sensor_Setup.",h3:"اختر شبكتك المنزلية، أدخل كلمة المرور ثم احفظ.",h4:"بعد الحفظ، أعد توصيل جهازك بشبكة Wi-Fi الرئيسية.",h5:"انتظر حتى يعيد ESP32 التشغيل ويتصل بالإنترنت.",h6:"افتح لوحة التحكم الرئيسية لعرض البيانات اللحظية.",close:"إغلاق",resetTitle:"حذف شبكة Wi-Fi المحفوظة؟",resetMsg:"سيتم مسح بيانات Wi-Fi المحفوظة وإعادة تشغيل ESP32.",cancel:"إلغاء",confirmReset:"مسح وإعادة التشغيل",resetDone:"تم مسح البيانات. يعاد تشغيل ESP32.",okTitle:"تم حفظ Wi-Fi!",okDesc:"يعاد تشغيل ESP32 ويتصل بشبكة Wi-Fi. سيتم تحويلك إلى لوحة التحكم خلال {n} ثوانٍ…",openDash:"فتح لوحة التحكم"}
+    };
+
+    function $(id){ return document.getElementById(id); }
+
+    var lang = (function(){
+      try { var s = localStorage.getItem("wc_lang"); if (s && D[s]) return s; } catch (e) {}
+      var n = (navigator.language || "id").slice(0, 2).toLowerCase();
+      return D[n] ? n : "id";
+    })();
+
+    function T(k, v) {
+      var s = (D[lang] && D[lang][k]) || D.id[k] || k;
+      if (v) for (var key in v) s = s.replace("{" + key + "}", v[key]);
+      return s;
     }
-    document.getElementById('rescan').addEventListener('click',scan);
-    scan();
+
+    var nets = [], selected = "", manual = false, scanning = false, scanFailed = false;
+
+    function applyLang() {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      var all = document.querySelectorAll("[data-i]");
+      for (var i = 0; i < all.length; i++) all[i].textContent = T(all[i].getAttribute("data-i"));
+      var ph = document.querySelectorAll("[data-ip]");
+      for (var j = 0; j < ph.length; j++) ph[j].placeholder = T(ph[j].getAttribute("data-ip"));
+      $("lang").value = lang;
+      renderNets();
+    }
+
+    function sigLevel(r) { return r > -60 ? 3 : (r > -75 ? 2 : 1); }
+
+    function icon(id) { return '<svg class="ic tail"><use href="#' + id + '"/></svg>'; }
+
+    function renderNets() {
+      var box = $("netList");
+      box.innerHTML = "";
+      if (scanning) {
+        box.innerHTML = '<div class="note"><span class="spin"></span><span></span></div>';
+        box.querySelector("span:last-child").textContent = T("scanning");
+        return;
+      }
+      if (!nets.length) {
+        box.innerHTML = '<div class="note"></div>';
+        box.firstChild.textContent = T(scanFailed ? "failScan" : "none");
+        return;
+      }
+      nets.forEach(function (n) {
+        var lv = sigLevel(n.rssi);
+        var isSel = !manual && n.ssid === selected;
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "net" + (isSel ? " sel" : "");
+        b.innerHTML = '<svg class="ic wifi" style="--o2:' + (lv >= 2 ? 1 : 0.25) + ';--o3:' + (lv >= 3 ? 1 : 0.25) + '"><use href="#i-wifi"/></svg>' +
+          '<span class="meta"><b></b><small></small></span>' +
+          (isSel ? icon("i-check") : (n.secure ? icon("i-lock") : ""));
+        b.querySelector("b").textContent = n.ssid;
+        b.querySelector("small").textContent = T(n.secure ? "secured" : "open") + " · " + T(["", "weak", "medium", "strong"][lv]);
+        b.addEventListener("click", function () {
+          selected = n.ssid; manual = false;
+          $("manualField").hidden = true;
+          renderNets();
+          if (n.secure) $("pass").focus();
+        });
+        box.appendChild(b);
+      });
+    }
+
+    function showManual(on) {
+      manual = on;
+      $("manualField").hidden = !on;
+      if (on) { selected = ""; $("ssidManual").focus(); }
+      renderNets();
+    }
+
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+    async function scan(refresh) {
+      scanning = true; scanFailed = false;
+      $("scanTop").disabled = true; $("scanBtn").disabled = true;
+      renderNets();
+      var ok = false;
+      for (var i = 0; i < 2 && !ok; i++) {
+        try {
+          var r = await fetch("/scan" + (refresh ? "?refresh=1" : ""), { cache: "no-store" });
+          var list = await r.json();
+          var best = {};
+          list.forEach(function (n) {
+            if (!n.ssid) return;
+            if (!best[n.ssid] || n.rssi > best[n.ssid].rssi) best[n.ssid] = n;
+          });
+          nets = Object.keys(best).map(function (k) { return best[k]; }).sort(function (a, b) { return b.rssi - a.rssi; });
+          ok = true;
+        } catch (e) {
+          if (i === 1) { nets = []; scanFailed = true; }
+          else await sleep(800);
+        }
+      }
+      scanning = false;
+      $("scanTop").disabled = false; $("scanBtn").disabled = false;
+      if (selected && !nets.some(function (n) { return n.ssid === selected; })) selected = "";
+      if (!nets.length) showManual(true); else renderNets();
+    }
+
+    $("scanTop").addEventListener("click", function () { scan(true); });
+    $("scanBtn").addEventListener("click", function () { scan(true); });
+    $("manualBtn").addEventListener("click", function () { showManual(true); });
+
+    $("eyeBtn").addEventListener("click", function () {
+      var p = $("pass"), show = p.type === "password";
+      p.type = show ? "text" : "password";
+      $("eyeIc").innerHTML = '<use href="#' + (show ? "i-eyeoff" : "i-eye") + '"/>';
+    });
+
+    $("lang").addEventListener("change", function () {
+      lang = this.value;
+      try { localStorage.setItem("wc_lang", lang); } catch (e) {}
+      applyLang();
+    });
+
+    function modal(id, show) { $(id).classList.toggle("show", show); }
+    $("helpBtn").addEventListener("click", function () { modal("helpModal", true); });
+    $("helpClose").addEventListener("click", function () { modal("helpModal", false); });
+    $("resetBtn").addEventListener("click", function () { modal("resetModal", true); });
+    $("resetNo").addEventListener("click", function () { modal("resetModal", false); });
+    ["helpModal", "resetModal"].forEach(function (id) {
+      $(id).addEventListener("click", function (e) { if (e.target === this) modal(id, false); });
+    });
+
+    $("resetYes").addEventListener("click", async function () {
+      modal("resetModal", false);
+      try { await fetch("/reset", { cache: "no-store" }); } catch (e) {}
+      document.querySelector(".sub").textContent = T("resetDone");
+    });
+
+    $("wifiForm").addEventListener("submit", async function (ev) {
+      ev.preventDefault();
+      var ssid = manual ? $("ssidManual").value.trim() : selected;
+      if (!ssid) { document.querySelector(".sub").textContent = T("needSsid"); return; }
+      var btn = $("btnSubmit");
+      btn.disabled = true;
+      btn.firstChild.textContent = T("sending");
+      try {
+        await fetch("/save", { method: "POST", body: new URLSearchParams({ ssid: ssid, pass: $("pass").value }) });
+      } catch (e) { /* ESP32 restart memutus koneksi; anggap berhasil */ }
+      showSuccess();
+    });
+
+    function showSuccess() {
+      var card = $("mainCard");
+      card.innerHTML = '<div class="ok"><div class="big"><svg class="ic"><use href="#i-check"/></svg></div>' +
+        '<h2></h2><p id="okDesc"></p><a class="btn primary" id="okLink"><span></span><svg class="ic"><use href="#i-arrow"/></svg></a></div>';
+      card.querySelector("h2").textContent = T("okTitle");
+      var a = $("okLink"); a.href = TARGET_URL; a.querySelector("span").textContent = T("openDash");
+      var n = 3;
+      $("okDesc").textContent = T("okDesc", { n: n });
+      var iv = setInterval(function () {
+        n--;
+        if (n <= 0) { clearInterval(iv); window.location.href = TARGET_URL; return; }
+        $("okDesc").textContent = T("okDesc", { n: n });
+      }, 1000);
+    }
+
+    applyLang();
+    scan(false);
   </script>
 </body>
 </html>
 )rawliteral";
+
+#endif

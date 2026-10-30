@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id" data-theme="dark">
+<html lang="id" dir="ltr" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
   <meta name="description" content="Weather-Cube — dashboard pemantauan kualitas udara.">
   <title>Weather-Cube · Pemantauan Kualitas Udara</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link id="bsCss" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,7 +37,7 @@
     html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     body {
       min-height: 100vh; margin: 0; color: var(--text);
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Noto Sans Arabic", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: .875rem; line-height: 1.42; letter-spacing: -.012em;
       background:
         radial-gradient(ellipse at 12% -8%, rgba(104,157,218,.13), transparent 34rem),
@@ -46,6 +46,8 @@
       background-attachment: fixed;
       transition: background .28s ease, color .28s ease;
     }
+    /* Huruf Arab/Mandarin tidak cocok dengan letter-spacing negatif */
+    html[lang="ar"] *, html[lang="zh"] * { letter-spacing: 0 !important; }
     a { color: var(--accent); }
     .app-container { max-width: 1320px; padding-left: clamp(18px, 2.2vw, 30px); padding-right: clamp(18px, 2.2vw, 30px); }
 
@@ -145,7 +147,7 @@
     }
     .hero::after {
       content:""; position:absolute; width:180px; height:180px; border-radius:50%;
-      right:-95px; top:80px; pointer-events:none; opacity:.24;
+      inset-inline-end:-95px; top:80px; pointer-events:none; opacity:.24;
       border:1px solid color-mix(in srgb, var(--accent) 22%, transparent);
       box-shadow:0 0 0 18px color-mix(in srgb, var(--accent) 4%, transparent), 0 0 0 38px color-mix(in srgb, var(--accent) 3%, transparent);
     }
@@ -190,13 +192,13 @@
     .chart-now.temp { color: var(--amber); }
     .chart-now.hum { color: #63a1ff; }
 
-    /* DROPDOWN PARAMETER GRAFIK */
+    /* DROPDOWN (parameter grafik & bahasa) */
     .dropdown-menu {
       --bs-dropdown-bg: var(--panel-solid); --bs-dropdown-border-color: var(--line);
       --bs-dropdown-link-color: var(--text); --bs-dropdown-link-hover-color: var(--text);
       --bs-dropdown-link-hover-bg: var(--soft); --bs-dropdown-link-active-color: var(--text);
       --bs-dropdown-link-active-bg: color-mix(in srgb, var(--accent) 14%, var(--panel-solid));
-      min-width: 220px; padding: .35rem; border-radius: 15px; box-shadow: 0 18px 50px rgba(0,0,0,.3);
+      min-width: 200px; padding: .35rem; border-radius: 15px; box-shadow: 0 18px 50px rgba(0,0,0,.3);
       backdrop-filter: blur(20px); z-index: 1060;
     }
     .dropdown-item { display:flex; align-items:center; justify-content:space-between; gap:.8rem; border-radius: 10px; padding: .5rem .65rem; font-size: .8rem; font-weight: 600; }
@@ -214,7 +216,7 @@
     .stat-tile .v { font-size:1.28rem; font-weight:820; letter-spacing:-.045em; line-height:1.15; margin-top:.15rem; }
 
     /* CHAT AI */
-    .chat-box { min-height: 180px; max-height: 330px; overflow: auto; display: flex; flex-direction: column; gap: .7rem; padding-right: .2rem; }
+    .chat-box { min-height: 180px; max-height: 330px; overflow: auto; display: flex; flex-direction: column; gap: .7rem; padding-inline-end: .2rem; }
     .chat-message { max-width:94%; border:1px solid var(--line); border-radius:16px; padding:.75rem .9rem; font-size:.83rem; line-height:1.5; animation: riseSoft .42s cubic-bezier(.2,.7,.25,1) both; overflow-wrap:anywhere; }
     .chat-message.ai { align-self:flex-start; background:var(--soft); }
     .chat-message.user { align-self:flex-end; background:color-mix(in srgb, var(--accent) 15%, var(--panel)); white-space:pre-wrap; }
@@ -224,8 +226,8 @@
     /* Teks AI yang dirapikan (markdown ringan -> HTML aman) */
     .rich p { margin: 0 0 .5rem; }
     .rich > :last-child { margin-bottom: 0; }
-    .rich ul, .rich ol { margin: .15rem 0 .55rem; padding-left: 1.15rem; }
-    .rich li { margin-bottom: .22rem; padding-left: .1rem; }
+    .rich ul, .rich ol { margin: .15rem 0 .55rem; padding-inline-start: 1.15rem; }
+    .rich li { margin-bottom: .22rem; padding-inline-start: .1rem; }
     .rich li::marker { color: var(--accent); }
     .rich strong { font-weight: 750; color: var(--text); }
     .rich em { font-style: italic; }
@@ -287,7 +289,7 @@
 
     /* FLOATING AI */
     .assistant-fab {
-      position:fixed; right:24px; bottom:24px; z-index:1080;
+      position:fixed; inset-inline-end:24px; bottom:24px; z-index:1080;
       display:flex; align-items:center; gap:.62rem; padding:.62rem .88rem .62rem .62rem;
       border:1px solid color-mix(in srgb,var(--accent) 27%,var(--line));
       border-radius:999px; color:var(--text);
@@ -298,11 +300,11 @@
     }
     .assistant-fab:hover { transform:translateY(-2px); border-color:var(--accent); box-shadow:0 14px 34px rgba(0,0,0,.22); }
     .assistant-fab-icon { width:35px; height:35px; flex: 0 0 auto; display:grid; place-items:center; border-radius:50%; color:#102033; background:linear-gradient(135deg,var(--accent),var(--aqua)); font-size:1.05rem; box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 12%,transparent); }
-    .assistant-fab-copy { display:flex; flex-direction:column; text-align:left; line-height:1.18; }
+    .assistant-fab-copy { display:flex; flex-direction:column; text-align:start; line-height:1.18; }
     .assistant-fab-copy strong { font-size:.8rem; line-height:1.2; font-weight:800; color: var(--text); }
     .assistant-fab-copy small { margin-top:.22rem; color:var(--muted); font-size:.66rem; line-height:1.3; }
     .assistant-panel {
-      position:fixed; right:24px; bottom:96px; z-index:1079; width:min(400px,calc(100vw - 28px));
+      position:fixed; inset-inline-end:24px; bottom:96px; z-index:1079; width:min(400px,calc(100vw - 28px));
       max-height:min(620px,calc(100vh - 125px)); display:flex; flex-direction:column;
       border-radius:22px; overflow:hidden; border:1px solid var(--line);
       background:color-mix(in srgb,var(--panel-solid) 94%,transparent);
@@ -312,6 +314,7 @@
       pointer-events:none; visibility:hidden;
       transition:opacity .2s ease, transform .22s cubic-bezier(.2,.7,.25,1), visibility .22s;
     }
+    html[dir="rtl"] .assistant-panel { transform-origin: bottom left; }
     .assistant-panel.open { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; visibility:visible; }
     .assistant-panel-head { display:flex; justify-content:space-between; align-items:center; gap:.8rem; padding:.9rem 1rem; border-bottom:1px solid var(--line); background:linear-gradient(110deg,color-mix(in srgb,var(--accent-strong) 15%,transparent),color-mix(in srgb,var(--aqua) 8%,transparent)); }
     .assistant-orb { width:39px;height:39px;display:grid;place-items:center;border-radius:14px;color:var(--text);background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 30%,var(--panel-solid)),color-mix(in srgb,var(--violet) 24%,var(--panel-solid)));border:1px solid var(--line); }
@@ -323,18 +326,18 @@
     .mini-msg.error { border-color: var(--bad) !important; }
     .assistant-section-jump { font-size:.75rem; color:var(--accent); text-decoration:none; font-weight:700; }
     @media (max-width:575.98px) {
-      .assistant-fab { right:14px; bottom:14px; }
-      .assistant-panel { right:10px; bottom:82px; width:calc(100vw - 20px); max-height:calc(100vh - 105px); }
+      .assistant-fab { inset-inline-end:14px; bottom:14px; }
+      .assistant-panel { inset-inline-end:10px; bottom:82px; width:calc(100vw - 20px); max-height:calc(100vh - 105px); }
     }
 
     /* TOAST PERINGATAN */
-    .toast-stack { position: fixed; top: 78px; right: 20px; z-index: 1090; display: flex; flex-direction: column; gap: .6rem; width: min(350px, calc(100vw - 28px)); pointer-events: none; }
+    .toast-stack { position: fixed; top: 78px; inset-inline-end: 20px; z-index: 1090; display: flex; flex-direction: column; gap: .6rem; width: min(350px, calc(100vw - 28px)); pointer-events: none; }
     .wc-toast { pointer-events: auto; display: flex; gap: .7rem; padding: .8rem .9rem; border-radius: 16px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel-solid) 95%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 14px 40px rgba(0,0,0,.28); animation: riseSoft .35s cubic-bezier(.2,.7,.25,1) both; }
     .wc-toast .bi { font-size: 1.15rem; margin-top: .05rem; }
     .wc-toast.waspada { border-color: color-mix(in srgb, var(--warn) 50%, var(--line)); } .wc-toast.waspada .bi { color: var(--warn); }
     .wc-toast.bahaya { border-color: color-mix(in srgb, var(--bad) 55%, var(--line)); } .wc-toast.bahaya .bi { color: var(--bad); }
     .wc-toast.info .bi { color: var(--accent); }
-    .wc-toast .t { font-weight: 800; font-size: .84rem; } .wc-toast .m { color: var(--muted); font-size: .78rem; margin-top: .1rem; }
+    .wc-toast .tt { font-weight: 800; font-size: .84rem; } .wc-toast .tm { color: var(--muted); font-size: .78rem; margin-top: .1rem; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
@@ -354,21 +357,27 @@
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
         <div class="navbar-nav me-auto mt-3 mt-lg-0">
-          <a class="nav-link active" href="#overview">Ringkasan</a>
-          <a class="nav-link" href="#insights">Insight</a>
-          <a class="nav-link" href="#trends">Riwayat</a>
-          <a class="nav-link" href="#assistant">AI Assistant</a>
+          <a class="nav-link active" href="#overview" data-i18n="nav_overview">Ringkasan</a>
+          <a class="nav-link" href="#insights" data-i18n="nav_insights">Insight</a>
+          <a class="nav-link" href="#trends" data-i18n="nav_trends">Riwayat</a>
+          <a class="nav-link" href="#assistant" data-i18n="nav_ai">AI Assistant</a>
         </div>
-        <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-3 mt-lg-0">
           <span class="status-chip">
             <span class="live-dot" id="connectionDot"></span>
-            <span id="connectionText">Menunggu data sensor</span>
+            <span id="connectionText"></span>
           </span>
-          <button type="button" id="alertToggle" class="btn-glass" title="Notifikasi saat status memburuk"><i class="bi bi-bell-slash" id="alertIcon"></i></button>
+          <button type="button" id="alertToggle" class="btn-glass"><i class="bi bi-bell-slash" id="alertIcon"></i></button>
+          <div class="dropdown">
+            <button class="btn-glass dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="langBtn" data-i18n-title="lang_label" data-i18n-aria="lang_label">
+              <i class="bi bi-translate"></i><span id="langCode">ID</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" id="langMenu"></ul>
+          </div>
           <button type="button" id="themeToggle" class="btn-glass d-inline-flex align-items-center gap-2">
-            <i class="bi bi-sun" id="themeIcon"></i><span class="d-none d-sm-inline" id="themeLabel">Mode terang</span>
+            <i class="bi bi-sun" id="themeIcon"></i><span class="d-none d-sm-inline" id="themeLabel"></span>
           </button>
-          <a class="btn-glass text-decoration-none" href="/setup.html" title="Pengaturan Wi-Fi"><i class="bi bi-gear"></i></a>
+          <a class="btn-glass text-decoration-none" href="/setup.html" data-i18n-title="wifi_settings"><i class="bi bi-gear"></i></a>
         </div>
       </div>
     </div>
@@ -383,18 +392,18 @@
     <section id="overview" class="section-anchor mb-4">
       <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4 fade-in">
         <div>
-          <div class="eyebrow mb-2">Environmental monitoring</div>
-          <h1 class="page-title mb-2">Kualitas udara saat ini</h1>
-          <p class="muted mb-0">AQI, partikel halus, dan tren pembacaan — langsung terlihat tanpa menu yang berlebihan.</p>
+          <div class="eyebrow mb-2" data-i18n="eyebrow_env">Environmental monitoring</div>
+          <h1 class="page-title mb-2" data-i18n="page_title">Kualitas udara saat ini</h1>
+          <p class="muted mb-0" data-i18n="page_sub"></p>
         </div>
         <div class="text-md-end">
           <span class="status-chip" style="font-size:.75rem; border-radius:999px;">
             <i class="bi bi-geo-alt-fill" style="color:var(--accent)"></i>
-            <span id="userLocation">Mendeteksi lokasi...</span>
+            <span id="userLocation"></span>
           </span>
-          <div class="small muted mt-2">Waktu lokal</div>
-          <div class="fs-5 fw-semibold" id="currentTime">--:--:--</div>
-          <div class="small muted">UI diperbarui <span id="lastUiUpdate">--:--:--</span></div>
+          <div class="small muted mt-2" data-i18n="local_time">Waktu lokal</div>
+          <div class="fs-5 fw-semibold" id="currentTime" dir="ltr">--:--:--</div>
+          <div class="small muted"><span data-i18n="ui_updated">UI diperbarui</span> <span id="lastUiUpdate" dir="ltr">--:--:--</span></div>
         </div>
       </div>
 
@@ -404,7 +413,7 @@
           <article class="glass hero h-100" id="aqiCard">
             <div class="d-flex justify-content-between align-items-start gap-3">
               <div>
-                <div class="eyebrow mb-3">Air quality index</div>
+                <div class="eyebrow mb-3" data-i18n="eyebrow_aqi">Air quality index</div>
                 <div class="d-flex align-items-baseline gap-2">
                   <span class="hero-number" id="aqiValue">--</span>
                   <span class="muted">AQI</span>
@@ -412,21 +421,23 @@
                 <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
                   <div class="hero-status offline" id="aqiStatus">
                     <i class="bi bi-circle-fill me-2" style="font-size:.55rem"></i>
-                    <span id="aqiStatusText">Menunggu data...</span>
+                    <span id="aqiStatusText"></span>
                   </div>
                   <span class="trend-chip" id="aqiTrend"></span>
                 </div>
               </div>
               <div class="metric-icon mt-1"><i class="bi bi-activity fs-5"></i></div>
             </div>
-            <div class="aqi-gauge">
-              <span id="aqiMarker" class="aqi-marker"></span>
+            <div dir="ltr">
+              <div class="aqi-gauge"><span id="aqiMarker" class="aqi-marker"></span></div>
+              <div class="d-flex justify-content-between small muted mt-2">
+                <span data-i18n="g_safe">Aman (≤50)</span><span data-i18n="g_warn">Waspada (51–100)</span><span data-i18n="g_danger">Bahaya (&gt;100)</span>
+              </div>
             </div>
-            <div class="d-flex justify-content-between small muted mt-2"><span>Aman (≤50)</span><span>Waspada (51–100)</span><span>Bahaya (&gt;100)</span></div>
             <hr style="border-color:var(--line);margin:.9rem 0 .8rem">
             <div class="d-flex justify-content-between align-items-center gap-3">
-              <span class="muted small">Status pembacaan</span>
-              <span class="status-chip"><i class="bi bi-info-circle"></i> <span id="dataMode">Menunggu</span></span>
+              <span class="muted small" data-i18n="reading_status">Status pembacaan</span>
+              <span class="status-chip"><i class="bi bi-info-circle"></i> <span id="dataMode"></span></span>
             </div>
           </article>
         </div>
@@ -437,37 +448,37 @@
             <div class="col-6 fade-in delay-1">
               <article class="glass metric-card pm-card h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                  <span class="small muted">Partikel PM2.5</span><span class="metric-icon"><i class="bi bi-wind"></i></span>
+                  <span class="small muted" data-i18n="m_pm">Partikel PM2.5</span><span class="metric-icon"><i class="bi bi-wind"></i></span>
                 </div>
                 <div><span class="metric-value" id="pm25Value">--</span> <span class="metric-unit">µg/m³</span></div>
-                <div class="small muted mt-2 d-flex justify-content-between align-items-center gap-2"><span>Sensor GP2Y1010AU0F</span><span class="lvl" id="pmLevel">--</span></div>
+                <div class="small muted mt-2 d-flex justify-content-between align-items-center gap-2"><span><span data-i18n="sensor">Sensor</span> GP2Y1010AU0F</span><span class="lvl" id="pmLevel">--</span></div>
               </article>
             </div>
             <div class="col-6 fade-in delay-2">
               <article class="glass metric-card gas-card h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                  <span class="small muted">Sensor Gas (MQ-2)</span><span class="metric-icon"><i class="bi bi-cloud-haze"></i></span>
+                  <span class="small muted" data-i18n="m_gas">Sensor Gas (MQ-2)</span><span class="metric-icon"><i class="bi bi-cloud-haze"></i></span>
                 </div>
                 <div><span class="metric-value" id="mq2Value">--</span> <span class="metric-unit">ADC</span></div>
-                <div class="small muted mt-2 d-flex justify-content-between align-items-center gap-2"><span>Deteksi asap &amp; gas</span><span class="lvl" id="gasLevel">--</span></div>
+                <div class="small muted mt-2 d-flex justify-content-between align-items-center gap-2"><span data-i18n="gas_note">Deteksi asap &amp; gas</span><span class="lvl" id="gasLevel">--</span></div>
               </article>
             </div>
             <div class="col-6 fade-in delay-1">
               <article class="glass metric-card temp-card h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                  <span class="small muted">Suhu Ruangan</span><span class="metric-icon"><i class="bi bi-thermometer-half"></i></span>
+                  <span class="small muted" data-i18n="m_temp">Suhu Ruangan</span><span class="metric-icon"><i class="bi bi-thermometer-half"></i></span>
                 </div>
                 <div><span class="metric-value" id="tempValue">--</span> <span class="metric-unit">°C</span></div>
-                <div class="small muted mt-2">Sensor DHT22</div>
+                <div class="small muted mt-2"><span data-i18n="sensor">Sensor</span> DHT22</div>
               </article>
             </div>
             <div class="col-6 fade-in delay-2">
               <article class="glass metric-card hum-card h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                  <span class="small muted">Kelembapan</span><span class="metric-icon"><i class="bi bi-droplet-half"></i></span>
+                  <span class="small muted" data-i18n="m_hum">Kelembapan</span><span class="metric-icon"><i class="bi bi-droplet-half"></i></span>
                 </div>
                 <div><span class="metric-value" id="humValue">--</span> <span class="metric-unit">%</span></div>
-                <div class="small muted mt-2">Sensor DHT22</div>
+                <div class="small muted mt-2"><span data-i18n="sensor">Sensor</span> DHT22</div>
               </article>
             </div>
 
@@ -476,11 +487,11 @@
                 <div class="d-flex align-items-center justify-content-between gap-3">
                   <div class="d-flex align-items-center gap-3">
                     <span class="metric-icon"><i class="bi bi-shield-check fs-5"></i></span>
-                    <div><div class="fw-semibold">Ringkasan kondisi</div><div class="small muted">Status sistem dan catatan pembacaan</div></div>
+                    <div><div class="fw-semibold" data-i18n="sum_title">Ringkasan kondisi</div><div class="small muted" data-i18n="sum_sub"></div></div>
                   </div>
-                  <span class="status-chip" id="systemChip"><span class="live-dot" id="systemDot"></span> <span id="systemChipText">Offline</span></span>
+                  <span class="status-chip" id="systemChip"><span class="live-dot" id="systemDot"></span> <span id="systemChipText"></span></span>
                 </div>
-                <div class="small muted mt-3" id="systemNote">Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.</div>
+                <div class="small muted mt-3" id="systemNote"></div>
               </article>
             </div>
           </div>
@@ -496,11 +507,11 @@
             <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
               <div class="d-flex align-items-center gap-3">
                 <span class="metric-icon"><i class="bi bi-heart-pulse fs-5"></i></span>
-                <div><div class="section-heading">Rekomendasi</div><div class="small muted">Saran otomatis berdasarkan pembacaan terakhir</div></div>
+                <div><div class="section-heading" data-i18n="tips_title">Rekomendasi</div><div class="small muted" data-i18n="tips_sub"></div></div>
               </div>
               <span class="lvl" id="tipsBadge">--</span>
             </div>
-            <ul class="tips" id="tipsList"><li><i class="bi bi-hourglass-split"></i><span>Menunggu data sensor...</span></li></ul>
+            <ul class="tips" id="tipsList"></ul>
           </article>
         </div>
         <div class="col-12 col-lg-5 fade-in delay-1">
@@ -508,17 +519,17 @@
             <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
               <div class="d-flex align-items-center gap-3">
                 <span class="metric-icon"><i class="bi bi-bar-chart-line fs-5"></i></span>
-                <div><div class="section-heading">Statistik sesi</div><div class="small muted" id="statSpan">Dari data yang termuat</div></div>
+                <div><div class="section-heading" data-i18n="stats_title">Statistik sesi</div><div class="small muted" id="statSpan"></div></div>
               </div>
-              <button type="button" id="btnExport" class="btn-glass" title="Unduh data sebagai CSV"><i class="bi bi-download me-1"></i>CSV</button>
+              <button type="button" id="btnExport" class="btn-glass" data-i18n-title="csv_title"><i class="bi bi-download me-1"></i>CSV</button>
             </div>
             <div class="stat-grid">
-              <div class="stat-tile"><div class="k">AQI terendah</div><div class="v" id="statAqiMin">--</div></div>
-              <div class="stat-tile"><div class="k">AQI rata-rata</div><div class="v" id="statAqiAvg">--</div></div>
-              <div class="stat-tile"><div class="k">AQI tertinggi</div><div class="v" id="statAqiMax">--</div></div>
-              <div class="stat-tile"><div class="k">PM2.5 rata-rata</div><div class="v" id="statPmAvg">--</div></div>
-              <div class="stat-tile"><div class="k">Gas rata-rata</div><div class="v" id="statGasAvg">--</div></div>
-              <div class="stat-tile"><div class="k">Jumlah data</div><div class="v" id="statCount">--</div></div>
+              <div class="stat-tile"><div class="k" data-i18n="st_aqi_min">AQI terendah</div><div class="v" id="statAqiMin">--</div></div>
+              <div class="stat-tile"><div class="k" data-i18n="st_aqi_avg">AQI rata-rata</div><div class="v" id="statAqiAvg">--</div></div>
+              <div class="stat-tile"><div class="k" data-i18n="st_aqi_max">AQI tertinggi</div><div class="v" id="statAqiMax">--</div></div>
+              <div class="stat-tile"><div class="k" data-i18n="st_pm_avg">PM2.5 rata-rata</div><div class="v" id="statPmAvg">--</div></div>
+              <div class="stat-tile"><div class="k" data-i18n="st_gas_avg">Gas rata-rata</div><div class="v" id="statGasAvg">--</div></div>
+              <div class="stat-tile"><div class="k" data-i18n="st_count">Jumlah data</div><div class="v" id="statCount">--</div></div>
             </div>
           </article>
         </div>
@@ -527,35 +538,34 @@
 
     <!-- TRENDS -->
     <section id="trends" class="section-anchor mb-4">
-      <!-- Grafik utama: AQI, PM2.5, Gas (dengan pilihan parameter) -->
       <article class="glass allow-overflow p-3 p-md-4 fade-in">
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3 mb-3">
           <div>
-            <div class="section-heading">Tren pembacaan</div>
-            <p class="small muted mb-0 mt-1">Grafik real-time dari Supabase. Data diperbarui setiap 5 detik. Pilih parameter yang ingin ditampilkan.</p>
+            <div class="section-heading" data-i18n="trend_title">Tren pembacaan</div>
+            <p class="small muted mb-0 mt-1" data-i18n="trend_sub"></p>
           </div>
           <div class="dropdown">
-            <button class="btn-glass dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" id="chartModeBtn">
-              <i class="bi bi-sliders"></i><span id="chartModeLabel">Parameter grafik</span>
+            <button class="btn-glass dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="chartModeBtn">
+              <i class="bi bi-sliders"></i><span id="chartModeLabel"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" id="chartModeMenu"></ul>
           </div>
         </div>
-        <div class="chart-wrap"><canvas id="airChart" aria-label="Grafik AQI, PM2.5 dan gas" role="img"></canvas></div>
+        <div class="chart-wrap" dir="ltr"><canvas id="airChart" role="img"></canvas></div>
       </article>
 
-      <!-- Grafik suhu & kelembapan (tetap terpisah, tanpa pilihan parameter) -->
+      <!-- Suhu & kelembapan tetap terpisah, tanpa pilihan parameter -->
       <div class="row g-3 g-lg-4 mt-0">
         <div class="col-12 col-md-6 fade-in">
           <article class="glass p-3 p-md-4 h-100">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
               <div class="d-flex align-items-center gap-3">
                 <span class="metric-icon" style="color:var(--amber); background:color-mix(in srgb, var(--amber) 12%, var(--soft));"><i class="bi bi-thermometer-half"></i></span>
-                <div><div class="section-heading">Suhu</div><div class="small muted">Riwayat sensor DHT22</div></div>
+                <div><div class="section-heading" data-i18n="t_temp">Suhu</div><div class="small muted" data-i18n="hist_dht"></div></div>
               </div>
-              <div class="chart-now temp"><span id="tempNow">--</span> <span class="metric-unit muted">°C</span></div>
+              <div class="chart-now temp" dir="ltr"><span id="tempNow">--</span> <span class="metric-unit muted">°C</span></div>
             </div>
-            <div class="chart-wrap sm"><canvas id="tempChart" aria-label="Grafik suhu" role="img"></canvas></div>
+            <div class="chart-wrap sm" dir="ltr"><canvas id="tempChart" role="img"></canvas></div>
           </article>
         </div>
         <div class="col-12 col-md-6 fade-in">
@@ -563,11 +573,11 @@
             <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
               <div class="d-flex align-items-center gap-3">
                 <span class="metric-icon" style="color:#63a1ff; background:color-mix(in srgb, #63a1ff 12%, var(--soft));"><i class="bi bi-droplet-half"></i></span>
-                <div><div class="section-heading">Kelembapan</div><div class="small muted">Riwayat sensor DHT22</div></div>
+                <div><div class="section-heading" data-i18n="m_hum">Kelembapan</div><div class="small muted" data-i18n="hist_dht"></div></div>
               </div>
-              <div class="chart-now hum"><span id="humNow">--</span> <span class="metric-unit muted">%</span></div>
+              <div class="chart-now hum" dir="ltr"><span id="humNow">--</span> <span class="metric-unit muted">%</span></div>
             </div>
-            <div class="chart-wrap sm"><canvas id="humChart" aria-label="Grafik kelembapan" role="img"></canvas></div>
+            <div class="chart-wrap sm" dir="ltr"><canvas id="humChart" role="img"></canvas></div>
           </article>
         </div>
       </div>
@@ -580,26 +590,25 @@
           <div class="col-12 col-lg-4">
             <div class="d-flex align-items-center gap-3 mb-2">
               <span class="metric-icon"><i class="bi bi-stars fs-5"></i></span>
-              <div><h2 class="section-heading mb-1">AI Assistant</h2><div class="small muted">Tanya atau minta penjelasan</div></div>
+              <div><h2 class="section-heading mb-1" data-i18n="nav_ai">AI Assistant</h2><div class="small muted" data-i18n="ai_sub"></div></div>
             </div>
-            <p class="small muted mb-3">AI membaca data sensor terbaru langsung dari database, bahkan saat perangkat sedang offline. Responsnya bukan diagnosis medis.</p>
-            <button id="btnQuickAnalyze" type="button" class="btn btn-accent w-100 py-2"><i class="bi bi-lightning-charge me-2"></i>Analisis kondisi terbaru</button>
+            <p class="small muted mb-3" data-i18n="ai_desc"></p>
+            <button id="btnQuickAnalyze" type="button" class="btn btn-accent w-100 py-2"><i class="bi bi-lightning-charge me-2"></i><span data-i18n="ai_analyze">Analisis kondisi terbaru</span></button>
             <div class="d-flex flex-wrap gap-2 mt-3">
-              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Apa itu PM2.5 dan kenapa berbahaya?" style="font-size:.72rem; border-radius:99px;">Apa itu PM2.5?</button>
-              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Bagaimana cara membaca AQI dengan benar?" style="font-size:.72rem; border-radius:99px;">Cara baca AQI</button>
-              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Apakah aman beraktivitas atau olahraga sekarang?" style="font-size:.72rem; border-radius:99px;">Aman beraktivitas?</button>
-              <button class="quick-prompt btn btn-glass btn-sm" type="button" data-prompt="Apa penyebab nilai gas MQ-2 saya tinggi dan apa yang harus dilakukan?" style="font-size:.72rem; border-radius:99px;">Gas tinggi, kenapa?</button>
+              <button class="btn btn-glass btn-sm" type="button" data-pk="p_pm" data-i18n="q_pm" style="font-size:.72rem; border-radius:99px;"></button>
+              <button class="btn btn-glass btn-sm" type="button" data-pk="p_aqi" data-i18n="q_aqi" style="font-size:.72rem; border-radius:99px;"></button>
+              <button class="btn btn-glass btn-sm" type="button" data-pk="p_act" data-i18n="q_act" style="font-size:.72rem; border-radius:99px;"></button>
+              <button class="btn btn-glass btn-sm" type="button" data-pk="p_gas" data-i18n="q_gas" style="font-size:.72rem; border-radius:99px;"></button>
             </div>
-            <button id="btnClearChat" type="button" class="btn btn-glass btn-sm mt-3" style="font-size:.72rem;"><i class="bi bi-trash3 me-1"></i>Hapus riwayat chat</button>
+            <button id="btnClearChat" type="button" class="btn btn-glass btn-sm mt-3" style="font-size:.72rem;"><i class="bi bi-trash3 me-1"></i><span data-i18n="clear_chat">Hapus riwayat chat</span></button>
           </div>
           <div class="col-12 col-lg-8">
             <div id="aiChatBox" class="chat-box mb-3" aria-live="polite"></div>
             <form id="chatForm" class="d-flex gap-2">
-              <label for="chatInput" class="visually-hidden">Pertanyaan untuk AI</label>
-              <input type="text" id="chatInput" class="form-control rounded-3 px-3" placeholder="Tulis pertanyaan…" autocomplete="off" maxlength="1000">
-              <button type="submit" class="btn btn-accent px-3" aria-label="Kirim pesan"><i class="bi bi-arrow-up"></i></button>
+              <input type="text" id="chatInput" class="form-control rounded-3 px-3" data-i18n-ph="chat_ph" data-i18n-aria="chat_ph" autocomplete="off" maxlength="1000">
+              <button type="submit" class="btn btn-accent px-3" data-i18n-aria="send"><i class="bi bi-arrow-up"></i></button>
             </form>
-            <div class="small muted mt-2" id="chatStatus">Endpoint AI: /api/chat</div>
+            <div class="small muted mt-2" data-i18n="ai_endpoint">Endpoint AI: /api/chat</div>
           </div>
         </div>
       </article>
@@ -608,7 +617,7 @@
     <!-- FOOTER -->
     <footer class="footer d-flex flex-column flex-sm-row justify-content-between gap-2 py-3">
       <span>© <span id="currentYear"></span> Weather-Cube · Air Monitoring</span>
-      <span>Data dari Supabase · refresh tiap 5 detik</span>
+      <span data-i18n="footer_data"></span>
     </footer>
   </main>
 
@@ -622,39 +631,337 @@
         <span class="assistant-orb"><i class="bi bi-stars"></i></span>
         <div>
           <div class="fw-bold" id="floatingAssistantTitle">Weather-Cube AI</div>
-          <div class="small muted" style="font-size:.72rem">Asisten kualitas udara</div>
+          <div class="small muted" style="font-size:.72rem" data-i18n="panel_sub"></div>
         </div>
       </div>
-      <button type="button" class="btn-glass p-2" id="closeFloatingAI" aria-label="Tutup AI Assistant"><i class="bi bi-x-lg"></i></button>
+      <button type="button" class="btn-glass p-2" id="closeFloatingAI" data-i18n-aria="close"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="assistant-panel-body">
       <div class="assistant-panel-messages" id="floatingAIMessages" aria-live="polite"></div>
       <div class="d-flex flex-wrap gap-2 mb-3">
-        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Bagaimana situasi udara sekarang?" style="font-size:.72rem; border-radius:99px;">Situasi sekarang</button>
-        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Apa itu PM2.5?" style="font-size:.72rem; border-radius:99px;">Apa itu PM2.5?</button>
-        <button class="quick-prompt btn btn-glass btn-sm" type="button" data-mini-prompt="Cara membaca AQI" style="font-size:.72rem; border-radius:99px;">Cara membaca AQI</button>
+        <button class="btn btn-glass btn-sm" type="button" data-mini-pk="p_now" data-i18n="q_now" style="font-size:.72rem; border-radius:99px;"></button>
+        <button class="btn btn-glass btn-sm" type="button" data-mini-pk="p_pm" data-i18n="q_pm" style="font-size:.72rem; border-radius:99px;"></button>
+        <button class="btn btn-glass btn-sm" type="button" data-mini-pk="p_aqi" data-i18n="q_aqi" style="font-size:.72rem; border-radius:99px;"></button>
       </div>
       <form id="floatingAIForm" class="d-flex gap-2">
-        <label for="floatingAIInput" class="visually-hidden">Tulis pertanyaan untuk AI</label>
-        <input id="floatingAIInput" class="form-control rounded-3 px-3" type="text" placeholder="Tanyakan sesuatu…" maxlength="1000" autocomplete="off">
-        <button type="submit" class="btn btn-accent px-3" aria-label="Kirim pertanyaan"><i class="bi bi-arrow-up"></i></button>
+        <input id="floatingAIInput" class="form-control rounded-3 px-3" type="text" data-i18n-ph="mini_ph" data-i18n-aria="mini_ph" maxlength="1000" autocomplete="off">
+        <button type="submit" class="btn btn-accent px-3" data-i18n-aria="send"><i class="bi bi-arrow-up"></i></button>
       </form>
       <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-        <span class="mini-note muted" id="floatingAIStatus" style="font-size:.68rem">Terhubung melalui /api/chat</span>
-        <a class="assistant-section-jump" href="#assistant" id="jumpToFullAI">Buka panel lengkap <i class="bi bi-arrow-up-right"></i></a>
+        <span class="mini-note muted" style="font-size:.68rem" data-i18n="mini_status"></span>
+        <a class="assistant-section-jump" href="#assistant" id="jumpToFullAI"><span data-i18n="jump_full">Buka panel lengkap</span> <i class="bi bi-arrow-up-right"></i></a>
       </div>
     </div>
   </section>
 
-  <button type="button" class="assistant-fab" id="assistantFab" aria-expanded="false" aria-controls="floatingAssistant">
-    <span class="assistant-fab-icon"><i class="bi bi-stars"></i></span>
-    <span class="assistant-fab-copy"><strong>AI Assistant</strong><small>Tanya tentang kualitas udara</small></span>
-  </button>
+  <button type="button" class="assistant-fab" id="assistantFab" aria-expanded="false" aria-controls="floatingAssistant"></button>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   (() => {
     'use strict';
+
+    // ==========================================
+    // 0. BAHASA (i18n): ID, EN, 中文, ES, العربية
+    // ==========================================
+    const LANGS = {
+      id: { code: 'ID',   name: 'Bahasa Indonesia', dir: 'ltr', loc: 'id-ID',        tok: ['AMAN', 'WASPADA', 'BAHAYA'] },
+      en: { code: 'EN',   name: 'English',          dir: 'ltr', loc: 'en-GB',        tok: ['SAFE', 'WARNING', 'DANGER'] },
+      zh: { code: '中文', name: '简体中文',          dir: 'ltr', loc: 'zh-CN',        tok: ['安全', '警戒', '危险'] },
+      es: { code: 'ES',   name: 'Español',          dir: 'ltr', loc: 'es-ES',        tok: ['SEGURO', 'PRECAUCIÓN', 'PELIGRO'] },
+      ar: { code: 'AR',   name: 'العربية',          dir: 'rtl', loc: 'ar-u-nu-latn', tok: ['آمن', 'تحذير', 'خطر'] }
+    };
+
+    const I18N = {
+      id: {
+        title: 'Weather-Cube · Pemantauan Kualitas Udara', meta_desc: 'Weather-Cube — dashboard pemantauan kualitas udara.',
+        nav_overview: 'Ringkasan', nav_insights: 'Insight', nav_trends: 'Riwayat', nav_ai: 'AI Assistant',
+        theme_light: 'Mode terang', theme_dark: 'Mode gelap', wifi_settings: 'Pengaturan Wi-Fi', lang_label: 'Bahasa',
+        bell_on: 'Notifikasi aktif (klik untuk mematikan)', bell_off: 'Aktifkan notifikasi saat status memburuk',
+        eyebrow_env: 'Pemantauan lingkungan', page_title: 'Kualitas udara saat ini',
+        page_sub: 'AQI, partikel halus, dan tren pembacaan — langsung terlihat tanpa menu yang berlebihan.',
+        loc_detecting: 'Mendeteksi lokasi...', loc_unavailable: 'Lokasi tidak tersedia',
+        local_time: 'Waktu lokal', ui_updated: 'UI diperbarui', eyebrow_aqi: 'Indeks kualitas udara',
+        g_safe: 'Aman (≤50)', g_warn: 'Waspada (51–100)', g_danger: 'Bahaya (>100)', reading_status: 'Status pembacaan',
+        m_pm: 'Partikel PM2.5', m_gas: 'Sensor Gas (MQ-2)', gas_note: 'Deteksi asap & gas', m_temp: 'Suhu Ruangan', m_hum: 'Kelembapan', t_temp: 'Suhu', sensor: 'Sensor',
+        sum_title: 'Ringkasan kondisi', sum_sub: 'Status sistem dan catatan pembacaan',
+        tips_title: 'Rekomendasi', tips_sub: 'Saran otomatis berdasarkan pembacaan terakhir', tips_wait: 'Menunggu data sensor...',
+        stats_title: 'Statistik sesi', stats_sub: 'Dari data yang termuat', range: 'Rentang {a} – {b}',
+        st_aqi_min: 'AQI terendah', st_aqi_avg: 'AQI rata-rata', st_aqi_max: 'AQI tertinggi', st_pm_avg: 'PM2.5 rata-rata', st_gas_avg: 'Gas rata-rata', st_count: 'Jumlah data',
+        csv_title: 'Unduh data sebagai CSV', csv_h: 'waktu|aqi|status|pm25_ugm3|gas_adc|suhu_c|kelembapan_pct',
+        trend_title: 'Tren pembacaan', trend_sub: 'Grafik real-time dari Supabase. Data diperbarui setiap 5 detik. Pilih parameter yang ingin ditampilkan.',
+        mode_all: 'Semua parameter', mode_aqi: 'AQI saja', mode_pmgas: 'PM2.5 + Gas', mode_pm: 'PM2.5 saja', mode_gas: 'Gas saja', mode_custom: 'Kustom',
+        hist_dht: 'Riwayat sensor DHT22', ds_gas: 'Gas (ADC)', ds_temp: 'Suhu (°C)', ds_hum: 'Kelembapan (%)', ax_gas: 'Gas ADC',
+        ai_sub: 'Tanya atau minta penjelasan', ai_desc: 'AI membaca data sensor terbaru langsung dari database, bahkan saat perangkat sedang offline. Responsnya bukan diagnosis medis.',
+        ai_analyze: 'Analisis kondisi terbaru', ai_analyze_p: 'Analisis kondisi kualitas udara terbaru dan berikan saran kesehatan singkat.',
+        q_pm: 'Apa itu PM2.5?', p_pm: 'Apa itu PM2.5 dan kenapa berbahaya?',
+        q_aqi: 'Cara baca AQI', p_aqi: 'Bagaimana cara membaca AQI dengan benar?',
+        q_act: 'Aman beraktivitas?', p_act: 'Apakah aman beraktivitas atau olahraga sekarang?',
+        q_gas: 'Gas tinggi, kenapa?', p_gas: 'Apa penyebab nilai gas MQ-2 saya tinggi dan apa yang harus dilakukan?',
+        q_now: 'Situasi sekarang', p_now: 'Bagaimana situasi udara sekarang?',
+        clear_chat: 'Hapus riwayat chat', chat_ph: 'Tulis pertanyaan…', mini_ph: 'Tanyakan sesuatu…', send: 'Kirim',
+        ai_endpoint: 'Endpoint AI: /api/chat', mini_status: 'Terhubung melalui /api/chat', jump_full: 'Buka panel lengkap',
+        fab_sub: 'Tanya tentang kualitas udara', fab_close: 'Tutup AI', fab_close_sub: 'Panel percakapan', panel_sub: 'Asisten kualitas udara', close: 'Tutup',
+        greet_main: 'Halo! Saya bisa membaca data sensor terakhir dari database dan menjelaskan kondisi udara, termasuk saat perangkat sedang offline.',
+        greet_mini: 'Halo! Ada yang ingin diketahui tentang AQI atau parameter sensor?',
+        role_you: 'Kamu', role_sys: 'Info sistem', err_fail: 'Permintaan gagal.', err_net: 'Tidak dapat menghubungi layanan AI.', err_noans: 'Belum ada tanggapan dari AI.',
+        footer_data: 'Data dari Supabase · refresh tiap 5 detik',
+        st_aman: 'Aman', st_waspada: 'Waspada', st_bahaya: 'Bahaya',
+        cat_prefix: 'Kategori: {s}', cat_last: ' (data terakhir)', wait_valid: 'Menunggu data valid', wait_data: 'Menunggu data...',
+        conn_live: 'Live Connected', conn_wait: 'Menunggu data sensor', mode_live: 'Live Supabase', mode_off: 'Offline', mode_wait: 'Menunggu', chip_live: 'Live',
+        note_on: 'Data sensor aktif. Terakhir diterima: {t}. {n}', note_off: 'Perangkat tidak mengirim data. Data terakhir diterima: {t}. {n}',
+        note_none: 'Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.',
+        trig_ok: 'Semua parameter dalam batas aman.', trig_warn: 'Status waspada dipicu oleh {p}.', trig_bad: 'Status bahaya dipicu oleh {p}.', and: 'dan', n_gas: 'Gas MQ-2 ({v} ADC)',
+        tr_up: 'naik {n}', tr_down: 'turun {n}', tr_flat: 'stabil',
+        tip_off: 'Perangkat sedang offline. Rekomendasi memakai data terakhir pukul {t}.',
+        tip_ok1: 'Kualitas udara baik. Aman untuk aktivitas normal di dalam maupun luar ruangan.', tip_ok2: 'Buka ventilasi secara berkala agar sirkulasi udara tetap segar.',
+        tip_w1: 'Kelompok sensitif (anak, lansia, penderita asma) sebaiknya mengurangi aktivitas berat.', tip_w2: 'Periksa sumber asap, debu, atau gas di sekitar sensor.',
+        tip_b1: 'Kondisi berbahaya. Hindari berlama-lama di area ini dan batasi aktivitas fisik.', tip_b2: 'Bila harus berada di area ini, gunakan masker N95/KN95.',
+        tip_gas: 'Gas MQ-2 tinggi ({v} ADC). Matikan sumber api/kompor, buka ventilasi, dan keluar ruangan jika tercium bau gas.',
+        tip_pm: 'PM2.5 tinggi ({v} µg/m³). Tutup jendela dan nyalakan pembersih udara bila tersedia.',
+        tip_heat: 'Suhu tinggi ({v} °C). Perbanyak minum air dan perbaiki sirkulasi udara.',
+        tip_dry: 'Kelembapan rendah ({v}%). Udara kering dapat mengiritasi saluran napas dan mata.',
+        tip_damp: 'Kelembapan tinggi ({v}%). Risiko jamur meningkat; jaga ventilasi atau gunakan dehumidifier.',
+        toast_up_t: 'Status naik ke {s}', notif_on_t: 'Notifikasi diaktifkan', notif_on_m: 'Kamu akan diberi tahu saat status udara memburuk.',
+        notif_noperm: 'Izin notifikasi browser belum diberikan; peringatan tetap muncul di halaman ini.',
+        notif_off_t: 'Notifikasi dimatikan', notif_off_m: 'Peringatan di halaman tetap muncul saat status memburuk.',
+        nodata_t: 'Belum ada data', nodata_m: 'Tunggu hingga data sensor termuat.', clear_t: 'Riwayat dihapus', clear_m: 'Percakapan dengan AI telah dibersihkan.'
+      },
+      en: {
+        title: 'Weather-Cube · Air Quality Monitoring', meta_desc: 'Weather-Cube — air quality monitoring dashboard.',
+        nav_overview: 'Overview', nav_insights: 'Insights', nav_trends: 'History', nav_ai: 'AI Assistant',
+        theme_light: 'Light mode', theme_dark: 'Dark mode', wifi_settings: 'Wi-Fi settings', lang_label: 'Language',
+        bell_on: 'Notifications on (click to turn off)', bell_off: 'Enable notifications when status worsens',
+        eyebrow_env: 'Environmental monitoring', page_title: 'Current air quality',
+        page_sub: 'AQI, fine particles and reading trends — visible at a glance, no clutter.',
+        loc_detecting: 'Detecting location...', loc_unavailable: 'Location unavailable',
+        local_time: 'Local time', ui_updated: 'UI updated', eyebrow_aqi: 'Air quality index',
+        g_safe: 'Safe (≤50)', g_warn: 'Warning (51–100)', g_danger: 'Danger (>100)', reading_status: 'Reading status',
+        m_pm: 'PM2.5 particles', m_gas: 'Gas sensor (MQ-2)', gas_note: 'Smoke & gas detection', m_temp: 'Room temperature', m_hum: 'Humidity', t_temp: 'Temperature', sensor: 'Sensor',
+        sum_title: 'Condition summary', sum_sub: 'System status and reading notes',
+        tips_title: 'Recommendations', tips_sub: 'Automatic advice based on the latest reading', tips_wait: 'Waiting for sensor data...',
+        stats_title: 'Session statistics', stats_sub: 'From loaded data', range: 'Range {a} – {b}',
+        st_aqi_min: 'Lowest AQI', st_aqi_avg: 'Average AQI', st_aqi_max: 'Highest AQI', st_pm_avg: 'Average PM2.5', st_gas_avg: 'Average gas', st_count: 'Data points',
+        csv_title: 'Download data as CSV', csv_h: 'time|aqi|status|pm25_ugm3|gas_adc|temp_c|humidity_pct',
+        trend_title: 'Reading trends', trend_sub: 'Real-time chart from Supabase, refreshed every 5 seconds. Choose which parameters to show.',
+        mode_all: 'All parameters', mode_aqi: 'AQI only', mode_pmgas: 'PM2.5 + Gas', mode_pm: 'PM2.5 only', mode_gas: 'Gas only', mode_custom: 'Custom',
+        hist_dht: 'DHT22 sensor history', ds_gas: 'Gas (ADC)', ds_temp: 'Temperature (°C)', ds_hum: 'Humidity (%)', ax_gas: 'Gas ADC',
+        ai_sub: 'Ask or request an explanation', ai_desc: 'The AI reads the latest sensor data straight from the database, even when the device is offline. Its answers are not medical diagnoses.',
+        ai_analyze: 'Analyze latest condition', ai_analyze_p: 'Analyze the latest air quality condition and give brief health advice.',
+        q_pm: 'What is PM2.5?', p_pm: 'What is PM2.5 and why is it harmful?',
+        q_aqi: 'How to read AQI', p_aqi: 'How do I read the AQI correctly?',
+        q_act: 'Safe to be active?', p_act: 'Is it safe to be active or exercise right now?',
+        q_gas: 'Why is gas high?', p_gas: 'What causes my MQ-2 gas reading to be high and what should I do?',
+        q_now: 'Current situation', p_now: 'What is the air situation right now?',
+        clear_chat: 'Clear chat history', chat_ph: 'Type a question…', mini_ph: 'Ask something…', send: 'Send',
+        ai_endpoint: 'AI endpoint: /api/chat', mini_status: 'Connected via /api/chat', jump_full: 'Open full panel',
+        fab_sub: 'Ask about air quality', fab_close: 'Close AI', fab_close_sub: 'Chat panel', panel_sub: 'Air quality assistant', close: 'Close',
+        greet_main: 'Hi! I can read the latest sensor data from the database and explain the air condition, even when the device is offline.',
+        greet_mini: 'Hi! Anything you want to know about AQI or the sensor readings?',
+        role_you: 'You', role_sys: 'System info', err_fail: 'Request failed.', err_net: 'Unable to reach the AI service.', err_noans: 'No response from the AI yet.',
+        footer_data: 'Data from Supabase · refreshes every 5 seconds',
+        st_aman: 'Safe', st_waspada: 'Warning', st_bahaya: 'Danger',
+        cat_prefix: 'Category: {s}', cat_last: ' (last data)', wait_valid: 'Waiting for valid data', wait_data: 'Waiting for data...',
+        conn_live: 'Live connected', conn_wait: 'Waiting for sensor data', mode_live: 'Live Supabase', mode_off: 'Offline', mode_wait: 'Waiting', chip_live: 'Live',
+        note_on: 'Sensor data is active. Last received: {t}. {n}', note_off: 'The device is not sending data. Last data received: {t}. {n}',
+        note_none: 'Waiting for connection to Supabase. Sensor data will appear automatically once the ESP32 is active.',
+        trig_ok: 'All parameters are within safe limits.', trig_warn: 'Warning status triggered by {p}.', trig_bad: 'Danger status triggered by {p}.', and: 'and', n_gas: 'MQ-2 gas ({v} ADC)',
+        tr_up: 'up {n}', tr_down: 'down {n}', tr_flat: 'stable',
+        tip_off: 'The device is offline. Recommendations use the last data from {t}.',
+        tip_ok1: 'Air quality is good. Safe for normal indoor and outdoor activities.', tip_ok2: 'Open ventilation periodically to keep the air fresh.',
+        tip_w1: 'Sensitive groups (children, the elderly, people with asthma) should reduce strenuous activity.', tip_w2: 'Check for sources of smoke, dust or gas near the sensor.',
+        tip_b1: 'Dangerous conditions. Avoid staying in this area and limit physical activity.', tip_b2: 'If you must be in this area, wear an N95/KN95 mask.',
+        tip_gas: 'MQ-2 gas is high ({v} ADC). Turn off flames/stoves, open ventilation and leave the room if you smell gas.',
+        tip_pm: 'PM2.5 is high ({v} µg/m³). Close windows and run an air purifier if available.',
+        tip_heat: 'High temperature ({v} °C). Drink more water and improve air circulation.',
+        tip_dry: 'Low humidity ({v}%). Dry air can irritate the airways and eyes.',
+        tip_damp: 'High humidity ({v}%). Mold risk increases; keep ventilation or use a dehumidifier.',
+        toast_up_t: 'Status rose to {s}', notif_on_t: 'Notifications enabled', notif_on_m: 'You will be notified when the air status worsens.',
+        notif_noperm: 'Browser notification permission not granted; alerts will still appear on this page.',
+        notif_off_t: 'Notifications disabled', notif_off_m: 'On-page alerts still appear when status worsens.',
+        nodata_t: 'No data yet', nodata_m: 'Wait until sensor data has loaded.', clear_t: 'History cleared', clear_m: 'The AI conversation has been cleared.'
+      },
+      zh: {
+        title: 'Weather-Cube · 空气质量监测', meta_desc: 'Weather-Cube — 空气质量监测仪表盘。',
+        nav_overview: '概览', nav_insights: '洞察', nav_trends: '历史', nav_ai: 'AI 助手',
+        theme_light: '浅色模式', theme_dark: '深色模式', wifi_settings: 'Wi-Fi 设置', lang_label: '语言',
+        bell_on: '通知已开启（点击关闭）', bell_off: '状态恶化时开启通知',
+        eyebrow_env: '环境监测', page_title: '当前空气质量',
+        page_sub: 'AQI、细颗粒物和读数趋势——一目了然。',
+        loc_detecting: '正在检测位置…', loc_unavailable: '无法获取位置',
+        local_time: '本地时间', ui_updated: '界面更新于', eyebrow_aqi: '空气质量指数',
+        g_safe: '安全 (≤50)', g_warn: '警戒 (51–100)', g_danger: '危险 (>100)', reading_status: '读数状态',
+        m_pm: 'PM2.5 颗粒物', m_gas: '气体传感器 (MQ-2)', gas_note: '烟雾与气体检测', m_temp: '室内温度', m_hum: '湿度', t_temp: '温度', sensor: '传感器',
+        sum_title: '状态摘要', sum_sub: '系统状态与读数说明',
+        tips_title: '建议', tips_sub: '基于最新读数的自动建议', tips_wait: '等待传感器数据…',
+        stats_title: '会话统计', stats_sub: '基于已加载数据', range: '范围 {a} – {b}',
+        st_aqi_min: '最低 AQI', st_aqi_avg: '平均 AQI', st_aqi_max: '最高 AQI', st_pm_avg: '平均 PM2.5', st_gas_avg: '平均气体', st_count: '数据点数',
+        csv_title: '下载 CSV 数据', csv_h: '时间|aqi|状态|pm25_ugm3|气体_adc|温度_c|湿度_pct',
+        trend_title: '读数趋势', trend_sub: '来自 Supabase 的实时图表，每 5 秒刷新。请选择要显示的参数。',
+        mode_all: '全部参数', mode_aqi: '仅 AQI', mode_pmgas: 'PM2.5 + 气体', mode_pm: '仅 PM2.5', mode_gas: '仅气体', mode_custom: '自定义',
+        hist_dht: 'DHT22 传感器历史', ds_gas: '气体 (ADC)', ds_temp: '温度 (°C)', ds_hum: '湿度 (%)', ax_gas: '气体 ADC',
+        ai_sub: '提问或请求解释', ai_desc: 'AI 直接从数据库读取最新传感器数据，即使设备离线也可用。其回答不构成医疗诊断。',
+        ai_analyze: '分析最新状况', ai_analyze_p: '请分析最新的空气质量状况并给出简短的健康建议。',
+        q_pm: '什么是 PM2.5？', p_pm: 'PM2.5 是什么？为什么有害？',
+        q_aqi: '如何看 AQI', p_aqi: '如何正确解读 AQI？',
+        q_act: '可以活动吗？', p_act: '现在适合活动或运动吗？',
+        q_gas: '气体偏高的原因？', p_gas: '我的 MQ-2 气体读数偏高是什么原因？应该怎么做？',
+        q_now: '当前情况', p_now: '现在的空气状况如何？',
+        clear_chat: '清除聊天记录', chat_ph: '输入问题…', mini_ph: '随便问点什么…', send: '发送',
+        ai_endpoint: 'AI 接口：/api/chat', mini_status: '通过 /api/chat 连接', jump_full: '打开完整面板',
+        fab_sub: '询问空气质量', fab_close: '关闭 AI', fab_close_sub: '对话面板', panel_sub: '空气质量助手', close: '关闭',
+        greet_main: '你好！我可以从数据库读取最新传感器数据并解释空气状况，即使设备离线也可以。',
+        greet_mini: '你好！想了解 AQI 或传感器参数吗？',
+        role_you: '你', role_sys: '系统信息', err_fail: '请求失败。', err_net: '无法连接 AI 服务。', err_noans: 'AI 暂无回复。',
+        footer_data: '数据来自 Supabase · 每 5 秒刷新',
+        st_aman: '安全', st_waspada: '警戒', st_bahaya: '危险',
+        cat_prefix: '类别：{s}', cat_last: '（最后数据）', wait_valid: '等待有效数据', wait_data: '等待数据…',
+        conn_live: '实时连接', conn_wait: '等待传感器数据', mode_live: '实时 Supabase', mode_off: '离线', mode_wait: '等待中', chip_live: '实时',
+        note_on: '传感器数据正常。最后接收：{t}。{n}', note_off: '设备未发送数据。最后接收：{t}。{n}',
+        note_none: '正在等待连接 Supabase。ESP32 启动后传感器数据将自动显示。',
+        trig_ok: '所有参数均在安全范围内。', trig_warn: '警戒状态由 {p} 触发。', trig_bad: '危险状态由 {p} 触发。', and: '和', n_gas: 'MQ-2 气体 ({v} ADC)',
+        tr_up: '上升 {n}', tr_down: '下降 {n}', tr_flat: '稳定',
+        tip_off: '设备离线。建议基于 {t} 的最后数据。',
+        tip_ok1: '空气质量良好，室内外正常活动均安全。', tip_ok2: '定期开窗通风，保持空气清新。',
+        tip_w1: '敏感人群（儿童、老人、哮喘患者）应减少剧烈活动。', tip_w2: '检查传感器附近是否有烟雾、灰尘或气体来源。',
+        tip_b1: '状况危险。请避免长时间停留在该区域并减少体力活动。', tip_b2: '如必须在该区域停留，请佩戴 N95/KN95 口罩。',
+        tip_gas: 'MQ-2 气体偏高（{v} ADC）。请关闭火源/炉灶并通风；如闻到燃气味请离开房间。',
+        tip_pm: 'PM2.5 偏高（{v} µg/m³）。请关闭窗户，如有空气净化器请开启。',
+        tip_heat: '温度偏高（{v} °C）。请多喝水并改善空气流通。',
+        tip_dry: '湿度偏低（{v}%）。干燥空气可能刺激呼吸道和眼睛。',
+        tip_damp: '湿度偏高（{v}%）。霉菌风险增加；请保持通风或使用除湿机。',
+        toast_up_t: '状态升至{s}', notif_on_t: '通知已开启', notif_on_m: '空气状态恶化时将通知你。',
+        notif_noperm: '尚未授予浏览器通知权限；提醒仍会显示在本页面。',
+        notif_off_t: '通知已关闭', notif_off_m: '状态恶化时页面内提醒仍会显示。',
+        nodata_t: '暂无数据', nodata_m: '请等待传感器数据加载。', clear_t: '记录已清除', clear_m: '与 AI 的对话已清除。'
+      },
+      es: {
+        title: 'Weather-Cube · Monitoreo de calidad del aire', meta_desc: 'Weather-Cube — panel de monitoreo de la calidad del aire.',
+        nav_overview: 'Resumen', nav_insights: 'Análisis', nav_trends: 'Historial', nav_ai: 'Asistente IA',
+        theme_light: 'Modo claro', theme_dark: 'Modo oscuro', wifi_settings: 'Ajustes de Wi-Fi', lang_label: 'Idioma',
+        bell_on: 'Notificaciones activas (clic para desactivar)', bell_off: 'Activar notificaciones cuando el estado empeore',
+        eyebrow_env: 'Monitoreo ambiental', page_title: 'Calidad del aire actual',
+        page_sub: 'AQI, partículas finas y tendencias de lectura, de un vistazo y sin complicaciones.',
+        loc_detecting: 'Detectando ubicación…', loc_unavailable: 'Ubicación no disponible',
+        local_time: 'Hora local', ui_updated: 'Interfaz actualizada', eyebrow_aqi: 'Índice de calidad del aire',
+        g_safe: 'Seguro (≤50)', g_warn: 'Precaución (51–100)', g_danger: 'Peligro (>100)', reading_status: 'Estado de lectura',
+        m_pm: 'Partículas PM2.5', m_gas: 'Sensor de gas (MQ-2)', gas_note: 'Detección de humo y gas', m_temp: 'Temperatura ambiente', m_hum: 'Humedad', t_temp: 'Temperatura', sensor: 'Sensor',
+        sum_title: 'Resumen de condición', sum_sub: 'Estado del sistema y notas de lectura',
+        tips_title: 'Recomendaciones', tips_sub: 'Consejos automáticos según la última lectura', tips_wait: 'Esperando datos del sensor…',
+        stats_title: 'Estadísticas de la sesión', stats_sub: 'De los datos cargados', range: 'Rango {a} – {b}',
+        st_aqi_min: 'AQI mínimo', st_aqi_avg: 'AQI promedio', st_aqi_max: 'AQI máximo', st_pm_avg: 'PM2.5 promedio', st_gas_avg: 'Gas promedio', st_count: 'Datos',
+        csv_title: 'Descargar datos en CSV', csv_h: 'hora|aqi|estado|pm25_ugm3|gas_adc|temp_c|humedad_pct',
+        trend_title: 'Tendencias de lectura', trend_sub: 'Gráfico en tiempo real desde Supabase, se actualiza cada 5 segundos. Elige qué parámetros mostrar.',
+        mode_all: 'Todos los parámetros', mode_aqi: 'Solo AQI', mode_pmgas: 'PM2.5 + Gas', mode_pm: 'Solo PM2.5', mode_gas: 'Solo gas', mode_custom: 'Personalizado',
+        hist_dht: 'Historial del sensor DHT22', ds_gas: 'Gas (ADC)', ds_temp: 'Temperatura (°C)', ds_hum: 'Humedad (%)', ax_gas: 'Gas ADC',
+        ai_sub: 'Pregunta o pide una explicación', ai_desc: 'La IA lee los datos más recientes directamente de la base de datos, incluso con el dispositivo sin conexión. Sus respuestas no son diagnósticos médicos.',
+        ai_analyze: 'Analizar la condición actual', ai_analyze_p: 'Analiza la condición más reciente de la calidad del aire y da un breve consejo de salud.',
+        q_pm: '¿Qué es PM2.5?', p_pm: '¿Qué es PM2.5 y por qué es dañino?',
+        q_aqi: 'Cómo leer el AQI', p_aqi: '¿Cómo se lee correctamente el AQI?',
+        q_act: '¿Seguro hacer actividad?', p_act: '¿Es seguro hacer actividad o ejercicio ahora?',
+        q_gas: '¿Por qué el gas es alto?', p_gas: '¿Qué causa que mi lectura de gas MQ-2 sea alta y qué debo hacer?',
+        q_now: 'Situación actual', p_now: '¿Cómo está el aire ahora?',
+        clear_chat: 'Borrar historial del chat', chat_ph: 'Escribe una pregunta…', mini_ph: 'Pregunta algo…', send: 'Enviar',
+        ai_endpoint: 'Endpoint de IA: /api/chat', mini_status: 'Conectado mediante /api/chat', jump_full: 'Abrir panel completo',
+        fab_sub: 'Pregunta sobre la calidad del aire', fab_close: 'Cerrar IA', fab_close_sub: 'Panel de chat', panel_sub: 'Asistente de calidad del aire', close: 'Cerrar',
+        greet_main: '¡Hola! Puedo leer los últimos datos del sensor desde la base de datos y explicar la calidad del aire, incluso si el dispositivo está sin conexión.',
+        greet_mini: '¡Hola! ¿Quieres saber algo sobre el AQI o los parámetros del sensor?',
+        role_you: 'Tú', role_sys: 'Info del sistema', err_fail: 'La solicitud falló.', err_net: 'No se pudo contactar con el servicio de IA.', err_noans: 'Aún no hay respuesta de la IA.',
+        footer_data: 'Datos de Supabase · se actualiza cada 5 segundos',
+        st_aman: 'Seguro', st_waspada: 'Precaución', st_bahaya: 'Peligro',
+        cat_prefix: 'Categoría: {s}', cat_last: ' (último dato)', wait_valid: 'Esperando datos válidos', wait_data: 'Esperando datos…',
+        conn_live: 'Conectado en vivo', conn_wait: 'Esperando datos del sensor', mode_live: 'Supabase en vivo', mode_off: 'Sin conexión', mode_wait: 'En espera', chip_live: 'En vivo',
+        note_on: 'Datos del sensor activos. Último recibido: {t}. {n}', note_off: 'El dispositivo no envía datos. Último dato recibido: {t}. {n}',
+        note_none: 'Esperando conexión con Supabase. Los datos aparecerán automáticamente cuando el ESP32 esté activo.',
+        trig_ok: 'Todos los parámetros están dentro de los límites seguros.', trig_warn: 'Estado de precaución provocado por {p}.', trig_bad: 'Estado de peligro provocado por {p}.', and: 'y', n_gas: 'Gas MQ-2 ({v} ADC)',
+        tr_up: 'sube {n}', tr_down: 'baja {n}', tr_flat: 'estable',
+        tip_off: 'El dispositivo está sin conexión. Las recomendaciones usan el último dato de {t}.',
+        tip_ok1: 'La calidad del aire es buena. Es seguro realizar actividades normales dentro y fuera.', tip_ok2: 'Ventila periódicamente para mantener el aire fresco.',
+        tip_w1: 'Los grupos sensibles (niños, mayores, personas con asma) deberían reducir la actividad intensa.', tip_w2: 'Revisa si hay fuentes de humo, polvo o gas cerca del sensor.',
+        tip_b1: 'Condiciones peligrosas. Evita permanecer en esta zona y limita la actividad física.', tip_b2: 'Si debes estar en esta zona, usa una mascarilla N95/KN95.',
+        tip_gas: 'Gas MQ-2 alto ({v} ADC). Apaga llamas/estufas, ventila y sal de la habitación si hueles a gas.',
+        tip_pm: 'PM2.5 alto ({v} µg/m³). Cierra las ventanas y usa un purificador de aire si tienes.',
+        tip_heat: 'Temperatura alta ({v} °C). Bebe más agua y mejora la circulación del aire.',
+        tip_dry: 'Humedad baja ({v}%). El aire seco puede irritar las vías respiratorias y los ojos.',
+        tip_damp: 'Humedad alta ({v}%). Aumenta el riesgo de moho; ventila o usa un deshumidificador.',
+        toast_up_t: 'El estado subió a {s}', notif_on_t: 'Notificaciones activadas', notif_on_m: 'Se te avisará cuando empeore el estado del aire.',
+        notif_noperm: 'No se concedió permiso de notificaciones; las alertas seguirán apareciendo en esta página.',
+        notif_off_t: 'Notificaciones desactivadas', notif_off_m: 'Las alertas en la página seguirán apareciendo cuando el estado empeore.',
+        nodata_t: 'Aún no hay datos', nodata_m: 'Espera a que se carguen los datos del sensor.', clear_t: 'Historial borrado', clear_m: 'La conversación con la IA se ha borrado.'
+      },
+      ar: {
+        title: 'Weather-Cube · مراقبة جودة الهواء', meta_desc: 'Weather-Cube — لوحة مراقبة جودة الهواء.',
+        nav_overview: 'نظرة عامة', nav_insights: 'تحليلات', nav_trends: 'السجل', nav_ai: 'مساعد الذكاء الاصطناعي',
+        theme_light: 'الوضع الفاتح', theme_dark: 'الوضع الداكن', wifi_settings: 'إعدادات Wi-Fi', lang_label: 'اللغة',
+        bell_on: 'الإشعارات مفعّلة (انقر للإيقاف)', bell_off: 'تفعيل الإشعارات عند تدهور الحالة',
+        eyebrow_env: 'المراقبة البيئية', page_title: 'جودة الهواء الحالية',
+        page_sub: 'مؤشر جودة الهواء والجسيمات الدقيقة واتجاهات القراءة — كل شيء في نظرة واحدة.',
+        loc_detecting: 'جارٍ تحديد الموقع…', loc_unavailable: 'الموقع غير متاح',
+        local_time: 'الوقت المحلي', ui_updated: 'تحديث الواجهة', eyebrow_aqi: 'مؤشر جودة الهواء',
+        g_safe: 'آمن (≤50)', g_warn: 'تحذير (51–100)', g_danger: 'خطر (>100)', reading_status: 'حالة القراءة',
+        m_pm: 'جسيمات PM2.5', m_gas: 'مستشعر الغاز (MQ-2)', gas_note: 'كشف الدخان والغاز', m_temp: 'درجة حرارة الغرفة', m_hum: 'الرطوبة', t_temp: 'الحرارة', sensor: 'مستشعر',
+        sum_title: 'ملخص الحالة', sum_sub: 'حالة النظام وملاحظات القراءة',
+        tips_title: 'التوصيات', tips_sub: 'نصائح تلقائية بناءً على آخر قراءة', tips_wait: 'بانتظار بيانات المستشعر…',
+        stats_title: 'إحصاءات الجلسة', stats_sub: 'من البيانات المحمّلة', range: 'النطاق {a} – {b}',
+        st_aqi_min: 'أدنى AQI', st_aqi_avg: 'متوسط AQI', st_aqi_max: 'أعلى AQI', st_pm_avg: 'متوسط PM2.5', st_gas_avg: 'متوسط الغاز', st_count: 'عدد البيانات',
+        csv_title: 'تنزيل البيانات بصيغة CSV', csv_h: 'الوقت|aqi|الحالة|pm25_ugm3|gas_adc|temp_c|humidity_pct',
+        trend_title: 'اتجاهات القراءة', trend_sub: 'مخطط لحظي من Supabase يتحدّث كل 5 ثوانٍ. اختر المعاملات المراد عرضها.',
+        mode_all: 'كل المعاملات', mode_aqi: 'AQI فقط', mode_pmgas: 'PM2.5 + الغاز', mode_pm: 'PM2.5 فقط', mode_gas: 'الغاز فقط', mode_custom: 'مخصّص',
+        hist_dht: 'سجل مستشعر DHT22', ds_gas: 'الغاز (ADC)', ds_temp: 'الحرارة (°C)', ds_hum: 'الرطوبة (%)', ax_gas: 'الغاز ADC',
+        ai_sub: 'اسأل أو اطلب شرحًا', ai_desc: 'يقرأ الذكاء الاصطناعي أحدث بيانات المستشعر مباشرة من قاعدة البيانات حتى عند انقطاع الجهاز. إجاباته ليست تشخيصًا طبيًا.',
+        ai_analyze: 'تحليل الحالة الأحدث', ai_analyze_p: 'حلّل أحدث حالة لجودة الهواء وقدّم نصيحة صحية موجزة.',
+        q_pm: 'ما هو PM2.5؟', p_pm: 'ما هو PM2.5 ولماذا هو ضار؟',
+        q_aqi: 'كيف تقرأ AQI', p_aqi: 'كيف أقرأ مؤشر AQI بشكل صحيح؟',
+        q_act: 'هل النشاط آمن؟', p_act: 'هل من الآمن ممارسة النشاط أو الرياضة الآن؟',
+        q_gas: 'لماذا الغاز مرتفع؟', p_gas: 'ما سبب ارتفاع قراءة الغاز MQ-2 وماذا أفعل؟',
+        q_now: 'الوضع الحالي', p_now: 'كيف حال الهواء الآن؟',
+        clear_chat: 'مسح سجل المحادثة', chat_ph: 'اكتب سؤالك…', mini_ph: 'اسأل أي شيء…', send: 'إرسال',
+        ai_endpoint: 'نقطة وصول الذكاء الاصطناعي: /api/chat', mini_status: 'متصل عبر /api/chat', jump_full: 'فتح اللوحة الكاملة',
+        fab_sub: 'اسأل عن جودة الهواء', fab_close: 'إغلاق الذكاء', fab_close_sub: 'لوحة المحادثة', panel_sub: 'مساعد جودة الهواء', close: 'إغلاق',
+        greet_main: 'مرحبًا! يمكنني قراءة أحدث بيانات المستشعر من قاعدة البيانات وشرح حالة الهواء حتى لو كان الجهاز غير متصل.',
+        greet_mini: 'مرحبًا! هل تريد معرفة شيء عن AQI أو قراءات المستشعر؟',
+        role_you: 'أنت', role_sys: 'معلومات النظام', err_fail: 'فشل الطلب.', err_net: 'تعذّر الاتصال بخدمة الذكاء الاصطناعي.', err_noans: 'لا يوجد رد من الذكاء الاصطناعي بعد.',
+        footer_data: 'البيانات من Supabase · تتحدّث كل 5 ثوانٍ',
+        st_aman: 'آمن', st_waspada: 'تحذير', st_bahaya: 'خطر',
+        cat_prefix: 'الفئة: {s}', cat_last: ' (آخر بيانات)', wait_valid: 'بانتظار بيانات صالحة', wait_data: 'بانتظار البيانات…',
+        conn_live: 'متصل مباشرة', conn_wait: 'بانتظار بيانات المستشعر', mode_live: 'Supabase مباشر', mode_off: 'غير متصل', mode_wait: 'بالانتظار', chip_live: 'مباشر',
+        note_on: 'بيانات المستشعر نشطة. آخر استلام: {t}. {n}', note_off: 'الجهاز لا يرسل بيانات. آخر بيانات مستلمة: {t}. {n}',
+        note_none: 'بانتظار الاتصال بـ Supabase. ستظهر البيانات تلقائيًا عند تشغيل ESP32.',
+        trig_ok: 'جميع المعاملات ضمن الحدود الآمنة.', trig_warn: 'حالة التحذير ناتجة عن {p}.', trig_bad: 'حالة الخطر ناتجة عن {p}.', and: 'و', n_gas: 'غاز MQ-2 ({v} ADC)',
+        tr_up: 'ارتفاع {n}', tr_down: 'انخفاض {n}', tr_flat: 'مستقر',
+        tip_off: 'الجهاز غير متصل. التوصيات مبنية على آخر بيانات في {t}.',
+        tip_ok1: 'جودة الهواء جيدة. آمن لممارسة الأنشطة المعتادة داخل المنزل وخارجه.', tip_ok2: 'افتح التهوية بشكل دوري للحفاظ على نقاء الهواء.',
+        tip_w1: 'يجب على الفئات الحساسة (الأطفال وكبار السن ومرضى الربو) تقليل الأنشطة الشاقة.', tip_w2: 'تحقّق من مصادر الدخان أو الغبار أو الغاز قرب المستشعر.',
+        tip_b1: 'الوضع خطير. تجنّب البقاء طويلًا في هذه المنطقة وقلّل النشاط البدني.', tip_b2: 'إذا اضطررت للتواجد هنا فارتدِ كمامة N95/KN95.',
+        tip_gas: 'غاز MQ-2 مرتفع ({v} ADC). أطفئ مصادر اللهب/الموقد وافتح التهوية وغادر الغرفة إذا شممت رائحة غاز.',
+        tip_pm: 'PM2.5 مرتفع ({v} µg/m³). أغلق النوافذ وشغّل جهاز تنقية الهواء إن وُجد.',
+        tip_heat: 'درجة الحرارة مرتفعة ({v} °م). اشرب مزيدًا من الماء وحسّن تهوية المكان.',
+        tip_dry: 'رطوبة منخفضة ({v}%). الهواء الجاف قد يهيّج الجهاز التنفسي والعينين.',
+        tip_damp: 'رطوبة مرتفعة ({v}%). يزداد خطر العفن؛ حافظ على التهوية أو استخدم مزيل رطوبة.',
+        toast_up_t: 'ارتفعت الحالة إلى {s}', notif_on_t: 'تم تفعيل الإشعارات', notif_on_m: 'سيتم إعلامك عند تدهور حالة الهواء.',
+        notif_noperm: 'لم يُمنح إذن إشعارات المتصفح؛ ستظهر التنبيهات في هذه الصفحة.',
+        notif_off_t: 'تم إيقاف الإشعارات', notif_off_m: 'ستظل التنبيهات داخل الصفحة تظهر عند تدهور الحالة.',
+        nodata_t: 'لا توجد بيانات بعد', nodata_m: 'انتظر حتى يتم تحميل بيانات المستشعر.', clear_t: 'تم مسح السجل', clear_m: 'تم مسح المحادثة مع الذكاء الاصطناعي.'
+      }
+    };
+
+    function pickLang() {
+      try { const s = localStorage.getItem('wc_lang'); if (s && LANGS[s]) return s; } catch (_) {}
+      const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'id').slice(0, 2).toLowerCase();
+      return LANGS[nav] ? nav : 'id';
+    }
+    let lang = pickLang();
+
+    const t = (key, vars) => {
+      let s = I18N[lang] && I18N[lang][key];
+      if (s === undefined) s = I18N.id[key];
+      if (s === undefined) return key;
+      if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] !== undefined ? vars[k] : m));
+      return s;
+    };
+
+    const LTR_CSS = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
+    const RTL_CSS = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css';
 
     // ==========================================
     // 1. KONFIGURASI
@@ -700,17 +1007,16 @@
 
     function classify(aqi) {
       if (aqi === null) return null;
-      if (aqi > 100) return { key: 'bahaya', label: 'Bahaya', cls: 'bad', sev: 2 };
-      if (aqi > 50)  return { key: 'waspada', label: 'Waspada', cls: '', sev: 1 };
-      return { key: 'aman', label: 'Aman', cls: 'good', sev: 0 };
+      if (aqi > 100) return { key: 'bahaya', label: t('st_bahaya'), cls: 'bad', sev: 2 };
+      if (aqi > 50)  return { key: 'waspada', label: t('st_waspada'), cls: '', sev: 1 };
+      return { key: 'aman', label: t('st_aman'), cls: 'good', sev: 0 };
     }
 
     const levelOf = (v, warn, bad) => v === null ? null : v > bad ? 'bahaya' : v > warn ? 'waspada' : 'aman';
-    const LEVEL_TEXT = { aman: 'Aman', waspada: 'Waspada', bahaya: 'Bahaya' };
 
     function setLevelChip(elm, level) {
       elm.className = 'lvl' + (level ? ' ' + level : '');
-      elm.textContent = level ? LEVEL_TEXT[level] : '--';
+      elm.textContent = level ? t('st_' + level) : '--';
     }
 
     function triggerNote(pm25, mq2) {
@@ -719,19 +1025,27 @@
       const pl = sev[levelOf(pm, 50, 150)] ?? 0;
       const gl = sev[levelOf(gas, 1000, 2000)] ?? 0;
       const worst = Math.max(pl, gl);
-      if (worst === 0) return 'Semua parameter dalam batas aman.';
+      if (worst === 0) return t('trig_ok');
       const names = [];
       if (pl === worst) names.push('PM2.5 (' + pm + ' µg/m³)');
-      if (gl === worst) names.push('Gas MQ-2 (' + gas + ' ADC)');
-      return 'Status ' + (worst === 2 ? 'bahaya' : 'waspada') + ' dipicu oleh ' + names.join(' dan ') + '.';
+      if (gl === worst) names.push(t('n_gas', { v: gas }));
+      return t(worst === 2 ? 'trig_bad' : 'trig_warn', { p: names.join(' ' + t('and') + ' ') });
     }
 
     // ==========================================
     // 1c. RENDER TEKS AI (markdown ringan -> HTML aman)
-    //   Tanda ** ** / * * / # tidak pernah tampil mentah di chat.
     // ==========================================
     function escapeHtml(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Kata status (bahasa aktif + Indonesia untuk riwayat lama) -> lencana berwarna
+    function statusRegex() {
+      const words = [...LANGS[lang].tok, ...LANGS.id.tok].map(escapeRe).join('|');
+      if (lang === 'zh') return new RegExp('(' + words + ')', 'g');
+      try { return new RegExp('(?<![\\p{L}\\p{N}])(' + words + ')(?![\\p{L}\\p{N}])', 'gu'); }
+      catch (_) { return new RegExp('\\b(' + words + ')\\b', 'g'); }
     }
 
     function inlineFmt(s) {
@@ -740,8 +1054,12 @@
       s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
       s = s.replace(/__([^_]+)__/g, '<strong>$1</strong>');
       s = s.replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,!?:;]|$)/g, '$1<em>$2</em>');
-      s = s.replace(/\*+/g, '');   // buang sisa tanda bintang
-      s = s.replace(/\b(AMAN|WASPADA|BAHAYA)\b/g, m => '<span class="tag tag-' + m.toLowerCase() + '">' + m + '</span>');
+      s = s.replace(/\*+/g, '');
+      s = s.replace(statusRegex(), m => {
+        let i = LANGS[lang].tok.indexOf(m);
+        if (i < 0) i = LANGS.id.tok.indexOf(m);
+        return i < 0 ? m : '<span class="tag tag-' + ['aman', 'waspada', 'bahaya'][i] + '">' + m + '</span>';
+      });
       return s;
     }
 
@@ -783,14 +1101,14 @@
       root.style.colorScheme = normalized;
       const isLight = normalized === 'light';
       themeIcon.className = 'bi ' + (isLight ? 'bi-moon-stars' : 'bi-sun');
-      themeLabel.textContent = isLight ? 'Mode gelap' : 'Mode terang';
+      themeLabel.textContent = isLight ? t('theme_dark') : t('theme_light');
       if (save) localStorage.setItem('weatherCubeTheme', normalized);
       updateChartTheme();
     }
 
     themeToggle.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true));
 
-    const timeFormat = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    let timeFormat = new Intl.DateTimeFormat(LANGS[lang].loc, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     function updateClock() {
       const now = new Date();
       $('currentTime').textContent = timeFormat.format(now);
@@ -798,21 +1116,24 @@
       $('currentYear').textContent = now.getFullYear();
     }
     setInterval(updateClock, 1000);
-    updateClock();
 
+    let locState = { kind: 'detecting', text: '' };
+    function renderLocation() {
+      $('userLocation').textContent = locState.kind === 'label' ? locState.text : t(locState.kind === 'detecting' ? 'loc_detecting' : 'loc_unavailable');
+    }
     async function autoDetectLocation() {
-      const el = $('userLocation');
       const cached = sessionStorage.getItem('wc_location');
-      if (cached) { el.textContent = cached; return; }
+      if (cached) { locState = { kind: 'label', text: cached }; renderLocation(); return; }
       try {
         const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3500) });
         const data = await res.json();
         const label = [data.city || '', data.region || ''].filter(Boolean).join(', ');
-        el.textContent = label || 'Lokasi tidak tersedia';
-        if (label) sessionStorage.setItem('wc_location', label);
+        if (label) { sessionStorage.setItem('wc_location', label); locState = { kind: 'label', text: label }; }
+        else locState = { kind: 'unavailable', text: '' };
       } catch (_) {
-        el.textContent = 'Lokasi tidak tersedia';
+        locState = { kind: 'unavailable', text: '' };
       }
+      renderLocation();
     }
     autoDetectLocation();
 
@@ -862,7 +1183,7 @@
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: { display: true, labels: { color: c.text, usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
-            tooltip: { backgroundColor: c.tooltip, titleColor: c.tooltipText, bodyColor: c.tooltipText, borderColor: c.grid, borderWidth: 1, padding: 11, displayColors: true }
+            tooltip: { backgroundColor: c.tooltip, titleColor: c.tooltipText, bodyColor: c.tooltipText, borderColor: c.grid, borderWidth: 1, padding: 11, displayColors: true, rtl: LANGS[lang].dir === 'rtl' }
           },
           scales: Object.assign({
             x: { grid: { color: c.grid }, ticks: { color: c.text, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } }
@@ -876,36 +1197,36 @@
     airChart = createChart('airChart', [
       ds('AQI', '#f5c65e', { backgroundColor: 'rgba(245,198,94,.10)', fill: true, yAxisID: 'y' }),
       ds('PM2.5', '#63e1d0', { yAxisID: 'y' }),
-      ds('Gas (ADC)', '#b2a0ff', { yAxisID: 'y1' })
+      ds(t('ds_gas'), '#b2a0ff', { yAxisID: 'y1' })
     ], c => ({
       y: { beginAtZero: true, position: 'left', grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: 'AQI / PM2.5', color: c.text, font: { size: 10 } } },
-      y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: 'Gas ADC', color: c.text, font: { size: 10 } } }
+      y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: t('ax_gas'), color: c.text, font: { size: 10 } } }
     }));
 
     tempChart = createChart('tempChart', [
-      ds('Suhu (°C)', '#ffd166', { backgroundColor: 'rgba(255,209,102,.10)', fill: true })
+      ds(t('ds_temp'), '#ffd166', { backgroundColor: 'rgba(255,209,102,.10)', fill: true })
     ], c => ({
       y: { grace: '15%', grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: '°C', color: c.text, font: { size: 10 } } }
     }));
 
     humChart = createChart('humChart', [
-      ds('Kelembapan (%)', '#63a1ff', { backgroundColor: 'rgba(99,161,255,.10)', fill: true })
+      ds(t('ds_hum'), '#63a1ff', { backgroundColor: 'rgba(99,161,255,.10)', fill: true })
     ], c => ({
       y: { grace: '15%', grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 5 }, title: { display: true, text: '%', color: c.text, font: { size: 10 } } }
     }));
 
     // ---- Pilihan parameter grafik utama (suhu & kelembapan tidak ikut) ----
     const CHART_MODES = {
-      all:   { label: 'Semua parameter', vis: [1, 1, 1] },
-      aqi:   { label: 'AQI saja',        vis: [1, 0, 0] },
-      pmgas: { label: 'PM2.5 + Gas',     vis: [0, 1, 1] },
-      pm:    { label: 'PM2.5 saja',      vis: [0, 1, 0] },
-      gas:   { label: 'Gas saja',        vis: [0, 0, 1] }
+      all:   { k: 'mode_all',   vis: [1, 1, 1] },
+      aqi:   { k: 'mode_aqi',   vis: [1, 0, 0] },
+      pmgas: { k: 'mode_pmgas', vis: [0, 1, 1] },
+      pm:    { k: 'mode_pm',    vis: [0, 1, 0] },
+      gas:   { k: 'mode_gas',   vis: [0, 0, 1] }
     };
     let chartMode = localStorage.getItem(MODE_KEY);
     if (!CHART_MODES[chartMode]) chartMode = 'all';
+    let customMode = false;
 
-    // Sembunyikan sumbu yang tidak dipakai agar grafik tetap bersih
     function syncAxes(chart) {
       if (!chart) return;
       const c = chartColors();
@@ -918,16 +1239,16 @@
                        : chart.isDatasetVisible(0) ? 'AQI' : 'PM2.5 (µg/m³)';
     }
 
-    function paintModeMenu(customLabel) {
-      $('chartModeLabel').textContent = customLabel || CHART_MODES[chartMode].label;
+    function paintModeMenu() {
+      $('chartModeLabel').textContent = customMode ? t('mode_custom') : t(CHART_MODES[chartMode].k);
       $('chartModeMenu').innerHTML = Object.entries(CHART_MODES).map(([key, m]) =>
-        '<li><button type="button" class="dropdown-item' + (!customLabel && key === chartMode ? ' active' : '') + '" data-mode="' + key + '">' +
-        '<span>' + m.label + '</span><i class="bi bi-check2"></i></button></li>').join('');
+        '<li><button type="button" class="dropdown-item' + (!customMode && key === chartMode ? ' active' : '') + '" data-mode="' + key + '">' +
+        '<span>' + escapeHtml(t(m.k)) + '</span><i class="bi bi-check2"></i></button></li>').join('');
     }
 
     function applyChartMode(mode, save = true) {
       if (!CHART_MODES[mode] || !airChart) return;
-      chartMode = mode;
+      chartMode = mode; customMode = false;
       CHART_MODES[mode].vis.forEach((v, i) => airChart.setDatasetVisibility(i, !!v));
       syncAxes(airChart);
       airChart.update('none');
@@ -946,7 +1267,8 @@
       ci.setDatasetVisibility(item.datasetIndex, !ci.isDatasetVisible(item.datasetIndex));
       syncAxes(ci);
       ci.update('none');
-      paintModeMenu('Kustom');
+      customMode = true;
+      paintModeMenu();
     };
 
     applyChartMode(chartMode, false);
@@ -958,7 +1280,7 @@
     let records = store.get(CACHE_KEY, []);
     if (!Array.isArray(records)) records = [];
 
-    const fmtTime = iso => new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const fmtTime = iso => new Date(iso).toLocaleTimeString(LANGS[lang].loc, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 
     function mergeRecords(list) {
       const map = new Map(records.map(r => [r.created_at, r]));
@@ -1000,7 +1322,6 @@
       dataMode: $('dataMode'), systemDot: $('systemDot'), systemChipText: $('systemChipText'), systemNote: $('systemNote')
     };
 
-    // Tampilkan nilai; AQI dihitung dari PM2.5 + Gas agar sinkron dengan status di ESP32
     function showValues(data) {
       const pm25 = num(data.pm25), mq2 = num(data.mq2), temp = num(data.temp), hum = num(data.hum);
       let aqiF = calcAqi(pm25, mq2);
@@ -1024,43 +1345,44 @@
       const p = prev ? aqiOf(prev) : null;
       if (aqi === null || p === null) { el.aqiTrend.textContent = ''; el.aqiTrend.className = 'trend-chip'; return; }
       const d = Math.round(aqi) - Math.round(p);
-      if (d >= 2)       { el.aqiTrend.className = 'trend-chip up';   el.aqiTrend.innerHTML = '<i class="bi bi-arrow-up-right"></i> naik ' + d; }
-      else if (d <= -2) { el.aqiTrend.className = 'trend-chip down'; el.aqiTrend.innerHTML = '<i class="bi bi-arrow-down-right"></i> turun ' + Math.abs(d); }
-      else              { el.aqiTrend.className = 'trend-chip';      el.aqiTrend.innerHTML = '<i class="bi bi-dash"></i> stabil'; }
+      if (d >= 2)       { el.aqiTrend.className = 'trend-chip up';   el.aqiTrend.innerHTML = '<i class="bi bi-arrow-up-right"></i> ' + escapeHtml(t('tr_up', { n: d })); }
+      else if (d <= -2) { el.aqiTrend.className = 'trend-chip down'; el.aqiTrend.innerHTML = '<i class="bi bi-arrow-down-right"></i> ' + escapeHtml(t('tr_down', { n: Math.abs(d) })); }
+      else              { el.aqiTrend.className = 'trend-chip';      el.aqiTrend.innerHTML = '<i class="bi bi-dash"></i> ' + escapeHtml(t('tr_flat')); }
     }
 
     function renderStatus(data, aqi, online, prev) {
       const cat = classify(aqi);
       el.connDot.classList.toggle('connected', online);
       el.systemDot.classList.toggle('connected', online);
-      el.connText.textContent = online ? 'Live Connected' : 'Menunggu data sensor';
-      el.dataMode.textContent = online ? 'Live Supabase' : 'Offline';
-      el.systemChipText.textContent = online ? 'Live' : 'Offline';
+      el.connText.textContent = online ? t('conn_live') : t('conn_wait');
+      el.dataMode.textContent = online ? t('mode_live') : t('mode_off');
+      el.systemChipText.textContent = online ? t('chip_live') : t('mode_off');
 
       if (!cat) {
         el.aqiStatus.className = 'hero-status offline';
-        el.aqiStatusText.textContent = online ? 'Menunggu data valid' : 'Perangkat Disconnected';
+        el.aqiStatusText.textContent = t('wait_valid');
       } else {
         el.aqiStatus.className = 'hero-status ' + cat.cls;
-        el.aqiStatusText.textContent = 'Kategori: ' + cat.label + (online ? '' : ' (data terakhir)');
+        el.aqiStatusText.textContent = t('cat_prefix', { s: cat.label }) + (online ? '' : t('cat_last'));
       }
       renderTrend(aqi, prev);
-
-      const note = triggerNote(data.pm25, data.mq2);
-      el.systemNote.textContent = online
-        ? 'Data sensor aktif. Terakhir diterima: ' + fmtTime(data.created_at) + '. ' + note
-        : 'Perangkat tidak mengirim data. Data terakhir diterima: ' + fmtTime(data.created_at) + '. ' + note;
+      el.systemNote.textContent = t(online ? 'note_on' : 'note_off', { t: fmtTime(data.created_at), n: triggerNote(data.pm25, data.mq2) });
     }
 
     function setNoData() {
       el.connDot.classList.remove('connected');
       el.systemDot.classList.remove('connected');
-      el.connText.textContent = 'Menunggu data sensor';
+      el.connText.textContent = t('conn_wait');
       el.aqiStatus.className = 'hero-status offline';
-      el.aqiStatusText.textContent = 'Perangkat Disconnected';
-      el.dataMode.textContent = 'Offline';
-      el.systemChipText.textContent = 'Offline';
-      el.systemNote.textContent = 'Menunggu koneksi ke Supabase. Data sensor akan muncul otomatis ketika perangkat ESP32 aktif.';
+      el.aqiStatusText.textContent = t('wait_data');
+      el.dataMode.textContent = t('mode_wait');
+      el.systemChipText.textContent = t('mode_off');
+      el.systemNote.textContent = t('note_none');
+      el.aqiTrend.textContent = '';
+      setLevelChip(el.pmLevel, null); setLevelChip(el.gasLevel, null);
+      $('tipsBadge').className = 'lvl'; $('tipsBadge').textContent = '--';
+      $('tipsList').innerHTML = '<li><i class="bi bi-hourglass-split"></i><span>' + escapeHtml(t('tips_wait')) + '</span></li>';
+      $('statSpan').textContent = t('stats_sub');
     }
 
     // ==========================================
@@ -1068,26 +1390,26 @@
     // ==========================================
     function buildTips(latest, aqi, online) {
       const cat = classify(aqi);
-      if (!cat) return [{ icon: 'bi-hourglass-split', cls: '', text: 'Menunggu data sensor...' }];
+      if (!cat) return [{ icon: 'bi-hourglass-split', cls: '', text: t('tips_wait') }];
       const pm = num(latest.pm25), gas = num(latest.mq2), temp = num(latest.temp), hum = num(latest.hum);
       const tips = [];
-      if (!online) tips.push({ icon: 'bi-wifi-off', cls: 'warn', text: 'Perangkat sedang offline. Rekomendasi memakai data terakhir pukul ' + fmtTime(latest.created_at) + '.' });
+      if (!online) tips.push({ icon: 'bi-wifi-off', cls: 'warn', text: t('tip_off', { t: fmtTime(latest.created_at) }) });
 
       if (cat.key === 'aman') {
-        tips.push({ icon: 'bi-emoji-smile', cls: 'good', text: 'Kualitas udara baik. Aman untuk aktivitas normal di dalam maupun luar ruangan.' });
-        tips.push({ icon: 'bi-door-open', cls: '', text: 'Buka ventilasi secara berkala agar sirkulasi udara tetap segar.' });
+        tips.push({ icon: 'bi-emoji-smile', cls: 'good', text: t('tip_ok1') });
+        tips.push({ icon: 'bi-door-open', cls: '', text: t('tip_ok2') });
       } else if (cat.key === 'waspada') {
-        tips.push({ icon: 'bi-exclamation-triangle', cls: 'warn', text: 'Kelompok sensitif (anak, lansia, penderita asma) sebaiknya mengurangi aktivitas berat.' });
-        tips.push({ icon: 'bi-search', cls: '', text: 'Periksa sumber asap, debu, atau gas di sekitar sensor.' });
+        tips.push({ icon: 'bi-exclamation-triangle', cls: 'warn', text: t('tip_w1') });
+        tips.push({ icon: 'bi-search', cls: '', text: t('tip_w2') });
       } else {
-        tips.push({ icon: 'bi-x-octagon', cls: 'bad', text: 'Kondisi berbahaya. Hindari berlama-lama di area ini dan batasi aktivitas fisik.' });
-        tips.push({ icon: 'bi-shield-exclamation', cls: 'bad', text: 'Bila harus berada di area ini, gunakan masker N95/KN95.' });
+        tips.push({ icon: 'bi-x-octagon', cls: 'bad', text: t('tip_b1') });
+        tips.push({ icon: 'bi-shield-exclamation', cls: 'bad', text: t('tip_b2') });
       }
-      if (gas !== null && gas > 1000) tips.push({ icon: 'bi-fire', cls: gas > 2000 ? 'bad' : 'warn', text: 'Gas MQ-2 tinggi (' + gas + ' ADC). Matikan sumber api/kompor, buka ventilasi, dan keluar ruangan jika tercium bau gas.' });
-      if (pm !== null && pm > 50) tips.push({ icon: 'bi-wind', cls: pm > 150 ? 'bad' : 'warn', text: 'PM2.5 tinggi (' + pm + ' µg/m³). Tutup jendela dan nyalakan pembersih udara bila tersedia.' });
-      if (temp !== null && temp > 35) tips.push({ icon: 'bi-thermometer-sun', cls: 'warn', text: 'Suhu tinggi (' + temp + ' °C). Perbanyak minum air dan perbaiki sirkulasi udara.' });
-      if (hum !== null && hum > 0 && hum < 30) tips.push({ icon: 'bi-droplet', cls: '', text: 'Kelembapan rendah (' + hum + '%). Udara kering dapat mengiritasi saluran napas dan mata.' });
-      if (hum !== null && hum > 70) tips.push({ icon: 'bi-moisture', cls: '', text: 'Kelembapan tinggi (' + hum + '%). Risiko jamur meningkat; jaga ventilasi atau gunakan dehumidifier.' });
+      if (gas !== null && gas > 1000) tips.push({ icon: 'bi-fire', cls: gas > 2000 ? 'bad' : 'warn', text: t('tip_gas', { v: gas }) });
+      if (pm !== null && pm > 50) tips.push({ icon: 'bi-wind', cls: pm > 150 ? 'bad' : 'warn', text: t('tip_pm', { v: pm }) });
+      if (temp !== null && temp > 35) tips.push({ icon: 'bi-thermometer-sun', cls: 'warn', text: t('tip_heat', { v: temp }) });
+      if (hum !== null && hum > 0 && hum < 30) tips.push({ icon: 'bi-droplet', cls: '', text: t('tip_dry', { v: hum }) });
+      if (hum !== null && hum > 70) tips.push({ icon: 'bi-moisture', cls: '', text: t('tip_damp', { v: hum }) });
       return tips;
     }
 
@@ -1096,8 +1418,8 @@
       const badge = $('tipsBadge');
       badge.className = 'lvl' + (cat ? ' ' + cat.key : '');
       badge.textContent = cat ? cat.label : '--';
-      $('tipsList').innerHTML = buildTips(latest, aqi, online).map(t =>
-        '<li class="' + t.cls + '"><i class="bi ' + t.icon + '"></i><span>' + escapeHtml(t.text) + '</span></li>').join('');
+      $('tipsList').innerHTML = buildTips(latest, aqi, online).map(tp =>
+        '<li class="' + tp.cls + '"><i class="bi ' + tp.icon + '"></i><span>' + escapeHtml(tp.text) + '</span></li>').join('');
 
       const aqis = records.map(aqiOf).filter(v => v !== null);
       const pms = records.map(r => num(r.pm25)).filter(v => v !== null);
@@ -1111,19 +1433,19 @@
       $('statGasAvg').textContent = fmt(avg(gases));
       $('statCount').textContent = records.length || '--';
       $('statSpan').textContent = records.length > 1
-        ? 'Rentang ' + fmtTime(records[0].created_at) + ' – ' + fmtTime(records[records.length - 1].created_at)
-        : 'Dari data yang termuat';
+        ? t('range', { a: fmtTime(records[0].created_at), b: fmtTime(records[records.length - 1].created_at) })
+        : t('stats_sub');
     }
 
     // ---- Toast + notifikasi browser saat status memburuk ----
     function showToast(type, title, msg) {
       const box = $('toastStack');
       const icon = type === 'bahaya' ? 'bi-x-octagon-fill' : type === 'waspada' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill';
-      const t = document.createElement('div');
-      t.className = 'wc-toast ' + type;
-      t.innerHTML = '<i class="bi ' + icon + '"></i><div><div class="t">' + escapeHtml(title) + '</div><div class="m">' + escapeHtml(msg) + '</div></div>';
-      box.appendChild(t);
-      setTimeout(() => { t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, 7000);
+      const toast = document.createElement('div');
+      toast.className = 'wc-toast ' + type;
+      toast.innerHTML = '<i class="bi ' + icon + '"></i><div><div class="tt">' + escapeHtml(title) + '</div><div class="tm">' + escapeHtml(msg) + '</div></div>';
+      box.appendChild(toast);
+      setTimeout(() => { toast.style.transition = 'opacity .3s'; toast.style.opacity = '0'; setTimeout(() => toast.remove(), 320); }, 7000);
       while (box.children.length > 3) box.firstChild.remove();
     }
 
@@ -1131,7 +1453,8 @@
     function paintBell() {
       $('alertIcon').className = 'bi ' + (alertsOn ? 'bi-bell-fill' : 'bi-bell-slash');
       $('alertToggle').classList.toggle('bell-on', alertsOn);
-      $('alertToggle').title = alertsOn ? 'Notifikasi aktif (klik untuk mematikan)' : 'Aktifkan notifikasi saat status memburuk';
+      $('alertToggle').title = alertsOn ? t('bell_on') : t('bell_off');
+      $('alertToggle').setAttribute('aria-label', $('alertToggle').title);
     }
     $('alertToggle').addEventListener('click', async () => {
       if (!alertsOn) {
@@ -1140,23 +1463,23 @@
         }
         alertsOn = true;
         const granted = 'Notification' in window && Notification.permission === 'granted';
-        showToast('info', 'Notifikasi diaktifkan', granted ? 'Kamu akan diberi tahu saat status udara memburuk.' : 'Izin notifikasi browser belum diberikan; peringatan tetap muncul di halaman ini.');
+        showToast('info', t('notif_on_t'), granted ? t('notif_on_m') : t('notif_noperm'));
       } else {
         alertsOn = false;
-        showToast('info', 'Notifikasi dimatikan', 'Peringatan di halaman tetap muncul saat status memburuk.');
+        showToast('info', t('notif_off_t'), t('notif_off_m'));
       }
       localStorage.setItem(ALERT_KEY, alertsOn ? '1' : '0');
       paintBell();
     });
-    paintBell();
 
     let lastSeverity = null;
     function checkAlert(aqi, online) {
       const cat = classify(aqi);
       if (!cat || !online) return;
       if (lastSeverity !== null && cat.sev > lastSeverity) {
-        const title = 'Status naik ke ' + cat.label;
-        const msg = 'AQI ' + Math.round(aqi) + '. ' + triggerNote(records[records.length - 1].pm25, records[records.length - 1].mq2);
+        const last = records[records.length - 1];
+        const title = t('toast_up_t', { s: cat.label });
+        const msg = 'AQI ' + Math.round(aqi) + '. ' + triggerNote(last.pm25, last.mq2);
         showToast(cat.key, title, msg);
         if (alertsOn && 'Notification' in window && Notification.permission === 'granted') {
           try { new Notification('Weather-Cube · ' + title, { body: msg }); } catch (_) {}
@@ -1167,11 +1490,11 @@
 
     // ---- Ekspor CSV ----
     $('btnExport').addEventListener('click', () => {
-      if (!records.length) { showToast('info', 'Belum ada data', 'Tunggu hingga data sensor termuat.'); return; }
-      const rows = [['waktu', 'aqi', 'status', 'pm25_ugm3', 'gas_adc', 'suhu_c', 'kelembapan_pct']];
+      if (!records.length) { showToast('info', t('nodata_t'), t('nodata_m')); return; }
+      const rows = [t('csv_h').split('|')];
       records.forEach(r => {
         const a = aqiOf(r), c = classify(a);
-        rows.push([new Date(r.created_at).toLocaleString('id-ID', { hour12: false }), a === null ? '' : Math.round(a), c ? c.label : '', r.pm25 ?? '', r.mq2 ?? '', r.temp ?? '', r.hum ?? '']);
+        rows.push([new Date(r.created_at).toLocaleString(LANGS[lang].loc, { hour12: false }), a === null ? '' : Math.round(a), c ? c.label : '', r.pm25 ?? '', r.mq2 ?? '', r.temp ?? '', r.hum ?? '']);
       });
       const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
       const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
@@ -1192,11 +1515,6 @@
       renderStatus(latest, aqi, online, prev);
       updateInsights(latest, aqi, online);
       checkAlert(aqi, online);
-    }
-
-    if (records.length) {
-      renderCharts();
-      applyLatest(records[records.length - 1]);
     }
 
     // ==========================================
@@ -1226,9 +1544,6 @@
       }
     }
 
-    refreshData();
-    setInterval(refreshData, POLL_MS);
-
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         if (records.length) applyLatest(records[records.length - 1]);
@@ -1241,20 +1556,17 @@
     // ==========================================
     // 7. AI CHAT (server membaca Supabase sendiri)
     // ==========================================
-    const GREETING_MAIN = 'Halo! Saya bisa membaca data sensor terakhir dari database dan menjelaskan kondisi udara, termasuk saat perangkat sedang offline.';
-    const GREETING_MINI = 'Halo! Ada yang ingin diketahui tentang AQI atau parameter sensor?';
-
     // Snapshot tampilan dashboard hanya sebagai CADANGAN jika server gagal membaca Supabase.
     function buildContext() {
       if (el.aqiValue.textContent === '--') return '';
-      return `AQI=${el.aqiValue.textContent}, PM2.5=${el.pm25Value.textContent} µg/m³, Gas=${el.mq2Value.textContent} ADC, Suhu=${el.tempValue.textContent}°C, Lembap=${el.humValue.textContent}%, Status=${el.aqiStatusText.textContent}`;
+      return `AQI=${el.aqiValue.textContent}, PM2.5=${el.pm25Value.textContent} µg/m³, Gas=${el.mq2Value.textContent} ADC, Temp=${el.tempValue.textContent}°C, Humidity=${el.humValue.textContent}%, Status=${el.aqiStatusText.textContent}`;
     }
 
     async function askAI(message, history) {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, context: buildContext(), history })
+        body: JSON.stringify({ message, context: buildContext(), history, lang })
       });
       let data = {};
       try { data = await response.json(); } catch (_) {}
@@ -1275,7 +1587,9 @@
       item.className = 'chat-message ' + (role === 'user' ? 'user' : 'ai') + (isError ? ' error' : '');
       const label = document.createElement('span');
       label.className = 'chat-role';
-      label.innerHTML = role === 'user' ? '<i class="bi bi-person me-1"></i>Kamu' : (isError ? '<i class="bi bi-exclamation-circle me-1"></i>Info sistem' : '<i class="bi bi-stars me-1"></i>Weather-Cube AI');
+      label.innerHTML = role === 'user'
+        ? '<i class="bi bi-person me-1"></i>' + escapeHtml(t('role_you'))
+        : (isError ? '<i class="bi bi-exclamation-circle me-1"></i>' + escapeHtml(t('role_sys')) : '<i class="bi bi-stars me-1"></i>Weather-Cube AI');
       const body = document.createElement('div');
       if (loading) { body.innerHTML = typingHtml; }
       else if (role === 'user') { body.textContent = messageText; }
@@ -1293,13 +1607,12 @@
 
     function restoreMainChat() {
       chatBox.innerHTML = '';
-      appendMessage('ai', GREETING_MAIN, false, true);
+      appendMessage('ai', t('greet_main'), false, true);
       const saved = chatLog.slice();
       chatLog = [];
       saved.forEach(m => appendMessage(m.role, m.text, m.error, true));
       chatLog = saved;
     }
-    restoreMainChat();
 
     const historyOf = log => log.filter(m => !m.error).slice(-6).map(m => ({ role: m.role === 'user' ? 'user' : 'ai', text: m.text }));
 
@@ -1315,24 +1628,18 @@
       try {
         const { ok, data } = await askAI(clean, history);
         loading.remove();
-        if (!ok) appendMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
-        else appendMessage('ai', data.answer || 'Belum ada tanggapan dari AI.');
+        if (!ok) appendMessage('ai', data.answer || data.error || t('err_fail'), true);
+        else appendMessage('ai', data.answer || t('err_noans'));
       } catch (error) {
         loading.remove();
-        appendMessage('ai', 'Tidak dapat menghubungi layanan AI.', true);
+        appendMessage('ai', t('err_net'), true);
       } finally {
         chatBusy = false;
         if (quickButton) quickButton.disabled = false;
       }
     }
 
-    if (quickButton) {
-      quickButton.addEventListener('click', () => {
-        // Tanpa menyisipkan angka: server mengambil data terbaru dari Supabase,
-        // sehingga tetap bekerja walau perangkat sedang offline.
-        fetchAIResponse('Analisis kondisi kualitas udara terbaru dan berikan saran kesehatan singkat.');
-      });
-    }
+    if (quickButton) quickButton.addEventListener('click', () => fetchAIResponse(t('ai_analyze_p')));
 
     if (chatForm) {
       chatForm.addEventListener('submit', event => {
@@ -1344,8 +1651,8 @@
       });
     }
 
-    document.querySelectorAll('[data-prompt]').forEach(button => {
-      button.addEventListener('click', () => fetchAIResponse(button.dataset.prompt));
+    document.querySelectorAll('[data-pk]').forEach(button => {
+      button.addEventListener('click', () => fetchAIResponse(t(button.dataset.pk)));
     });
 
     // ==========================================
@@ -1362,14 +1669,19 @@
     let miniLog = store.get(MINI_KEY, []);
     if (!Array.isArray(miniLog)) miniLog = [];
 
+    function paintFab() {
+      const open = floatingPanel.classList.contains('open');
+      assistantFab.innerHTML = open
+        ? '<span class="assistant-fab-icon"><i class="bi bi-chat-dots"></i></span><span class="assistant-fab-copy"><strong>' + escapeHtml(t('fab_close')) + '</strong><small>' + escapeHtml(t('fab_close_sub')) + '</small></span>'
+        : '<span class="assistant-fab-icon"><i class="bi bi-stars"></i></span><span class="assistant-fab-copy"><strong>' + escapeHtml(t('nav_ai')) + '</strong><small>' + escapeHtml(t('fab_sub')) + '</small></span>';
+    }
+
     function setFloatingOpen(open) {
       floatingPanel.classList.toggle('open', open);
       aiBackdrop.classList.toggle('show', open);
       floatingPanel.setAttribute('aria-hidden', String(!open));
       assistantFab.setAttribute('aria-expanded', String(open));
-      assistantFab.innerHTML = open
-        ? '<span class="assistant-fab-icon"><i class="bi bi-chat-dots"></i></span><span class="assistant-fab-copy"><strong>Tutup AI</strong><small>Panel percakapan</small></span>'
-        : '<span class="assistant-fab-icon"><i class="bi bi-stars"></i></span><span class="assistant-fab-copy"><strong>AI Assistant</strong><small>Tanya tentang kualitas udara</small></span>';
+      paintFab();
       if (open) window.setTimeout(() => floatingAIInput.focus(), 170);
     }
 
@@ -1398,13 +1710,12 @@
 
     function restoreMiniChat() {
       floatingAIMessages.innerHTML = '';
-      appendMiniMessage('ai', GREETING_MINI, false, true);
+      appendMiniMessage('ai', t('greet_mini'), false, true);
       const saved = miniLog.slice();
       miniLog = [];
       saved.forEach(m => appendMiniMessage(m.role, m.text, m.error, true));
       miniLog = saved;
     }
-    restoreMiniChat();
 
     async function sendFloatingPrompt(prompt) {
       const clean = String(prompt || '').trim();
@@ -1417,11 +1728,11 @@
       try {
         const { ok, data } = await askAI(clean, history);
         pending.remove();
-        if (!ok) appendMiniMessage('ai', data.answer || data.error || 'Permintaan gagal.', true);
-        else appendMiniMessage('ai', data.answer || 'AI belum mengirimkan jawaban.');
+        if (!ok) appendMiniMessage('ai', data.answer || data.error || t('err_fail'), true);
+        else appendMiniMessage('ai', data.answer || t('err_noans'));
       } catch (error) {
         pending.remove();
-        appendMiniMessage('ai', 'Tidak dapat menghubungi /api/chat.', true);
+        appendMiniMessage('ai', t('err_net'), true);
       } finally {
         floatingBusy = false;
         floatingAIInput.focus();
@@ -1438,22 +1749,21 @@
       });
     }
 
-    document.querySelectorAll('[data-mini-prompt]').forEach(button => {
+    document.querySelectorAll('[data-mini-pk]').forEach(button => {
       button.addEventListener('click', () => {
         setFloatingOpen(true);
-        sendFloatingPrompt(button.dataset.miniPrompt);
+        sendFloatingPrompt(t(button.dataset.miniPk));
       });
     });
 
     const jumpToFullAI = $('jumpToFullAI');
     if (jumpToFullAI) jumpToFullAI.addEventListener('click', () => setFloatingOpen(false));
 
-    // Hapus riwayat kedua chat
     $('btnClearChat').addEventListener('click', () => {
       chatLog = []; miniLog = [];
       store.set(CHAT_KEY, []); store.set(MINI_KEY, []);
       restoreMainChat(); restoreMiniChat();
-      showToast('info', 'Riwayat dihapus', 'Percakapan dengan AI telah dibersihkan.');
+      showToast('info', t('clear_t'), t('clear_m'));
     });
 
     // ==========================================
@@ -1469,6 +1779,70 @@
       }, { rootMargin: '-20% 0px -65% 0px' });
       sections.forEach(section => observer.observe(section));
     }
+
+    // ==========================================
+    // 10. TERAPKAN BAHASA (dipanggil saat load & saat ganti bahasa)
+    // ==========================================
+    function paintLangMenu() {
+      $('langCode').textContent = LANGS[lang].code;
+      $('langMenu').innerHTML = Object.entries(LANGS).map(([k, l]) =>
+        '<li><button type="button" class="dropdown-item' + (k === lang ? ' active' : '') + '" data-lang="' + k + '"><span>' + l.name + '</span><i class="bi bi-check2"></i></button></li>').join('');
+    }
+
+    function applyLang() {
+      const L = LANGS[lang];
+      root.lang = lang;
+      root.dir = L.dir;
+      const wantCss = L.dir === 'rtl' ? RTL_CSS : LTR_CSS;
+      if ($('bsCss').getAttribute('href') !== wantCss) $('bsCss').setAttribute('href', wantCss);
+      document.title = t('title');
+      const md = document.querySelector('meta[name="description"]');
+      if (md) md.setAttribute('content', t('meta_desc'));
+
+      document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
+      document.querySelectorAll('[data-i18n-ph]').forEach(e => { e.placeholder = t(e.dataset.i18nPh); });
+      document.querySelectorAll('[data-i18n-title]').forEach(e => { e.title = t(e.dataset.i18nTitle); });
+      document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t(e.dataset.i18nAria)); });
+
+      paintLangMenu();
+      timeFormat = new Intl.DateTimeFormat(L.loc, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      updateClock();
+      renderLocation();
+      paintBell();
+      paintFab();
+
+      // Grafik: label dataset, judul sumbu, arah tooltip
+      airChart.data.datasets[2].label = t('ds_gas');
+      airChart.options.scales.y1.title.text = t('ax_gas');
+      tempChart.data.datasets[0].label = t('ds_temp');
+      humChart.data.datasets[0].label = t('ds_hum');
+      charts.forEach(c => { c.options.plugins.tooltip.rtl = L.dir === 'rtl'; });
+      paintModeMenu();
+      syncAxes(airChart);
+      if (records.length) renderCharts(); else charts.forEach(c => c.update('none'));
+      applyTheme(root.dataset.theme);
+
+      restoreMainChat();
+      restoreMiniChat();
+
+      if (records.length) applyLatest(records[records.length - 1]); else setNoData();
+    }
+
+    function setLang(next) {
+      if (!LANGS[next] || next === lang) return;
+      lang = next;
+      try { localStorage.setItem('wc_lang', lang); } catch (_) {}
+      applyLang();
+    }
+
+    $('langMenu').addEventListener('click', e => {
+      const btn = e.target.closest('[data-lang]');
+      if (btn) setLang(btn.dataset.lang);
+    });
+
+    applyLang();
+    refreshData();
+    setInterval(refreshData, POLL_MS);
   })();
   </script>
 </body>
