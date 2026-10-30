@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+<defs>
+  <!-- Right face: Royal to Deep Navy - gives depth -->
+  <linearGradient id="rightFace" x1="320" y1="248" x2="320" y2="420" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#1266C5"/>
+    <stop offset="100%" stop-color="#082B59"/>
+  </linearGradient>
+  <!-- Left face: Deep Navy subtle depth -->
+  <linearGradient id="leftFace" x1="192" y1="248" x2="192" y2="420" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#123868"/>
+    <stop offset="100%" stop-color="#082B59"/>
+  </linearGradient>
+  <!-- Cloud highlight - very subtle -->
+  <linearGradient id="cloudFace" x1="256" y1="142" x2="256" y2="324" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#F4F8FC"/>
+    <stop offset="100%" stop-color="#E6EFFA"/>
+  </linearGradient>
+</defs>
+
+<!-- ISOMETRIC CUBE BASE - Slightly rounded silhouette -->
+<!-- Left Face -->
+<path d="M 128 251.5 
+         L 256 326.5
+         L 256 416
+         C 256 419.2 254.2 421.5 250.8 423.5
+         L 133 353.5
+         C 129.5 351.5 128 348.5 128 344.5
+         L 128 251.5 Z" 
+      fill="url(#leftFace)"/>
+
+<!-- Right Face -->
+<path d="M 256 326.5
+         L 384 251.5
+         L 384 344.5
+         C 384 348.5 382.5 351.5 379 353.5
+         L 261.2 423.5
+         C 257.8 421.5 256 419.2 256 416
+         L 256 326.5 Z"
+      fill="url(#rightFace)"/>
+
+<!-- TOP FACE: CLOUD-CUBE HYBRID
+     Core idea: The top diamond's upper edge IS the cloud.
+     Bottom V stays geometric (cube), top is soft cloud.
+     3-lobe minimal cloud = strong at 16px
+-->
+<path d="M 128 251.5
+         L 256 326.5
+         L 384 251.5
+         C 389.5 236.8 381.5 220.5 366.2 217.2
+         C 367.8 199.8 354.5 184.2 336.5 183.2
+         C 328.5 182.8 321.2 185.5 315.5 190.2
+         C 308.2 166.5 286.5 149.5 261.2 148.2
+         C 235.8 146.8 212.5 161.5 202.5 184.2
+         C 196.2 179.5 188.2 177.2 180.2 178.2
+         C 161.5 180.8 147.5 196.8 148.2 215.5
+         C 132.2 218.5 121.5 234.5 128 251.5 Z"
+      fill="url(#cloudFace)"/>
+
+<!-- IoT Identity: Minimal cyan node + signal
+     Placed on right face - reads as status LED + connectivity
+     At 16px, dot remains visible, arcs disappear gracefully
+-->
+<g>
+  <!-- Soft glow for depth, not neon -->
+  <circle cx="314" cy="352" r="16" fill="#20C5D8" opacity="0.14"/>
+  <!-- Core IoT dot -->
+  <circle cx="314" cy="352" r="6.5" fill="#20C5D8"/>
+  <!-- Highlight for premium feel -->
+  <circle cx="312.3" cy="350.2" r="1.8" fill="#F4F8FC" opacity="0.95"/>
+  <!-- Signal arcs - minimal, single stroke -->
+  <path d="M 322 345 Q 332 352 322 359" fill="none" stroke="#20C5D8" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
+  <path d="M 327 341 Q 340 352 327 363" fill="none" stroke="#20C5D8" stroke-width="1.25" stroke-linecap="round" opacity="0.32"/>
+</g>
+
+</svg>
