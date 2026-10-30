@@ -1,3 +1,8 @@
 {
-  "version": 2
+  "rewrites": [
+    { "source": "/weathercube.svg", "destination": "/public/weathercube.svg" },
+    { "source": "/weathercube.png", "destination": "/public/weathercube.png" },
+    { "source": "/favicon.ico", "destination": "/public/favicon.ico" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
