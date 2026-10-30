@@ -4,7 +4,8 @@ const app = express();
 
 app.use(express.json());
 
-// Mengizinkan Express melayani file HTML statis (index.html & setup.html)
+// INI YANG BENER: serve public dulu, baru root
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
