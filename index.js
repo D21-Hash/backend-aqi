@@ -1,10 +1,9 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-
 app.use(express.json());
 
-// INI YANG BENER: serve public dulu, baru root
+// INI KUNCINYA: serve public di root DAN root sendiri
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
